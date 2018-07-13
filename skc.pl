@@ -47,6 +47,7 @@ for ($cnt = 1; $cnt < 130; $cnt++) {
 	print OFD;
 	$_ = <FD>;
 	print OFD;
+
 	while (<FD>) {
 		if ($_ =~ /South Front/) {
 			($par, $slope, $course) = split(/,/);
