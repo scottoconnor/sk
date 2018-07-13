@@ -4,30 +4,9 @@
 #
 
 require 'tnfb_years.pl';
+require 'courses.pl';
 
 use Getopt::Long;
-
-#
-# Pars for each hole on each course.
-#
-%c = (
-	SF => {
-		onep => 4, twop => 4, threep => 3, fourp => 4, fivep => 5, sixp => 5,
-		sevenp => 3, eightp => 4, ninep => 4
-	},
-	SB => {
-		onep => 5, twop => 3, threep => 4, fourp => 4, fivep => 5, sixp => 3,
-		sevenp => 4, eightp => 3, ninep => 5
-	},
-	NF => {
-		onep => 5, twop => 4, threep => 4, fourp => 4, fivep => 5, sixp => 3,
-		sevenp => 4, eightp => 3, ninep => 4
-	},
-	NB => {
-		onep => 4, twop => 4, threep => 5, fourp => 3, fivep => 4, sixp => 4,
-		sevenp => 3, eightp => 4, ninep => 5,
-	},
-);
 
 #
 # Players data structure.
@@ -238,40 +217,40 @@ while (<FD>) {
 		$player{$course}->{xplayed}++;
 
 		$player{$course}->{one} += $o;
-		if (($c{$course}->{onep}) - $o == 1) { $player{$course}->{oneb}++; $total_birdies++; $bp{$first . " " . $last} += 1; };
-		if (($c{$course}->{onep}) - $o == 2) { $player{$course}->{onee}++; $total_eagles++; $ep{$first . " " . $last} += 1; };
+		if (($c{$course}->{1}) - $o == 1) { $player{$course}->{oneb}++; $total_birdies++; $bp{$first . " " . $last} += 1; };
+		if (($c{$course}->{1}) - $o == 2) { $player{$course}->{onee}++; $total_eagles++; $ep{$first . " " . $last} += 1; };
 
 		$player{$course}->{two} += $t;
-		if (($c{$course}->{twop}) - $t == 1) { $player{$course}->{twob}++; $total_birdies++; $bp{$first . " " . $last} += 1; };
-		if (($c{$course}->{twop}) - $t == 2) { $player{$course}->{twoe}++; $total_eagles++; $ep{$first . " " . $last} += 1; };
+		if (($c{$course}->{2}) - $t == 1) { $player{$course}->{twob}++; $total_birdies++; $bp{$first . " " . $last} += 1; };
+		if (($c{$course}->{2}) - $t == 2) { $player{$course}->{twoe}++; $total_eagles++; $ep{$first . " " . $last} += 1; };
 
 		$player{$course}->{three} += $th;
-		if (($c{$course}->{threep}) - $th == 1) { $player{$course}->{threeb}++; $total_birdies++; $bp{$first . " " . $last} += 1;};
-		if (($c{$course}->{threep}) - $th == 2) { $player{$course}->{threee}++; $total_eagles++; $ep{$first . " " . $last} += 1; };
+		if (($c{$course}->{3}) - $th == 1) { $player{$course}->{threeb}++; $total_birdies++; $bp{$first . " " . $last} += 1;};
+		if (($c{$course}->{3}) - $th == 2) { $player{$course}->{threee}++; $total_eagles++; $ep{$first . " " . $last} += 1; };
 
 		$player{$course}->{four} += $f;
-		if (($c{$course}->{fourp}) - $f == 1) { $player{$course}->{fourb}++; $total_birdies++; $bp{$first . " " . $last} += 1; };
-		if (($c{$course}->{fourp}) - $f == 2) { $player{$course}->{foure}++; $total_eagles++; $ep{$first . " " . $last} += 1; };
+		if (($c{$course}->{4}) - $f == 1) { $player{$course}->{fourb}++; $total_birdies++; $bp{$first . " " . $last} += 1; };
+		if (($c{$course}->{4}) - $f == 2) { $player{$course}->{foure}++; $total_eagles++; $ep{$first . " " . $last} += 1; };
 
 		$player{$course}->{five} += $fv;
-		if (($c{$course}->{fivep}) - $fv == 1) { $player{$course}->{fiveb}++; $total_birdies++; $bp{$first . " " . $last} += 1; };
-		if (($c{$course}->{fivep}) - $fv == 2) { $player{$course}->{fivee}++; $total_eagles++; $ep{$first . " " . $last} += 1; };
+		if (($c{$course}->{5}) - $fv == 1) { $player{$course}->{fiveb}++; $total_birdies++; $bp{$first . " " . $last} += 1; };
+		if (($c{$course}->{5}) - $fv == 2) { $player{$course}->{fivee}++; $total_eagles++; $ep{$first . " " . $last} += 1; };
 
 		$player{$course}->{six} += $s;
-		if (($c{$course}->{sixp}) - $s == 1) { $player{$course}->{sixb}++; $total_birdies++; $bp{$first . " " . $last} += 1; };
-		if (($c{$course}->{sixp}) - $s == 2) { $player{$course}->{sixe}++; $total_eagles++; $ep{$first . " " . $last} += 1; };
+		if (($c{$course}->{6}) - $s == 1) { $player{$course}->{sixb}++; $total_birdies++; $bp{$first . " " . $last} += 1; };
+		if (($c{$course}->{6}) - $s == 2) { $player{$course}->{sixe}++; $total_eagles++; $ep{$first . " " . $last} += 1; };
 
 		$player{$course}->{seven} += $sv;
-		if (($c{$course}->{sevenp}) - $sv == 1) { $player{$course}->{sevenb}++; $total_birdies++; $bp{$first . " " . $last} += 1; };
-		if (($c{$course}->{sevenp}) - $sv == 2) { $player{$course}->{sevene}++; $total_eagles++; $ep{$first . " " . $last} += 1; };
+		if (($c{$course}->{7}) - $sv == 1) { $player{$course}->{sevenb}++; $total_birdies++; $bp{$first . " " . $last} += 1; };
+		if (($c{$course}->{7}) - $sv == 2) { $player{$course}->{sevene}++; $total_eagles++; $ep{$first . " " . $last} += 1; };
 
 		$player{$course}->{eight} += $e;
-		if (($c{$course}->{eightp}) - $e == 1) { $player{$course}->{eightb}++; $total_birdies++; $bp{$first . " " . $last} += 1; };
-		if (($c{$course}->{eightp}) - $e == 2) { $player{$course}->{eighte}++; $total_eagles++; $ep{$first . " " . $last} += 1; };
+		if (($c{$course}->{8}) - $e == 1) { $player{$course}->{eightb}++; $total_birdies++; $bp{$first . " " . $last} += 1; };
+		if (($c{$course}->{8}) - $e == 2) { $player{$course}->{eighte}++; $total_eagles++; $ep{$first . " " . $last} += 1; };
 
 		$player{$course}->{nine} += $n;
-		if (($c{$course}->{ninep}) - $n == 1) { $player{$course}->{nineb}++; $total_birdies++; $bp{$first . " " . $last} += 1; };
-		if (($c{$course}->{ninep}) - $n == 2) { $player{$course}->{ninee}++; $total_eagles++; $ep{$first . " " . $last} += 1; };
+		if (($c{$course}->{9}) - $n == 1) { $player{$course}->{nineb}++; $total_birdies++; $bp{$first . " " . $last} += 1; };
+		if (($c{$course}->{9}) - $n == 2) { $player{$course}->{ninee}++; $total_eagles++; $ep{$first . " " . $last} += 1; };
 	    }
 	}
 }
@@ -321,47 +300,47 @@ foreach (@c) {
 		}
 
 
-	printf("hole %d (par %d): Total shots: %3d, ", $hole++, $c{$_}->{onep}, $player{$_}->{one});
+	printf("hole %d (par %d): Total shots: %3d, ", $hole++, $c{$_}->{1}, $player{$_}->{one});
 	printf("ave = %.2f, %.2f vs. par, B: %d, E: %d\n", ($player{$_}->{one} / $player{$_}->{xplayed}),
 	    (($player{$_}->{one} / $player{$_}->{xplayed}) - $c{$_}->{onep}),
 		$player{$_}->{oneb} ? $player{$_}->{oneb} : 0, $player{$_}->{onee} ? $player{$_}->{onee} : 0);
 
-	printf("hole %d (par %d): Total shots: %3d, ", $hole++, $c{$_}->{twop}, $player{$_}->{two});
+	printf("hole %d (par %d): Total shots: %3d, ", $hole++, $c{$_}->{2}, $player{$_}->{two});
 	printf("ave = %.2f, %.2f vs. par, B: %d, E: %d\n", ($player{$_}->{two} / $player{$_}->{xplayed}),
 	    (($player{$_}->{two} / $player{$_}->{xplayed}) - $c{$_}->{twop}),
 		$player{$_}->{twob} ? $player{$_}->{twob} : 0, $player{$_}->{twoe} ? $player{$_}->{twoe} : 0);
 
-	printf("hole %d (par %d): Total shots: %3d, ", $hole++, $c{$_}->{threep}, $player{$_}->{three});
+	printf("hole %d (par %d): Total shots: %3d, ", $hole++, $c{$_}->{3}, $player{$_}->{three});
 	printf("ave = %.2f, %.2f vs. par, B: %d, E: %d\n", ($player{$_}->{three} / $player{$_}->{xplayed}),
 	    (($player{$_}->{three} / $player{$_}->{xplayed}) - $c{$_}->{threep}),
 		$player{$_}->{threeb} ? $player{$_}->{threeb} : 0, $player{$_}->{threee} ? $player{$_}->{threee} : 0);
 
-	printf("hole %d (par %d): Total shots: %3d, ", $hole++, $c{$_}->{fourp}, $player{$_}->{four});
+	printf("hole %d (par %d): Total shots: %3d, ", $hole++, $c{$_}->{4}, $player{$_}->{four});
 	printf("ave = %.2f, %.2f vs. par, B: %d, E: %d\n", ($player{$_}->{four} / $player{$_}->{xplayed}),
 	    (($player{$_}->{four} / $player{$_}->{xplayed}) - $c{$_}->{fourp}),
 		$player{$_}->{fourb} ? $player{$_}->{fourb} : 0, $player{$_}->{foure} ? $player{$_}->{foure} : 0);
 
-	printf("hole %d (par %d): Total shots: %3d, ", $hole++, $c{$_}->{fivep}, $player{$_}->{five});
+	printf("hole %d (par %d): Total shots: %3d, ", $hole++, $c{$_}->{5}, $player{$_}->{five});
 	printf("ave = %.2f, %.2f vs. par, B: %d, E: %d\n", ($player{$_}->{five} / $player{$_}->{xplayed}),
 	    (($player{$_}->{five} / $player{$_}->{xplayed}) - $c{$_}->{fivep}),
 		$player{$_}->{fiveb} ? $player{$_}->{fiveb} : 0, $player{$_}->{fivee} ? $player{$_}->{fivee} : 0);
 
-	printf("hole %d (par %d): Total shots: %3d, ", $hole++, $c{$_}->{sixp}, $player{$_}->{six});
+	printf("hole %d (par %d): Total shots: %3d, ", $hole++, $c{$_}->{6}, $player{$_}->{six});
 	printf("ave = %.2f, %.2f vs. par, B: %d, E: %d\n", ($player{$_}->{six} / $player{$_}->{xplayed}),
 	    (($player{$_}->{six} / $player{$_}->{xplayed}) - $c{$_}->{sixp}),
 		$player{$_}->{sixb} ? $player{$_}->{sixb} : 0, $player{$_}->{sixe} ? $player{$_}->{sixe} : 0);
 
-	printf("hole %d (par %d): Total shots: %3d, ", $hole++, $c{$_}->{sevenp}, $player{$_}->{seven});
+	printf("hole %d (par %d): Total shots: %3d, ", $hole++, $c{$_}->{7}, $player{$_}->{seven});
 	printf("ave = %.2f, %.2f vs. par, B: %d, E: %d\n", ($player{$_}->{seven} / $player{$_}->{xplayed}),
 	    (($player{$_}->{seven} / $player{$_}->{xplayed}) - $c{$_}->{sevenp}),
 		$player{$_}->{sevenb} ? $player{$_}->{sevenb} : 0, $player{$_}->{sevene} ? $player{$_}->{sevene} : 0);
 
-	printf("hole %d (par %d): Total shots: %3d, ", $hole++, $c{$_}->{eightp}, $player{$_}->{eight});
+	printf("hole %d (par %d): Total shots: %3d, ", $hole++, $c{$_}->{8}, $player{$_}->{eight});
 	printf("ave = %.2f, %.2f vs. par, B: %d, E: %d\n", ($player{$_}->{eight} / $player{$_}->{xplayed}),
 	    (($player{$_}->{eight} / $player{$_}->{xplayed}) - $c{$_}->{eightp}),
 		$player{$_}->{eightb} ? $player{$_}->{eightb} : 0, $player{$_}->{eighte} ? $player{$_}->{eighte} : 0);
 
-	printf("hole %d (par %d): Total shots: %3d, ", $hole++, $c{$_}->{ninep}, $player{$_}->{nine});
+	printf("hole %d (par %d): Total shots: %3d, ", $hole++, $c{$_}->{9}, $player{$_}->{nine});
 	printf("ave = %.2f, %.2f vs. par, B: %d, E: %d\n\n", ($player{$_}->{nine} / $player{$_}->{xplayed}),
 	    (($player{$_}->{nine} / $player{$_}->{xplayed}) - $c{$_}->{ninep}),
 		$player{$_}->{nineb} ? $player{$_}->{nineb} : 0, $player{$_}->{ninee} ? $player{$_}->{ninee} : 0);
