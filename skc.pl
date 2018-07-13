@@ -2,8 +2,6 @@
 #
 # Copyright (c) 2018 Scott O'Connor
 #
-#
-#
 
 require 'courses.pl';
 
