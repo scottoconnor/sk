@@ -1,4 +1,7 @@
 #! /usr/bin/perl
+#
+# Copyright (c) 2018 Scott O'Connor
+#
 
 use Time::Local;
 
