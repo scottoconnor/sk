@@ -5,8 +5,6 @@
 
 $debug = 0;
 
-use Time::Local;
-
 require "courses.pl";
 require "hcroutines.pl";
 
