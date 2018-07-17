@@ -8,7 +8,7 @@ $debug = 0;
 require "courses.pl";
 require "hcroutines.pl";
 
-for ($x = 200; $x < 301; $x++) {
+for ($x = 200; $x < 321; $x++) {
 	if (-e $x) {
 		&gen_hc($x);
 	}
@@ -70,13 +70,12 @@ sub gen_hc {
 
 		$p[$y] = ((($post - $par) * 113) / $slope);
 
+		printf("date=%s: post=%d: differential: %.3f\n", $date, $post, $p[$y]), if $debug;
+
 		#
 		# First round to the nearest hundredth, then to the tenth.
 		#
-		$p[$y] = &round_hundredth($p[$y]);
-		$p[$y] = &round_tenth($p[$y]);
-
-		printf("date=%s: post=%d: differential: %.1f\n", $date, $post, $p[$y]), if $debug;
+		$p[$y] = sprintf("%0.1f",$p[$y]);
 
 		$y++;
 	}
@@ -93,6 +92,9 @@ sub gen_hc {
 	$hi /= $use;
 	$hi *= 0.90;  # 90% is used for match play
 	$hi = (int($hi * 10) / 10);
+
+	if ($first eq "Scott") {
+	}
 
 	$sf = int(($hi * $c{SF}->{slope} / 113) + 0.5);
 	$sb = int(($hi * $c{SB}->{slope} / 113) + 0.5);
