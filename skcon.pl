@@ -3,11 +3,8 @@
 # Copyright (c) 2018 Scott O'Connor
 #
 
-use Time::Local;
-
 require 'tnfb.pl';
 require 'courses.pl';
-
 
 for ($cnt = 1, $xx = 200; $cnt < 150; $cnt++, $xx++) {
 	if ($cnt < 10) {
@@ -116,6 +113,12 @@ while ($line = <FD>) {
 		#$slope = $c{$course}{slope};
 	} else {
 		$course = 'NL';
+		#$line = <FD>;
+		#$line = <FD>;
+		#$line = <FD>;
+		#$line = <FD>;
+		#$line = <FD>;
+		#next;
 	}
 
 	$line = <FD>;
