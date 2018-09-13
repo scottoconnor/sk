@@ -17,10 +17,10 @@ GetOptions (
 or die("Error in command line arguments\n");
 
 for ($x = 200; $x < 321; $x++) {
-	if (-e $x) {
-		&gen_hc($x);
+	if (-e "golfers/$x") {
+		&gen_hc("golfers/$x");
 		if ($trend) {
-			&gen_hc_trend($x);
+			&gen_hc_trend("golfers/$x");
 		}
 	}
 }
@@ -115,7 +115,7 @@ sub gen_hc {
 	$nb = int(($hi * $c{NB}->{slope} / 113) + 0.5);
 	$hcave = int(($hi * $c{AVE}->{slope} / 113) + 0.5);
 
-	printf ("%-8s %-10s - %5.1fN  HC=%-3d\n", $first, $last, $hi, $sf);
+	printf ("%-8s %-10s - %5.1fN  HC=%-2d\n", $first, $last, $hi, $sf);
 	#printf ("%-8s %-10s - %5.1fN  SF=%-3d SB=%-3d NF=%-3d NB=%-3d  AVE=%-3d\n", $first, $last, $hi, $sf, $sb, $nf, $nb, $hcave);
 }
 
@@ -186,13 +186,10 @@ sub gen_hc_trend {
 		$hi *= 0.90;  # 90% is used for match play
 		$hi = (int($hi * 10) / 10);
 
-		if ($first eq "Scott") {
-		}
-
 		$sf = int(($hi * $c{SF}->{slope} / 113) + 0.5);
 
-		printf ("%-9s:  %-10s %-8s - %5.1fN  HC=%-3d\n", $date, $last, $first, $hi, $sf);
-			$first_score = ($last_score - 10);
+		#printf ("%-9s:  %-10s %-8s - %5.1fN  HC=%-3d\n", $date, $last, $first, $hi, $sf);
+		printf ("%-9s:  %5.1fN  HC=%-3d\n", $date, $hi, $sf);
 		$last_score++;
 		$first_score = ($last_score - 20);
 	}
