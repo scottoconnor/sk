@@ -39,10 +39,10 @@ $end_week = abs($end_week);
 undef(%y);
 undef(%p);
 
-if ($html) {
-	print "<!DOCTYPE html>\n", if $html;
-	print "<html>\n", if $html;
-}
+#if ($html) {
+	#print "<!DOCTYPE html>\n", if $html;
+	#print "<html>\n", if $html;
+#}
 
 for (; ($start_year <= $end_year); $start_year++) {
 	undef(%bt);
@@ -60,9 +60,10 @@ for (; ($start_year <= $end_year); $start_year++) {
 	if ($tables) {
 		&print_tables;
 	}
-	if ($player_stats) {
-		&print_player_stats;
-	}
+}
+
+if ($player_stats) {
+	&print_player_stats;
 }
 
 sub print_stats {
@@ -93,7 +94,7 @@ sub print_stats {
 	    printf("Total Pars = %d\n", $y{$yp}{total_pars}), if !$html;
 	    printf("Total Bogies = %d\n", $y{$yp}{total_bogies}), if !$html;
 	    printf("Total Double Bogies = %d\n", $y{$yp}{total_db}), if !$html;
-	    printf("Total Others = %d\n", $y{$yp}{total_other}), if !$html;
+	    printf("Total Others = %d\n\n", $y{$yp}{total_other}), if !$html;
 
 	    printf("Total Posted scores: <font color=\"green\">%d</font></br>\n", $y{$yp}{total_scores}), if $html;
 	    printf("Total holes played: <font color=\"green\">%d</font></br>\n", ($y{$yp}{total_scores} * 9)), if $html;
@@ -121,7 +122,7 @@ sub print_tables {
 	    print "</style>\n</head>\n", if $html;
 	    print "<table style=\"width:25\%\"></br>\n", if $html;
 	    print "  <tr>\n    <th>Name</th>\n    <th>Birdies</th>\n  </tr>\n", if $html;
-	    print "\nBirdie Table:\n", if !$html;
+	    print "Birdie Table:\n", if !$html;
 		foreach my $key (sort { $bt{$b} <=> $bt{$a} } keys %bt) {
 		    printf "%-20s %4d\n", $key, $bt{$key}, if !$html;
 		    print "  <tr>\n", if $html;
@@ -130,6 +131,8 @@ sub print_tables {
 	        }
 	    print "</table></br>", if $html;
 	}
+	print "\n", if !$html;
+
 	if (%et) {
 	    print "<b>Eagle Table:</b></br>\n", if $html;
 	    print "<head>\n<style>\n", if $html;
@@ -138,7 +141,7 @@ sub print_tables {
 	    print "</style>\n</head>\n", if $html;
 	    print "<table style=\"width:25\%\"></br>\n", if $html;
 	    print "  <tr>\n    <th>Name</th>\n    <th>Eagles</th>\n  </tr>\n", if $html;
-	    print "\nEagle Table:\n", if !$html;
+	    print "Eagle Table:\n", if !$html;
 	    foreach my $key (sort { $et{$b} <=> $et{$a} } keys %et) {
 		printf "%-20s %4d\n", $key, $et{$key}, if !$html;
 		print "  <tr>\n", if $html;
@@ -147,8 +150,8 @@ sub print_tables {
 	    }
 	    print "</table>\n", if $html;
 	}
-	print "\n\n";
-	print "</br></br>", if $html;
+	print "\n", if !$html;
+	print "</br>", if $html;
     }
 }
 
