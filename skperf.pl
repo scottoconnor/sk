@@ -60,6 +60,10 @@ for (; ($start_year <= $end_year); $start_year++) {
 	if ($tables) {
 		&print_tables;
 	}
+	if (!$player_stats) {
+		undef(%y);
+		undef(%p);
+	}
 }
 
 if ($player_stats) {
@@ -169,14 +173,17 @@ sub print_player_stats {
 	print "$x\n";
 	print "$p{$x}{team}\n\n";
 
-	print "Total Strokes = $p{$x}{total_strokes}\n\n";
 
+        my $total_player_rounds = 0;
 	foreach $sc (keys %c) {
 	    if ($p{$x}{$sc}{xplayed} == 0) {
 		next;
 	    }
-            print "Played $sc: $p{$x}{$sc}{xplayed} times.\n";
+            printf("Played %-11s: %d times.\n", $c{$sc}->{name}, $p{$x}{$sc}{xplayed});
+	    $total_player_rounds += $p{$x}{$sc}{xplayed};
 	}
+	print "\nTotal Strokes = $p{$x}{total_strokes}\n";
+	printf("Total Average Score = %.2f\n", ($p{$x}{total_strokes} / $total_player_rounds));
 
 	print "\n";
 
@@ -188,13 +195,20 @@ sub print_player_stats {
 
 	    print "$c{$sc}->{name}\n";
 
+	    my $offset = 0;
+	    if ($sc eq "NB" || $sc eq "SB") {
+		$offset = 9;
+	    }
+
 	    for ($h = 1; $h < 10; $h++) {
 
-		printf("hole %d (par %d): Total shots: %3d  ", $h, $c{$sc}->{$h}, $p{$x}{$sc}{$h}{shots});
+		printf("hole %d (par %d): Total shots: %3d  ", ($h + $offset), $c{$sc}->{$h}, $p{$x}{$sc}{$h}{shots});
 
 		printf("ave = %.2f, %.2f vs. par, B: %d, E: %d\n", ($p{$x}{$sc}{$h}{shots} / $p{$x}{$sc}{xplayed}),
 		    (($p{$x}{$sc}{$h}{shots} / $p{$x}{$sc}{xplayed}) - $c{$sc}->{$h}),
 			$p{$x}{$sc}{$h}{b} ? $p{$x}{$sc}{$h}{b} : 0, $p{$x}{$sc}{$h}{e} ? $p{$x}{$sc}{$h}{e} : 0);
+		printf("\tPars=%d, Bogies=%d, Double Bogies=%d, Others=%d\n\n", $p{$x}{$sc}{$h}{p}, $p{$x}{$sc}{$h}{bo},
+		    $p{$x}{$sc}{$h}{db}, $p{$x}{$sc}{$h}{o});
 	    }
 	    print "\n";
 	}
@@ -258,10 +272,22 @@ sub get_player_scores {
 		for ($h = 1; $h < 10; $h++) {
 		    $hole = abs(shift @score);
 		    $p{$pn}{$course}{$h}{shots} += $hole;
-		    if (($c{$course}->{$h} - $hole) < -2) { $y{$start_year}{total_other}++;  };
-		    if (($c{$course}->{$h} - $hole) == -2) { $y{$start_year}{total_db}++;  };
-		    if (($c{$course}->{$h} - $hole) == -1) { $y{$start_year}{total_bogies}++;  };
-		    if (($c{$course}->{$h} - $hole) == 0) { $y{$start_year}{total_pars}++;  };
+		    if (($c{$course}->{$h} - $hole) < -2) {
+			$p{$pn}{$course}{$h}{o}++;
+			$y{$start_year}{total_other}++;
+		    };
+		    if (($c{$course}->{$h} - $hole) == -2) {
+			$p{$pn}{$course}{$h}{db}++;
+			$y{$start_year}{total_db}++;
+		    }
+		    if (($c{$course}->{$h} - $hole) == -1) {
+			$p{$pn}{$course}{$h}{bo}++;
+			$y{$start_year}{total_bogies}++;
+		    }
+		    if (($c{$course}->{$h} - $hole) == 0) {
+			$p{$pn}{$course}{$h}{p}++;
+			$y{$start_year}{total_pars}++;
+		    }
 		    if (($c{$course}->{$h} - $hole) == 1) {
 			$p{$pn}{$course}{$h}{b}++;
 			$y{$start_year}{total_birdies}++;
