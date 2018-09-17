@@ -16,16 +16,18 @@ $end_year = 2018;
 $cur_week = $start_week = 1;
 $end_week = 15;
 $stats_only = 0;
+$include_subs = 0;
 $player_stats = 0;
 $tables = 0;
 $html = 0;
 
 GetOptions (
-	"sy=s" => \$start_year,
-	"ey=s" => \$end_year,
-	"sw=s" => \$start_week,
-	"ew=s" => \$end_week,
+	"sy=i" => \$start_year,
+	"ey=i" => \$end_year,
+	"sw=i" => \$start_week,
+	"ew=i" => \$end_week,
 	"s" =>  \$stats_only,
+	"S" =>  \$include_subs,
 	"p" =>  \$player_stats,
 	"t" =>  \$tables,
 	"h" =>  \$html,
@@ -170,8 +172,8 @@ sub print_player_stats {
 		next;
 	}
 
-	print "$x\n";
-	print "$p{$x}{team}\n\n";
+	print "$x\n\n";
+	print "$p{$x}{team}\n\n", if $debug;
 
 
         my $total_player_rounds = 0;
@@ -202,11 +204,18 @@ sub print_player_stats {
 
 	    for ($h = 1; $h < 10; $h++) {
 
-		printf("hole %d (par %d): Total shots: %3d  ", ($h + $offset), $c{$sc}->{$h}, $p{$x}{$sc}{$h}{shots});
+		printf("Hole %d (par %d): Total shots: %3d  ", ($h + $offset), $c{$sc}->{$h}, $p{$x}{$sc}{$h}{shots});
 
-		printf("ave = %.2f, %.2f vs. par, B: %d, E: %d\n", ($p{$x}{$sc}{$h}{shots} / $p{$x}{$sc}{xplayed}),
-		    (($p{$x}{$sc}{$h}{shots} / $p{$x}{$sc}{xplayed}) - $c{$sc}->{$h}),
-			$p{$x}{$sc}{$h}{b} ? $p{$x}{$sc}{$h}{b} : 0, $p{$x}{$sc}{$h}{e} ? $p{$x}{$sc}{$h}{e} : 0);
+		if ($c{$sc}->{$h} > 3) {
+		    printf("ave=%.2f, %.2f vs. par, B: %d, E: %d\n", ($p{$x}{$sc}{$h}{shots} / $p{$x}{$sc}{xplayed}),
+			(($p{$x}{$sc}{$h}{shots} / $p{$x}{$sc}{xplayed}) - $c{$sc}->{$h}),
+			    $p{$x}{$sc}{$h}{b} ? $p{$x}{$sc}{$h}{b} : 0, $p{$x}{$sc}{$h}{e} ? $p{$x}{$sc}{$h}{e} : 0);
+		} elsif ($c{$sc}->{$h} == 3) {
+		    printf("ave=%.2f, %.2f vs. par, B: %d,", ($p{$x}{$sc}{$h}{shots} / $p{$x}{$sc}{xplayed}),
+			(($p{$x}{$sc}{$h}{shots} / $p{$x}{$sc}{xplayed}) - $c{$sc}->{$h}),
+			    $p{$x}{$sc}{$h}{b} ? $p{$x}{$sc}{$h}{b} : 0);
+		    printf(" H: %d\n", $p{$x}{$sc}{$h}{e} ? $p{$x}{$sc}{$h}{b} : 0);
+		}
 		printf("\tPars=%d, Bogies=%d, Double Bogies=%d, Others=%d\n\n", $p{$x}{$sc}{$h}{p}, $p{$x}{$sc}{$h}{bo},
 		    $p{$x}{$sc}{$h}{db}, $p{$x}{$sc}{$h}{o});
 	    }
@@ -228,9 +237,9 @@ sub get_player_scores {
 
     ($first, $last, $team) = split(/:/, $name);
 
-    if ($team eq "Sub") {
-	#close (FD);
-	#return;
+    if ($team eq "Sub" && ($include_subs == 0)) {
+	close (FD);
+	return;
     }
 
     $pn = $first . " " . $last;
