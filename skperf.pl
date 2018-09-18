@@ -15,8 +15,8 @@ $start_year = 2018;
 $end_year = 2018;
 $cur_week = $start_week = 1;
 $end_week = 15;
-$stats_only = 0;
-$include_subs = 0;
+$stats = 0;
+$include_subs = 1;
 $player_stats = 0;
 $tables = 0;
 $html = 0;
@@ -26,25 +26,17 @@ GetOptions (
 	"ey=i" => \$end_year,
 	"sw=i" => \$start_week,
 	"ew=i" => \$end_week,
-	"s" =>  \$stats_only,
-	"S" =>  \$include_subs,
+	"s" =>  \$stats,
 	"p" =>  \$player_stats,
 	"t" =>  \$tables,
 	"h" =>  \$html,
 	"d" => \$debug)
 or die("Error in command line arguments\n");
 
-$start_year = abs($start_year);
-$end_year = abs($end_year);
-$cur_week = $start_week = abs($start_week);
-$end_week = abs($end_week);
+$cur_week = $start_week;
+
 undef(%y);
 undef(%p);
-
-#if ($html) {
-	#print "<!DOCTYPE html>\n", if $html;
-	#print "<html>\n", if $html;
-#}
 
 for (; ($start_year <= $end_year); $start_year++) {
 	undef(%bt);
@@ -56,7 +48,7 @@ for (; ($start_year <= $end_year); $start_year++) {
 			&get_player_scores("golfers/$x");
 		}
 	}
-	if ($stats_only) {
+	if ($stats) {
 		&print_stats;
 	}
 	if ($tables) {
@@ -89,7 +81,7 @@ sub print_stats {
 	print "<b><font color=\"green\">:</b></font></br>", if $html;
 
 
-	if ($y{$yp}{total_strokes} && $stats_only) {
+	if ($y{$yp}{total_strokes} && $stats) {
 	    printf("Total Posted scores: %d\n", $y{$yp}{total_scores}), if !$html;
 	    printf("Total holes played: %d\n", ($y{$yp}{total_scores} * 9)), if !$html;
 	    printf("Total Strokes = %d\n", $y{$yp}{total_strokes}), if !$html;
