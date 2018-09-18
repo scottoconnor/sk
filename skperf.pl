@@ -38,9 +38,10 @@ $cur_week = $start_week;
 undef(%y);
 undef(%p);
 
+#
+# First get all the players scores/stats for the requested years/weeks.
+#
 for (; ($start_year <= $end_year); $start_year++) {
-	undef(%bt);
-	undef(%et);
 
 	for ($x = 200; $x < 400; $x++) {
 		if (-e "golfers/$x") {
@@ -48,109 +49,115 @@ for (; ($start_year <= $end_year); $start_year++) {
 			&get_player_scores("golfers/$x");
 		}
 	}
+}
+
+#
+# Now print out the data for those years/weeks.
+#
+foreach $yp (sort keys %y) {
 	if ($stats) {
-		&print_stats;
+		&print_stats($yp);
 	}
 	if ($tables) {
-		&print_tables;
-	}
-	if (!$player_stats) {
-		undef(%y);
-		undef(%p);
+		&print_tables($yp);
 	}
 }
 
+#
+# Print out player's hole-by-hole stats if requested.
+#
 if ($player_stats) {
 	&print_player_stats;
 }
 
 sub print_stats {
 
-    foreach $yp (sort keys %y) {
+    my($yp) = @_;
 
-	print "$yp", if !$html;
-	print " - Weeks $start_week through $end_week", if !$html &&
-		(($end_week - $start_week) < 14) && (($end_week - $start_week) > 0);
-	print " - Week $start_week", if !$html && ($start_week == $end_week);
-	print ":\n", if !$html;
+    print "$yp", if !$html;
+    print " - Weeks $start_week through $end_week", if !$html &&
+	(($end_week - $start_week) < 14) && (($end_week - $start_week) > 0);
+    print " - Week $start_week", if !$html && ($start_week == $end_week);
+    print ":\n", if !$html;
 
-	print "<b><font color=\"green\">$yp</b></font>", if $html;
-	print "&nbsp<b><font color=\"green\">- Weeks $start_week through $end_week</b></font></br", if $html &&
-		(($end_week - $start_week) < 14) && (($end_week - $start_week) > 0);
-	print "&nbsp<b><font color=\"green\">- Week $start_week</b></font>", if $html && ($start_week == $end_week);
-	print "<b><font color=\"green\">:</b></font></br>", if $html;
+    print "<b><font color=\"green\">$yp</b></font>", if $html;
+    print "&nbsp<b><font color=\"green\">- Weeks $start_week through $end_week</b></font></br", if $html &&
+	(($end_week - $start_week) < 14) && (($end_week - $start_week) > 0);
+    print "&nbsp<b><font color=\"green\">- Week $start_week</b></font>", if $html && ($start_week == $end_week);
+    print "<b><font color=\"green\">:</b></font></br>", if $html;
 
 
-	if ($y{$yp}{total_strokes} && $stats) {
-	    printf("Total Posted scores: %d\n", $y{$yp}{total_scores}), if !$html;
-	    printf("Total holes played: %d\n", ($y{$yp}{total_scores} * 9)), if !$html;
-	    printf("Total Strokes = %d\n", $y{$yp}{total_strokes}), if !$html;
-	    printf("League Stroke Average = %.2f\n",
-		($y{$yp}{total_strokes} / $y{$yp}{total_scores})), if !$html;
-	    printf("Total Eagles  = %d\n", $y{$yp}{total_eagles}), if !$html;
-	    printf("Total Birdies = %d\n", $y{$yp}{total_birdies}), if !$html;
-	    printf("Total Pars = %d\n", $y{$yp}{total_pars}), if !$html;
-	    printf("Total Bogies = %d\n", $y{$yp}{total_bogies}), if !$html;
-	    printf("Total Double Bogies = %d\n", $y{$yp}{total_db}), if !$html;
-	    printf("Total Others = %d\n\n", $y{$yp}{total_other}), if !$html;
+    if ($y{$yp}{total_strokes} && $stats) {
+	printf("Total Posted scores: %d\n", $y{$yp}{total_scores}), if !$html;
+	printf("Total holes played: %d\n", ($y{$yp}{total_scores} * 9)), if !$html;
+	printf("Total Strokes = %d\n", $y{$yp}{total_strokes}), if !$html;
+	printf("League Stroke Average = %.2f\n",
+	    ($y{$yp}{total_strokes} / $y{$yp}{total_scores})), if !$html;
+	printf("Total Eagles  = %d\n", $y{$yp}{total_eagles}), if !$html;
+	printf("Total Birdies = %d\n", $y{$yp}{total_birdies}), if !$html;
+	printf("Total Pars = %d\n", $y{$yp}{total_pars}), if !$html;
+	printf("Total Bogies = %d\n", $y{$yp}{total_bogies}), if !$html;
+	printf("Total Double Bogies = %d\n", $y{$yp}{total_db}), if !$html;
+	printf("Total Others = %d\n\n", $y{$yp}{total_other}), if !$html;
 
-	    printf("Total Posted scores: <font color=\"green\">%d</font></br>\n", $y{$yp}{total_scores}), if $html;
-	    printf("Total holes played: <font color=\"green\">%d</font></br>\n", ($y{$yp}{total_scores} * 9)), if $html;
-	    printf("Total Strokes = <font color=\"green\">%d</font></br>\n", $y{$yp}{total_strokes}), if $html;
-	    printf("League Stroke Average = <font color=\"green\">%.2f</font></br>\n",
-		($y{$yp}{total_strokes} / $y{$yp}{total_scores})), if $html;
-	    printf("Total Eagles  = <font color=\"green\">%d</font></br>\n", $y{$yp}{total_eagles}), if $html;
-	    printf("Total Birdies = <font color=\"green\">%d</font></br>\n", $y{$yp}{total_birdies}), if $html;
-	    printf("Total Pars = <font color=\"green\">%d</font></br>\n", $y{$yp}{total_pars}), if $html;
-	    printf("Total Bogies = <font color=\"green\">%d</font></br>\n", $y{$yp}{total_bogies}), if $html;
-	    printf("Total Double Bogies = <font color=\"green\">%d</font></br>\n", $y{$yp}{total_db}), if $html;
-	    printf("Total Others = <font color=\"green\">%d</font></br></br>\n", $y{$yp}{total_other}), if $html;
-	}
+	printf("Total Posted scores: <font color=\"green\">%d</font></br>\n", $y{$yp}{total_scores}), if $html;
+	printf("Total holes played: <font color=\"green\">%d</font></br>\n", ($y{$yp}{total_scores} * 9)), if $html;
+	printf("Total Strokes = <font color=\"green\">%d</font></br>\n", $y{$yp}{total_strokes}), if $html;
+	printf("League Stroke Average = <font color=\"green\">%.2f</font></br>\n",
+	    ($y{$yp}{total_strokes} / $y{$yp}{total_scores})), if $html;
+	printf("Total Eagles  = <font color=\"green\">%d</font></br>\n", $y{$yp}{total_eagles}), if $html;
+	printf("Total Birdies = <font color=\"green\">%d</font></br>\n", $y{$yp}{total_birdies}), if $html;
+	printf("Total Pars = <font color=\"green\">%d</font></br>\n", $y{$yp}{total_pars}), if $html;
+	printf("Total Bogies = <font color=\"green\">%d</font></br>\n", $y{$yp}{total_bogies}), if $html;
+	printf("Total Double Bogies = <font color=\"green\">%d</font></br>\n", $y{$yp}{total_db}), if $html;
+	printf("Total Others = <font color=\"green\">%d</font></br></br>\n", $y{$yp}{total_other}), if $html;
     }
 }
 
 sub print_tables {
 
-    foreach $yp (sort keys %y) {
-	if (%bt) {
-	    print "<b>Birdie Table:</b></br>\n", if $html;
-	    print "<head>\n<style>\n", if $html;
-	    print "table, th, td {\n    border: 1px solid black;\n    border-collapse: collapse;\n}\n", if $html;
-	    print "th, td {\n    text-align: left;\n}\n", if $html;
-	    print "</style>\n</head>\n", if $html;
-	    print "<table style=\"width:25\%\"></br>\n", if $html;
-	    print "  <tr>\n    <th>Name</th>\n    <th>Birdies</th>\n  </tr>\n", if $html;
-	    print "Birdie Table:\n", if !$html;
-		foreach my $key (sort { $bt{$b} <=> $bt{$a} } keys %bt) {
-		    printf "%-20s %4d\n", $key, $bt{$key}, if !$html;
-		    print "  <tr>\n", if $html;
-		    printf "    <td>%-20s</td>\n    <td>%4d</td>", $key, $bt{$key}, if $html;
-		    print "  </tr>\n", if $html;
-	        }
-	    print "</table></br>", if $html;
-	}
-	print "\n", if !$html;
+    my($yp) = @_;
 
-	if (%et) {
-	    print "<b>Eagle Table:</b></br>\n", if $html;
-	    print "<head>\n<style>\n", if $html;
-	    print "table, th, td {\n    border: 1px solid black;\n    border-collapse: collapse;\n}\n", if $html;
-	    print "th, td {\n    text-align: left;\n}\n", if $html;
-	    print "</style>\n</head>\n", if $html;
-	    print "<table style=\"width:25\%\"></br>\n", if $html;
-	    print "  <tr>\n    <th>Name</th>\n    <th>Eagles</th>\n  </tr>\n", if $html;
-	    print "Eagle Table:\n", if !$html;
-	    foreach my $key (sort { $et{$b} <=> $et{$a} } keys %et) {
-		printf "%-20s %4d\n", $key, $et{$key}, if !$html;
+    if (%{$bt{$yp}}) {
+	%birds = %{$bt{$yp}};
+	print "<b>Birdie Table:</b></br>\n", if $html;
+	print "<head>\n<style>\n", if $html;
+	print "table, th, td {\n    border: 1px solid black;\n    border-collapse: collapse;\n}\n", if $html;
+	print "th, td {\n    text-align: left;\n}\n", if $html;
+	print "</style>\n</head>\n", if $html;
+	print "<table style=\"width:25\%\"></br>\n", if $html;
+	print "  <tr>\n    <th>Name</th>\n    <th>Birdies</th>\n  </tr>\n", if $html;
+	print "Birdie Table:\n", if !$html;
+	    foreach my $key (sort { $birds{$b} <=> $birds{$a} } keys %birds) {
+		printf "%-20s %4d\n", $key, $birds{$key}, if !$html;
 		print "  <tr>\n", if $html;
-		printf "    <td>%-20s</td>\n    <td>%4d</td>", $key, $et{$key}, if $html;
+		printf "    <td>%-20s</td>\n    <td>%4d</td>", $key, $birds{$key}, if $html;
 		print "  </tr>\n", if $html;
 	    }
-	    print "</table>\n", if $html;
-	}
-	print "\n", if !$html;
-	print "</br>", if $html;
+	print "</table></br>", if $html;
     }
+    print "\n", if !$html;
+
+    if (%{$et{$yp}}) {
+	%eagles = %{$et{$yp}};
+	print "<b>Eagle Table:</b></br>\n", if $html;
+	print "<head>\n<style>\n", if $html;
+	print "table, th, td {\n    border: 1px solid black;\n    border-collapse: collapse;\n}\n", if $html;
+	print "th, td {\n    text-align: left;\n}\n", if $html;
+	print "</style>\n</head>\n", if $html;
+	print "<table style=\"width:25\%\"></br>\n", if $html;
+	print "  <tr>\n    <th>Name</th>\n    <th>Eagles</th>\n  </tr>\n", if $html;
+	print "Eagle Table:\n", if !$html;
+	foreach my $key (sort { $eagles{$b} <=> $eagles{$a} } keys %eagles) {
+	    printf "%-20s %4d\n", $key, $eagles{$key}, if !$html;
+	    print "  <tr>\n", if $html;
+	    printf "    <td>%-20s</td>\n    <td>%4d</td>", $key, $eagles{$key}, if $html;
+	    print "  </tr>\n", if $html;
+	}
+	print "</table>\n", if $html;
+    }
+    print "\n", if !$html;
+    print "</br>", if $html;
 }
 
 sub print_player_stats {
@@ -292,12 +299,12 @@ sub get_player_scores {
 		    if (($c{$course}->{$h} - $hole) == 1) {
 			$p{$pn}{$course}{$h}{b}++;
 			$y{$start_year}{total_birdies}++;
-			$bt{$pn} += 1;
+			$bt{$start_year}{$pn} += 1;
 		    }
 		    if (($c{$course}->{$h} - $hole) == 2) {
 			$p{$pn}{$course}{$h}{e}++;
 			$y{$start_year}{total_eagles}++;
-			$et{$pn} += 1;
+			$et{$start_year}{$pn} += 1;
 		    };
 		}
 	    }
