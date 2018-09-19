@@ -11,17 +11,17 @@ fi
 
 WEEK=${1}
 START_YEAR=2018
-END_YEAR=2010
+END_YEAR=2006
 
 YEAR=${START_YEAR}
 
-rm -f /tmp/${YEAR}*.html
+rm -f /tmp/*.html
 
-./skperf.pl -y -s -i -h -sy ${YEAR} -ey ${YEAR} > /tmp/${YEAR}.html
+./skperf.pl -s -t -h -sy ${YEAR} -ey ${YEAR} > /tmp/${YEAR}.html
 
 
 until [  $YEAR -lt $END_YEAR ]; do
-	./skperf.pl -y -s -i -h -sy $YEAR -ey $YEAR -sw 1 -ew $WEEK >> /tmp/${START_YEAR}-${END_YEAR}-week${WEEK}.html
+	./skperf.pl -s -t -h -sy $YEAR -ey $YEAR -sw 1 -ew $WEEK >> /tmp/${START_YEAR}-${END_YEAR}-week${WEEK}.html
 	let YEAR-=1
 done
 
@@ -29,6 +29,6 @@ done
 YEAR=${START_YEAR}
 
 until [  ${WEEK} -lt 1 ]; do
-	./skperf.pl -h -s -i -w -y -sy $YEAR -ey $YEAR -sw ${WEEK} -ew ${WEEK} >> /tmp/${YEAR}-weekly.html
+	./skperf.pl -h -s -t -sy $YEAR -ey $YEAR -sw ${WEEK} -ew ${WEEK} >> /tmp/${YEAR}-weekly.html
 	let WEEK-=1
 done

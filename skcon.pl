@@ -6,20 +6,20 @@
 require 'tnfb.pl';
 require 'courses.pl';
 
-for ($cnt = 1, $xx = 200; $cnt < 150; $cnt++, $xx++) {
+for ($cnt = 1, $xx = 200; $cnt < 200; $cnt++, $xx++) {
 	if ($cnt < 10) {
-		$fna = "00$cnt" . ".ID"
+		$fna = "golfers/" . "00$cnt" . ".ID"
 	} elsif ($cnt >= 10 && $cnt < 100) {
-		$fna = "0$cnt" . ".ID";
+		$fna = "golfers/" ."0$cnt" . ".ID";
 	} elsif ($cnt == 100) {
-		$fna = "$cnt" . ".ID";
+		$fna = "golfers/" ."$cnt" . ".ID";
 	} elsif ($cnt > 100) {
-		$fna = "subs/" . "$cnt" . ".ID";
+		$fna = "golfers/" . "$cnt" . ".ID";
 	}
 
 	if (-e $fna) {
 		print "fna = $fna\n";
-		&player_stat($fna, $xx);
+		&player_stat($fna, "golfers/$xx");
 	}
 }
 
@@ -97,20 +97,20 @@ while ($line = <FD>) {
 
 	if ($course =~ /Stow\/South Front/) {
 		$course = 'SF';
-		#$par = $c{$course}{par};
-		#$slope = $c{$course}{slope};
+		$par = $c{$course}{par};
+		$slope = $c{$course}{slope};
 	} elsif ($course =~ /Stow\/South Back/) {
 		$course = 'SB';
-		#$par = $c{$course}{par};
-		#$slope = $c{$course}{slope};
+		$par = $c{$course}{par};
+		$slope = $c{$course}{slope};
 	} elsif ($course =~ /Stow\/North Front/) {
 		$course = 'NF';
-		#$par = $c{$course}{par};
-		#$slope = $c{$course}{slope};
+		$par = $c{$course}{par};
+		$slope = $c{$course}{slope};
 	} elsif ($course =~ /Stow\/North Back/) {
 		$course = 'NB';
-		#$par = $c{$course}{par};
-		#$slope = $c{$course}{slope};
+		$par = $c{$course}{par};
+		$slope = $c{$course}{slope};
 	} else {
 		$course = 'NL';
 		#$line = <FD>;

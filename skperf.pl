@@ -213,7 +213,7 @@ sub print_player_stats {
 		    printf("ave=%.2f, %.2f vs. par, B: %d,", ($p{$x}{$sc}{$h}{shots} / $p{$x}{$sc}{xplayed}),
 			(($p{$x}{$sc}{$h}{shots} / $p{$x}{$sc}{xplayed}) - $c{$sc}->{$h}),
 			    $p{$x}{$sc}{$h}{b} ? $p{$x}{$sc}{$h}{b} : 0);
-		    printf(" H: %d\n", $p{$x}{$sc}{$h}{e} ? $p{$x}{$sc}{$h}{b} : 0);
+		    printf(" H: %d\n", $p{$x}{$sc}{$h}{e} ? $p{$x}{$sc}{$h}{e} : 0);
 		}
 		printf("\tPars=%d, Bogies=%d, Double Bogies=%d, Others=%d\n\n", $p{$x}{$sc}{$h}{p}, $p{$x}{$sc}{$h}{bo},
 		    $p{$x}{$sc}{$h}{db}, $p{$x}{$sc}{$h}{o});

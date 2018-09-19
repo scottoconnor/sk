@@ -6,6 +6,7 @@
 %c = (
 	# South Front
 	SF => {
+		name => "South Front",
 		#
 		# Pars for each hole on each course.
 		#
@@ -24,6 +25,7 @@
 	},
 	# South Back
 	SB => {
+		name => "South Back",
 		#
 		# Pars for each hole on each course.
 		#
@@ -42,6 +44,7 @@
 	},
 	# North Front
 	NF => {
+		name => "North Front",
 		#
 		# Pars for each hole on each course.
 		#
@@ -60,6 +63,7 @@
 	},
 	# North Back
 	NB => {
+		name => "North Back",
 		#
 		# Pars for each hole on each course.
 		#
@@ -76,8 +80,4 @@
 		# USGA
 		par => 35.1, slope => 130,
 	},
-	AVE => {
-		# USGA average of above four courses.
-		par => 35.1, slope => 125,
-	}
 );
