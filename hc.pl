@@ -16,7 +16,7 @@ GetOptions (
         "d" => \$debug)
 or die("Error in command line arguments\n");
 
-for ($x = 200; $x < 321; $x++) {
+for ($x = 200; $x < 400; $x++) {
 	if (-e "golfers/$x") {
 		&gen_hc("golfers/$x");
 		if ($trend) {
