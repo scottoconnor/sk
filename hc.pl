@@ -9,7 +9,9 @@ require "hcroutines.pl";
 use Getopt::Long;
 
 $debug = 0;
+$include_subs = 0;
 $trend = 0;
+$output = 0;
 
 GetOptions (
         "t" =>  \$trend,
@@ -22,6 +24,7 @@ for ($x = 200; $x < 400; $x++) {
 		if ($trend) {
 			&gen_hc_trend("golfers/$x");
 		}
+		close(PT), if $output;
 	}
 }
 
@@ -39,13 +42,22 @@ sub gen_hc {
 	chomp($scores[0]);
 	($first, $last, $team) = split(/:/, $scores[0]);
 
-	if ($team eq "Sub") {
+	if (($team eq "Sub") && ($include_subs == 0)) {
 		return;
 	}
 
 	shift @scores;
 
 	$num = @scores;
+
+	$out_filename = "/tmp/$first $last";
+
+	if (-e $out_filename) {
+		unlink $out_filename, if ($output == 0);
+	}
+
+	open(PT, ">", "/tmp/$first $last"), if $output;
+	select PT, if $output;
 
 	#
 	# If player has less than 5 scores, a handicap can not be generated.
@@ -134,7 +146,7 @@ sub gen_hc_trend {
 	chomp($scores[0]);
 	($first, $last, $team) = split(/:/, $scores[0]);
 
-	if ($team eq "Sub") {
+	if (($team eq "Sub") && ($include_subs == 0)) {
 		return;
 	}
 

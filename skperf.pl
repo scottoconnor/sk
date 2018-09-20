@@ -16,9 +16,10 @@ $end_year = 2018;
 $cur_week = $start_week = 1;
 $end_week = 15;
 $stats = 0;
-$include_subs = 1;
+$include_subs = 0;
 $player_stats = 0;
 $tables = 0;
+$output = 0;
 $html = 0;
 
 GetOptions (
@@ -164,6 +165,16 @@ sub print_player_stats {
 
     foreach $x (sort keys %p) {
 
+	$out_filename = "/tmp/$x";
+	if ($output) {
+	    open (PS, ">", $out_filename);
+	    select PS;
+	} elsif (-e $out_filename) {
+	    unlink $out_filename;
+	}
+
+	my @courses = ("SF", "SB", "NF", "NB");
+
 	#
 	# Not all players play each year, so skip those that don't have posted scores.
 	#
@@ -174,9 +185,8 @@ sub print_player_stats {
 	print "$x\n\n";
 	print "$p{$x}{team}\n\n", if $debug;
 
-
         my $total_player_rounds = 0;
-	foreach $sc (keys %c) {
+	while ($sc = shift @courses) {
 	    if ($p{$x}{$sc}{xplayed} == 0) {
 		next;
 	    }
@@ -188,7 +198,8 @@ sub print_player_stats {
 
 	print "\n";
 
-	foreach $sc (keys %c) {
+	@courses = ("SF", "SB", "NF", "NB");
+	while ($sc = shift @courses) {
 
 	    if ($p{$x}{$sc}{xplayed} == 0) {
 		next;
@@ -220,7 +231,7 @@ sub print_player_stats {
 	    }
 	    print "\n";
 	}
-
+        close(PS), if $output;
     }
 }
 
