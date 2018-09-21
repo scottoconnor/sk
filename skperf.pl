@@ -16,7 +16,7 @@ $end_year = 2018;
 $cur_week = $start_week = 1;
 $end_week = 15;
 $stats = 0;
-$include_subs = 0;
+$include_subs = 1;
 $player_stats = 0;
 $tables = 0;
 $output = 0;
@@ -55,7 +55,7 @@ for (; ($start_year <= $end_year); $start_year++) {
 #
 # Now print out the data for those years/weeks.
 #
-foreach $yp (sort keys %y) {
+foreach $yp (reverse sort keys %y) {
 	if ($stats) {
 		&print_stats($yp);
 	}
