@@ -15,6 +15,7 @@ $start_year = 2018;
 $end_year = 2018;
 $cur_week = $start_week = 1;
 $end_week = 15;
+$all_time = 0;
 $stats = 0;
 $include_subs = 1;
 $player_stats = 0;
@@ -27,6 +28,7 @@ GetOptions (
 	"ey=i" => \$end_year,
 	"sw=i" => \$start_week,
 	"ew=i" => \$end_week,
+	"at" => \$all_time,
 	"s" =>  \$stats,
 	"p" =>  \$player_stats,
 	"t" =>  \$tables,
@@ -69,6 +71,46 @@ foreach $yp (reverse sort keys %y) {
 #
 if ($player_stats) {
 	&print_player_stats;
+}
+
+if ($all_time) {
+    print "<b>All Time Birdie Table:</b></br>\n", if $html;
+    print "<head>\n<style>\n", if $html;
+    print "table, th, td {\n    border: 1px solid black;\n    border-collapse: collapse;\n}\n", if $html;
+    print "th, td {\n    text-align: left;\n}\n", if $html;
+    print "</style>\n</head>\n", if $html;
+    print "<table style=\"width:25\%\"></br>\n", if $html;
+    print "  <tr>\n    <th>Name</th>\n    <th>Birdies</th>\n  </tr>\n", if $html;
+    print "All Time Birdie Table:\n", if !$html;
+    foreach $key (sort { $p{$b}{tb} <=> $p{$a}{tb} } (keys(%p))) {
+	if ($p{$key}{tb} == 0) {
+	    next;
+	}
+	printf("%-17s: %d\n", $key, $p{$key}{tb}), if !$html;
+	print "  <tr>\n", if $html;
+	printf "    <td>%-20s</td>\n    <td>%4d</td>", $key, $p{$key}{tb}, if $html;
+	print "  </tr>\n", if $html;
+    }
+    print "</table></br>", if $html;
+
+    print "<b>All Time Eagles Table:</b></br>\n", if $html;
+    print "<head>\n<style>\n", if $html;
+    print "table, th, td {\n    border: 1px solid black;\n    border-collapse: collapse;\n}\n", if $html;
+    print "th, td {\n    text-align: left;\n}\n", if $html;
+    print "</style>\n</head>\n", if $html;
+    print "<table style=\"width:25\%\"></br>\n", if $html;
+    print "  <tr>\n    <th>Name</th>\n    <th>Birdies</th>\n  </tr>\n", if $html;
+    print "All Time Eagles Table:\n", if !$html;
+    foreach $key (sort { $p{$b}{te} <=> $p{$a}{te} } (keys(%p))) {
+	if ($p{$key}{te} == 0) {
+	    next;
+	}
+	printf("%-17s: %d\n", $key, $p{$key}{te}), if !$html;
+	print "  <tr>\n", if $html;
+	printf "    <td>%-20s</td>\n    <td>%4d</td>", $key, $p{$key}{te}, if $html;
+	print "  </tr>\n", if $html;
+    }
+    print "</table></br>", if $html;
 }
 
 sub print_stats {
@@ -309,11 +351,13 @@ sub get_player_scores {
 		    }
 		    if (($c{$course}->{$h} - $hole) == 1) {
 			$p{$pn}{$course}{$h}{b}++;
+			$p{$pn}{tb}++;
 			$y{$start_year}{total_birdies}++;
 			$bt{$start_year}{$pn} += 1;
 		    }
 		    if (($c{$course}->{$h} - $hole) == 2) {
 			$p{$pn}{$course}{$h}{e}++;
+			$p{$pn}{te}++;
 			$y{$start_year}{total_eagles}++;
 			$et{$start_year}{$pn} += 1;
 		    };
