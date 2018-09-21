@@ -10,7 +10,7 @@ if [ -z $1 ]; then
 fi
 
 WEEK=${1}
-START_YEAR=2018
+START_YEAR=`date +"%Y"`
 END_YEAR=2006
 
 YEAR=${START_YEAR}
@@ -18,6 +18,8 @@ YEAR=${START_YEAR}
 rm -f /tmp/*.html
 
 ./skperf.pl -s -t -h -sy ${YEAR} -ey ${YEAR} > /tmp/${YEAR}.html
+
+./skperf.pl -at -h -sy 1997 -ey ${YEAR} > /tmp/table-totals.html
 
 
 until [  $YEAR -lt $END_YEAR ]; do

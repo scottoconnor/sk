@@ -74,42 +74,44 @@ if ($player_stats) {
 }
 
 if ($all_time) {
-    print "<b>All Time Birdie Table:</b></br>\n", if $html;
-    print "<head>\n<style>\n", if $html;
-    print "table, th, td {\n    border: 1px solid black;\n    border-collapse: collapse;\n}\n", if $html;
-    print "th, td {\n    text-align: left;\n}\n", if $html;
-    print "</style>\n</head>\n", if $html;
-    print "<table style=\"width:25\%\"></br>\n", if $html;
-    print "  <tr>\n    <th>Name</th>\n    <th>Birdies</th>\n  </tr>\n", if $html;
-    print "All Time Birdie Table:\n", if !$html;
-    foreach $key (sort { $p{$b}{tb} <=> $p{$a}{tb} } (keys(%p))) {
-	if ($p{$key}{tb} == 0) {
-	    next;
-	}
-	printf("%-17s: %d\n", $key, $p{$key}{tb}), if !$html;
-	print "  <tr>\n", if $html;
-	printf "    <td>%-20s</td>\n    <td>%4d</td>", $key, $p{$key}{tb}, if $html;
-	print "  </tr>\n", if $html;
-    }
-    print "</table></br>", if $html;
-
     print "<b>All Time Eagles Table:</b></br>\n", if $html;
     print "<head>\n<style>\n", if $html;
     print "table, th, td {\n    border: 1px solid black;\n    border-collapse: collapse;\n}\n", if $html;
     print "th, td {\n    text-align: left;\n}\n", if $html;
     print "</style>\n</head>\n", if $html;
-    print "<table style=\"width:25\%\"></br>\n", if $html;
-    print "  <tr>\n    <th>Name</th>\n    <th>Eagles</th>\n  </tr>\n", if $html;
+    print "<table style=\"width:40\%\"></br>\n", if $html;
+    print "  <tr>\n    <th>Name</th>\n    <th>Eagles</th>\n    <th>Eagles per 9-holes</th>\n  </tr>\n", if $html;
     print "All Time Eagles Table:\n", if !$html;
     foreach $key (sort { $p{$b}{te} <=> $p{$a}{te} } (keys(%p))) {
-	if ($p{$key}{te} == 0) {
+	if ($p{$key}{te} == 0 || ($p{$key}{total_rounds} < 30)) {
 	    next;
 	}
-	printf("%-17s: %d\n", $key, $p{$key}{te}), if !$html;
+	printf("%-17s: %d\t(%.2f eagles per 9 holes)\n", $key, $p{$key}{te}, ($p{$key}{te} / $p{$key}{total_rounds})), if !$html;
 	print "  <tr>\n", if $html;
-	printf "    <td>%-20s</td>\n    <td>%4d</td>", $key, $p{$key}{te}, if $html;
+	printf("    <td>%-20s</td>\n    <td>%4d</td>    <td>%.2f", $key, $p{$key}{te}, ($p{$key}{te} / $p{$key}{total_rounds})), if $html;
 	print "  </tr>\n", if $html;
     }
+
+    print "\n", if !$html;
+    print "</table></br>", if $html;
+    print "<b>All Time Birdie Table:</b></br>\n", if $html;
+    print "<head>\n<style>\n", if $html;
+    print "table, th, td {\n    border: 1px solid black;\n    border-collapse: collapse;\n}\n", if $html;
+    print "th, td {\n    text-align: left;\n}\n", if $html;
+    print "</style>\n</head>\n", if $html;
+    print "<table style=\"width:40\%\"></br>\n", if $html;
+    print "  <tr>\n    <th>Name</th>\n    <th>Birdies</th>\n    <th>Birdies per 9-holes</th>\n  </tr>\n", if $html;
+    print "All Time Birdie Table:\n", if !$html;
+    foreach $key (sort { $p{$b}{tb} <=> $p{$a}{tb} } (keys(%p))) {
+	if ($p{$key}{tb} == 0 || ($p{$key}{total_rounds} < 30)) {
+	    next;
+	}
+	printf("%-17s: %d\t(%.2f birdies per 9 holes)\n", $key, $p{$key}{tb}, ($p{$key}{tb} / $p{$key}{total_rounds})), if !$html;
+	print "  <tr>\n", if $html;
+	printf("    <td>%-20s</td>\n    <td>%4d</td>    <td>%.2f", $key, $p{$key}{tb}, ($p{$key}{tb} / $p{$key}{total_rounds})), if $html;
+	print "  </tr>\n", if $html;
+    }
+    print "\n", if !$html;
     print "</table></br>", if $html;
 
     print "<b>All Time Par Table:</b></br>\n", if $html;
@@ -117,18 +119,19 @@ if ($all_time) {
     print "table, th, td {\n    border: 1px solid black;\n    border-collapse: collapse;\n}\n", if $html;
     print "th, td {\n    text-align: left;\n}\n", if $html;
     print "</style>\n</head>\n", if $html;
-    print "<table style=\"width:25\%\"></br>\n", if $html;
-    print "  <tr>\n    <th>Name</th>\n    <th>Pars</th>\n  </tr>\n", if $html;
+    print "<table style=\"width:40\%\"></br>\n", if $html;
+    print "  <tr>\n    <th>Name</th>\n    <th>Pars</th>\n    <th>Pars per 9-holes</th>\n  </tr>\n", if $html;
     print "All Time Par Table:\n", if !$html;
     foreach $key (sort { $p{$b}{tp} <=> $p{$a}{tp} } (keys(%p))) {
-	if ($p{$key}{tp} == 0) {
+	if ($p{$key}{tp} == 0 || ($p{$key}{total_rounds} < 30)) {
 	    next;
 	}
-	printf("%-17s: %d\n", $key, $p{$key}{tp}), if !$html;
+	printf("%-17s: %d\t(%.2f pars per 9 holes)\n", $key, $p{$key}{tp}, ($p{$key}{tp} / $p{$key}{total_rounds})), if !$html;
 	print "  <tr>\n", if $html;
-	printf "    <td>%-20s</td>\n    <td>%4d</td>", $key, $p{$key}{tp}, if $html;
+	printf("    <td>%-20s</td>\n    <td>%4d</td>    <td>%.2f", $key, $p{$key}{tp}, ($p{$key}{tp} / $p{$key}{total_rounds})), if $html;
 	print "  </tr>\n", if $html;
     }
+    print "\n", if !$html;
     print "</table></br>", if $html;
 
     print "<b>All Time Bogie Table:</b></br>\n", if $html;
@@ -136,18 +139,19 @@ if ($all_time) {
     print "table, th, td {\n    border: 1px solid black;\n    border-collapse: collapse;\n}\n", if $html;
     print "th, td {\n    text-align: left;\n}\n", if $html;
     print "</style>\n</head>\n", if $html;
-    print "<table style=\"width:25\%\"></br>\n", if $html;
-    print "  <tr>\n    <th>Name</th>\n    <th>Bogies</th>\n  </tr>\n", if $html;
+    print "<table style=\"width:40\%\"></br>\n", if $html;
+    print "  <tr>\n    <th>Name</th>\n    <th>Bogies</th>\n    <th>Bogies per 9-holes</th>\n  </tr>\n", if $html;
     print "All Time Bogie Table:\n", if !$html;
     foreach $key (sort { $p{$b}{bo} <=> $p{$a}{bo} } (keys(%p))) {
-	if ($p{$key}{bo} == 0) {
+	if ($p{$key}{bo} == 0 || ($p{$key}{total_rounds} < 30)) {
 	    next;
 	}
-	printf("%-17s: %d\n", $key, $p{$key}{bo}), if !$html;
+	printf("%-17s: %d\t(%.2f bogies per 9 holes)\n", $key, $p{$key}{bo}, ($p{$key}{bo} / $p{$key}{total_rounds})), if !$html;
 	print "  <tr>\n", if $html;
-	printf "    <td>%-20s</td>\n    <td>%4d</td>", $key, $p{$key}{bo}, if $html;
+	printf("    <td>%-20s</td>\n    <td>%4d</td>    <td>%.2f", $key, $p{$key}{bo}, ($p{$key}{bo} / $p{$key}{total_rounds})), if $html;
 	print "  </tr>\n", if $html;
     }
+    print "\n", if !$html;
     print "</table></br>", if $html;
 
     print "<b>All Time Double Bogie Table:</b></br>\n", if $html;
@@ -155,18 +159,19 @@ if ($all_time) {
     print "table, th, td {\n    border: 1px solid black;\n    border-collapse: collapse;\n}\n", if $html;
     print "th, td {\n    text-align: left;\n}\n", if $html;
     print "</style>\n</head>\n", if $html;
-    print "<table style=\"width:25\%\"></br>\n", if $html;
-    print "  <tr>\n    <th>Name</th>\n    <th>Doubles</th>\n  </tr>\n", if $html;
+    print "<table style=\"width:40\%\"></br>\n", if $html;
+    print "  <tr>\n    <th>Name</th>\n    <th>Doubles</th>\n    <th>Doubles per 9-holes</th>\n  </tr>\n", if $html;
     print "All Time Double Bogie Table:\n", if !$html;
     foreach $key (sort { $p{$b}{tdb} <=> $p{$a}{tdb} } (keys(%p))) {
-	if ($p{$key}{tdb} == 0) {
+	if ($p{$key}{tdb} == 0 || ($p{$key}{total_rounds} < 30)) {
 	    next;
 	}
-	printf("%-17s: %d\n", $key, $p{$key}{tdb}), if !$html;
+	printf("%-17s: %d\t(%.2f doubles per 9 holes)\n", $key, $p{$key}{tdb}, ($p{$key}{tdb} / $p{$key}{total_rounds})), if !$html;
 	print "  <tr>\n", if $html;
-	printf "    <td>%-20s</td>\n    <td>%4d</td>", $key, $p{$key}{tdb}, if $html;
+	printf("    <td>%-20s</td>\n    <td>%4d</td>    <td>%.2f", $key, $p{$key}{tdb}, ($p{$key}{tdb} / $p{$key}{total_rounds})), if $html;
 	print "  </tr>\n", if $html;
     }
+    print "\n", if !$html;
     print "</table></br>", if $html;
 
     print "<b>All Time Others Table:</b></br>\n", if $html;
@@ -174,18 +179,19 @@ if ($all_time) {
     print "table, th, td {\n    border: 1px solid black;\n    border-collapse: collapse;\n}\n", if $html;
     print "th, td {\n    text-align: left;\n}\n", if $html;
     print "</style>\n</head>\n", if $html;
-    print "<table style=\"width:25\%\"></br>\n", if $html;
-    print "  <tr>\n    <th>Name</th>\n    <th>Others</th>\n  </tr>\n", if $html;
+    print "<table style=\"width:40\%\"></br>\n", if $html;
+    print "  <tr>\n    <th>Name</th>\n    <th>Others</th>\n    <th>Others per 9-holes</th>\n  </tr>\n", if $html;
     print "All Time Others Table:\n", if !$html;
     foreach $key (sort { $p{$b}{to} <=> $p{$a}{to} } (keys(%p))) {
-	if ($p{$key}{to} == 0) {
+	if ($p{$key}{to} == 0 || ($p{$key}{total_rounds} < 30)) {
 	    next;
 	}
-	printf("%-17s: %d\n", $key, $p{$key}{to}), if !$html;
+	printf("%-17s: %d\t(%.2f others per 9 holes)\n", $key, $p{$key}{to}, ($p{$key}{to} / $p{$key}{total_rounds})), if !$html;
 	print "  <tr>\n", if $html;
-	printf "    <td>%-20s</td>\n    <td>%4d</td>", $key, $p{$key}{to}, if $html;
+	printf("    <td>%-20s</td>\n    <td>%4d</td>    <td>%.2f", $key, $p{$key}{to}, ($p{$key}{to} / $p{$key}{total_rounds})), if $html;
 	print "  </tr>\n", if $html;
     }
+    print "\n", if !$html;
     print "</table></br>", if $html;
 }
 
@@ -403,6 +409,7 @@ sub get_player_scores {
 		$y{$start_year}{total_strokes} += $shot;
 		$y{$start_year}{total_scores}++;
 
+		$p{$pn}{total_rounds}++;
 		$p{$pn}{total_strokes} += $shot;
 		$p{$pn}{$course}{xplayed}++;
 
