@@ -99,7 +99,7 @@ if ($all_time) {
     print "th, td {\n    text-align: left;\n}\n", if $html;
     print "</style>\n</head>\n", if $html;
     print "<table style=\"width:25\%\"></br>\n", if $html;
-    print "  <tr>\n    <th>Name</th>\n    <th>Birdies</th>\n  </tr>\n", if $html;
+    print "  <tr>\n    <th>Name</th>\n    <th>Eagles</th>\n  </tr>\n", if $html;
     print "All Time Eagles Table:\n", if !$html;
     foreach $key (sort { $p{$b}{te} <=> $p{$a}{te} } (keys(%p))) {
 	if ($p{$key}{te} == 0) {
@@ -108,6 +108,82 @@ if ($all_time) {
 	printf("%-17s: %d\n", $key, $p{$key}{te}), if !$html;
 	print "  <tr>\n", if $html;
 	printf "    <td>%-20s</td>\n    <td>%4d</td>", $key, $p{$key}{te}, if $html;
+	print "  </tr>\n", if $html;
+    }
+    print "</table></br>", if $html;
+
+    print "<b>All Time Par Table:</b></br>\n", if $html;
+    print "<head>\n<style>\n", if $html;
+    print "table, th, td {\n    border: 1px solid black;\n    border-collapse: collapse;\n}\n", if $html;
+    print "th, td {\n    text-align: left;\n}\n", if $html;
+    print "</style>\n</head>\n", if $html;
+    print "<table style=\"width:25\%\"></br>\n", if $html;
+    print "  <tr>\n    <th>Name</th>\n    <th>Pars</th>\n  </tr>\n", if $html;
+    print "All Time Par Table:\n", if !$html;
+    foreach $key (sort { $p{$b}{tp} <=> $p{$a}{tp} } (keys(%p))) {
+	if ($p{$key}{tp} == 0) {
+	    next;
+	}
+	printf("%-17s: %d\n", $key, $p{$key}{tp}), if !$html;
+	print "  <tr>\n", if $html;
+	printf "    <td>%-20s</td>\n    <td>%4d</td>", $key, $p{$key}{tp}, if $html;
+	print "  </tr>\n", if $html;
+    }
+    print "</table></br>", if $html;
+
+    print "<b>All Time Bogie Table:</b></br>\n", if $html;
+    print "<head>\n<style>\n", if $html;
+    print "table, th, td {\n    border: 1px solid black;\n    border-collapse: collapse;\n}\n", if $html;
+    print "th, td {\n    text-align: left;\n}\n", if $html;
+    print "</style>\n</head>\n", if $html;
+    print "<table style=\"width:25\%\"></br>\n", if $html;
+    print "  <tr>\n    <th>Name</th>\n    <th>Bogies</th>\n  </tr>\n", if $html;
+    print "All Time Bogie Table:\n", if !$html;
+    foreach $key (sort { $p{$b}{bo} <=> $p{$a}{bo} } (keys(%p))) {
+	if ($p{$key}{bo} == 0) {
+	    next;
+	}
+	printf("%-17s: %d\n", $key, $p{$key}{bo}), if !$html;
+	print "  <tr>\n", if $html;
+	printf "    <td>%-20s</td>\n    <td>%4d</td>", $key, $p{$key}{bo}, if $html;
+	print "  </tr>\n", if $html;
+    }
+    print "</table></br>", if $html;
+
+    print "<b>All Time Double Bogie Table:</b></br>\n", if $html;
+    print "<head>\n<style>\n", if $html;
+    print "table, th, td {\n    border: 1px solid black;\n    border-collapse: collapse;\n}\n", if $html;
+    print "th, td {\n    text-align: left;\n}\n", if $html;
+    print "</style>\n</head>\n", if $html;
+    print "<table style=\"width:25\%\"></br>\n", if $html;
+    print "  <tr>\n    <th>Name</th>\n    <th>Doubles</th>\n  </tr>\n", if $html;
+    print "All Time Double Bogie Table:\n", if !$html;
+    foreach $key (sort { $p{$b}{tdb} <=> $p{$a}{tdb} } (keys(%p))) {
+	if ($p{$key}{tdb} == 0) {
+	    next;
+	}
+	printf("%-17s: %d\n", $key, $p{$key}{tdb}), if !$html;
+	print "  <tr>\n", if $html;
+	printf "    <td>%-20s</td>\n    <td>%4d</td>", $key, $p{$key}{tdb}, if $html;
+	print "  </tr>\n", if $html;
+    }
+    print "</table></br>", if $html;
+
+    print "<b>All Time Others Table:</b></br>\n", if $html;
+    print "<head>\n<style>\n", if $html;
+    print "table, th, td {\n    border: 1px solid black;\n    border-collapse: collapse;\n}\n", if $html;
+    print "th, td {\n    text-align: left;\n}\n", if $html;
+    print "</style>\n</head>\n", if $html;
+    print "<table style=\"width:25\%\"></br>\n", if $html;
+    print "  <tr>\n    <th>Name</th>\n    <th>Others</th>\n  </tr>\n", if $html;
+    print "All Time Others Table:\n", if !$html;
+    foreach $key (sort { $p{$b}{to} <=> $p{$a}{to} } (keys(%p))) {
+	if ($p{$key}{to} == 0) {
+	    next;
+	}
+	printf("%-17s: %d\n", $key, $p{$key}{to}), if !$html;
+	print "  <tr>\n", if $html;
+	printf "    <td>%-20s</td>\n    <td>%4d</td>", $key, $p{$key}{to}, if $html;
 	print "  </tr>\n", if $html;
     }
     print "</table></br>", if $html;
@@ -334,18 +410,22 @@ sub get_player_scores {
 		    $hole = abs(shift @score);
 		    $p{$pn}{$course}{$h}{shots} += $hole;
 		    if (($c{$course}->{$h} - $hole) < -2) {
+			$p{$pn}{to}++;
 			$p{$pn}{$course}{$h}{o}++;
 			$y{$start_year}{total_other}++;
 		    };
 		    if (($c{$course}->{$h} - $hole) == -2) {
+			$p{$pn}{tdb}++;
 			$p{$pn}{$course}{$h}{db}++;
 			$y{$start_year}{total_db}++;
 		    }
 		    if (($c{$course}->{$h} - $hole) == -1) {
+			$p{$pn}{bo}++;
 			$p{$pn}{$course}{$h}{bo}++;
 			$y{$start_year}{total_bogies}++;
 		    }
 		    if (($c{$course}->{$h} - $hole) == 0) {
+			$p{$pn}{tp}++;
 			$p{$pn}{$course}{$h}{p}++;
 			$y{$start_year}{total_pars}++;
 		    }
