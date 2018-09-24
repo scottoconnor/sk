@@ -232,7 +232,6 @@ while ($line = <FD>) {
                 }
                 print NFD "\n";
 
-		print "13,3: $fn $line $shot: $check_shot.\n", if $debug;
                 if ($check_shot != $shot) {
                         print "13,3: $shot: $check_shot, Incorrect!\n";
                 }

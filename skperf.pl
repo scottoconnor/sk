@@ -43,6 +43,11 @@ undef(%p);
 
 #
 # First get all the players scores/stats for the requested years/weeks.
+# Calling get_player_scores will load up the hashes:
+# 	%p  with all the player data on a per player basis
+# 	%y  with all the yearly data on a per year basis
+#
+# After we get that, the other routines can use that data to generate stats.
 #
 for (; ($start_year <= $end_year); $start_year++) {
 
@@ -56,6 +61,8 @@ for (; ($start_year <= $end_year); $start_year++) {
 
 #
 # Now print out the data for those years/weeks.
+#
+# The years are printed in descending order.
 #
 foreach $yp (reverse sort keys %y) {
 	if ($stats) {

@@ -89,8 +89,6 @@ sub gen_hc {
 
 		print "$course, $par, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $n\n", if $debug;
 
-		#&check_scores($o, $t, $th, $f, $fv, $s, $sv, $e, $n);
-
 		$p[$y] = ((($post - $par) * 113) / $slope);
 
 		printf("date=%s: post=%d: differential: %.3f\n", $date, $post, $p[$y]), if $debug;
@@ -205,46 +203,4 @@ sub gen_hc_trend {
 		$last_score++;
 		$first_score = ($last_score - 20);
 	}
-}
-
-sub check_score_order {
-	my ($num, @ls) = @_;
-	my ($x);
-
-	for ($x = 0; $x < $num; $x++) {
-		chomp($ls[$x]);
-		($course, $par, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $n) =
-			split(/:/, $ls[$x]);
-		$players{$date}->{c} = $course;
-		$players{$date}->{par} = $par;
-		$players{$date}->{slope} = $slope;
-		$players{$date}->{shot} = $shot;
-		$players{$date}->{post} = $post;
-		$players{$date}->{one} = $o;
-		$players{$date}->{two} = $t;
-		$players{$date}->{three} = $th;
-		$players{$date}->{four} = $f;
-		$players{$date}->{five} = $fv;
-		$players{$date}->{six} = $s;
-		$players{$date}->{seven} = $sv;
-		$players{$date}->{eight} = $e;
-		$players{$date}->{nine} = $n;
-	}
-	foreach my $sk (sort keys %players) {
-		printf "%-8s %s\n", $sk, $players{$sk}->{c};
-	}
-}
-
-sub combine_scores {
-	my (@s) = @_;
-	my $n = @s;
-
-	print"Start: $n";
-	for (; $n >=0; $n--) {
-		chomp($s[$n]);
-		print "@s[$n]\n";
-	}
-	print"End: $n\n";
-
-	return(@s);
 }
