@@ -11,9 +11,7 @@ for ($cnt = 1, $xx = 200; $cnt < 200; $cnt++, $xx++) {
 		$fna = "golfers/" . "00$cnt" . ".ID"
 	} elsif ($cnt >= 10 && $cnt < 100) {
 		$fna = "golfers/" ."0$cnt" . ".ID";
-	} elsif ($cnt == 100) {
-		$fna = "golfers/" ."$cnt" . ".ID";
-	} elsif ($cnt > 100) {
+	} elsif ($cnt >= 100) {
 		$fna = "golfers/" . "$cnt" . ".ID";
 	}
 
@@ -32,7 +30,7 @@ $debug = 0;
 open(FD, $fn);
 open(NFD, ">", $fnnew); 
 
-# First line is the ScoreKeeper tag, throw them away
+# First line is the ScoreKeeper tag, throw it away
 # to get to the players name.
 $line = <FD>;
 
