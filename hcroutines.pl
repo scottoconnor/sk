@@ -47,28 +47,93 @@ sub round_tenth {
 	return ($r);
 }
 
-#
-# routine to check scores for errors.
-#
-sub check_scores {
+sub gen_hc_trend {
+	my ($fn, $output) = @_;
+	my (@scores, $x, $y, $hi, $use, @n);
 
-        my ($o, $t, $th, $f, $fv, $s, $sv, $e, $n) = @_;
+	undef @n;
 
-        #
-        # If the first few scores are not defined, then its probaly a score
-        # that wasn't post with hole by hole method. Just skip it.
-        #
-        if (!defined($o) && !defined($t) && !defined($th) && !defined($f)) {
-                return;
-        }
+	open(FD, $fn);
+	@scores = <FD>;
+	close(FD);
 
-        #
-        # Make sure no hole has a zero for a score.
-        #
-        if ($o == 0 || $t == 0 || $th == 0 || $f == 0 || $fv == 0 ||
-                    $s == 0 ||  $sv == 0 || $e == 0 || $n == 0) {
-                        print "$date Scoring error. $name: $o  $t  $th  $f  $fv  $s  $sv  $e  $n\n";
-        }
+	chomp($scores[0]);
+	($first, $last, $team) = split(/:/, $scores[0]);
+
+	if (($team eq "Sub") && ($include_subs == 0)) {
+		return;
+	}
+
+	shift @scores;
+
+	$num = @scores;
+
+	#
+	# If player has less than 20 scores, do not generate a handicap trend.
+	#
+	if ($num < 20) {
+		print "$first $last: Only $num scores, not enough to generate a trend.\n", if $debug;
+		return;
+	}
+
+	$pn = $first . " " . $last;
+
+	#
+	# With a handicap trend, we will always have at least 20 scores.
+	#
+	$use = &nscores($num);
+
+	$first_score = 0; $last_score = 20;
+
+	while ($last_score <= $num) {
+		$y = 0; undef @n;
+		while ($first_score < $last_score) {
+
+			$s = $scores[$first_score];
+			chomp($s);
+			($course, $par, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $ni) =
+				split(/:/, $s);
+
+			($year, $month, $day) = split(/-/, $date);
+			$n[$y] = ((($post - $par) * 113) / $slope);
+			$n[$y] = sprintf("%0.1f", $n[$y]);
+
+			printf("date=%s: post=%d: differential: %.1f\n", $date, $post, $n[$y]), if $debug;
+			print "first score = $first_score, last score = $last_score\n", if $debug;
+			$first_score++;
+			$y++;
+		}
+
+		if ($last_score < $num) {
+		    $s = $scores[$last_score];
+		    chomp($s);
+		    ($course, $par, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $ni) =
+			split(/:/, $s);
+		} elsif ($last_score == $num) {
+			$date = "current";
+		}
+
+		@n = sort {$a <=> $b} @n;
+
+		$hi = 0;
+
+		for ($x = 0; $x < $use; $x++) {
+			printf("%d: %.1f\n", $x, $n[$x]), if $debug;
+			$hi += $n[$x];
+		}
+
+		$hi /= $use;
+		$hi *= 0.90;  # 90% is used for match play
+		$hi = (int($hi * 10) / 10);
+
+		$sf = int(($hi * $c{SF}->{slope} / 113) + 0.5);
+
+		printf ("%-9s:  %-10s %-8s - %5.1fN  HC=%-3d\n", $date, $last, $first, $hi, $sf), if $debug;
+		printf ("%s:%s:%.1f:%d\n", $pn, $date, $hi, $sf), if $output;
+		#printf ("%-9s:  %5.1fN  HC=%-3d\n", $date, $hi, $sf), if ($output == 0);
+		$p{$pn}{$date}{hc} = $sf, if ($output == 0);
+		$last_score++;
+		$first_score = ($last_score - 20);
+	}
 }
-
 1;

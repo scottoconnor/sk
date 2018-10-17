@@ -5,6 +5,7 @@
 
 require 'tnfb_years.pl';
 require 'courses.pl';
+require 'hcroutines.pl';
 
 use Getopt::Long;
 
@@ -12,10 +13,11 @@ use Getopt::Long;
 # Default to running stats on current year.
 #
 $start_year = 2018;
-$end_year = 2018;
+$end_year = (1900 + (localtime)[5]);
 $cur_week = $start_week = 1;
 $end_week = 15;
 $all_time = 0;
+$vhc = 0;
 $stats = 0;
 $include_subs = 1;
 $player_stats = 0;
@@ -28,6 +30,7 @@ GetOptions (
 	"ey=i" => \$end_year,
 	"sw=i" => \$start_week,
 	"ew=i" => \$end_week,
+	"vhc" => \$vhc,
 	"at" => \$all_time,
 	"s" =>  \$stats,
 	"p" =>  \$player_stats,
@@ -36,10 +39,19 @@ GetOptions (
 	"d" => \$debug)
 or die("Error in command line arguments\n");
 
+if ($all_time) {
+	$start_year = 1997;
+}
+
 $cur_week = $start_week;
 
 undef(%y);
 undef(%p);
+
+#
+# Load the players handcaip trend in case they are needed.
+#
+&get_player_trend();
 
 #
 # First get all the players scores/stats for the requested years/weeks.
@@ -57,6 +69,41 @@ for (; ($start_year <= $end_year); $start_year++) {
 			&get_player_scores("golfers/$x");
 		}
 	}
+}
+
+#
+# Print out the the players score verses their handicap on a weekly
+# basis and average for the years specified.
+#
+if ($vhc) {
+    foreach $pn (keys %p) {
+	if ($p{$pn}{total_strokes} == 0 || ($p{$pn}{total_rounds} < 10) || ($p{$pn}{team} eq "Sub")) {
+	    next;
+	}
+
+	foreach $yp (reverse sort keys %y) {
+	    foreach $w (reverse 1..15) {
+		if ($p{$pn}{$dates{$yp}{$w}}{score} && defined($p{$pn}{$dates{$yp}{$w}}{hc})) {
+		    $p{$pn}{diff} += (($p{$pn}{$dates{$yp}{$w}}{score} - $p{$pn}{$dates{$yp}{$w}}{hc}) - 36);
+		    printf("%-20s: week %-2s shot %d, hc %2d, net %d, diff %d\n", $pn, $w, $p{$pn}{$dates{$yp}{$w}}{score},
+			$p{$pn}{$dates{$yp}{$w}}{hc}, ($p{$pn}{$dates{$yp}{$w}}{score} - $p{$pn}{$dates{$yp}{$w}}{hc}),
+			    (($p{$pn}{$dates{$yp}{$w}}{score} - $p{$pn}{$dates{$yp}{$w}}{hc}) - 36));
+		} elsif ($p{$pn}{$dates{$yp}{$w}}{score} && !defined($p{$pn}{$dates{$yp}{$w}}{hc})) {
+		    $p{$pn}{total_rounds}--;
+		}
+	    }
+	}
+	$p{$pn}{avediff} = ($p{$pn}{diff} / $p{$pn}{total_rounds});
+    }
+    print "\n";
+
+    foreach $pn (sort { $p{$a}{avediff} <=> $p{$b}{avediff} } (keys(%p))) {
+	if (($p{$pn}{diff} == 0) || ($p{$pn}{team} eq "Sub")) {
+	    next;
+	}
+	printf("%-25s %-17s: Ave = %.2f \(total rounds %d\)\n", $p{$pn}{team},
+	    $pn, $p{$pn}{avediff}, $p{$pn}{total_rounds});
+    }
 }
 
 #
@@ -366,6 +413,18 @@ sub print_player_stats {
     }
 }
 
+sub get_player_trend {
+
+	open(TD, "trend"), or die "Can't open file trend.\n";
+	my (@ary);
+
+	while (<TD>) {
+		@ary = split(/:/, $_);
+		$p{$ary[0]}{$ary[1]}{hc} = $ary[3];
+	}
+	close(TD);
+}
+
 sub get_player_scores {
 
     my($fn) = @_;
@@ -419,6 +478,7 @@ sub get_player_scores {
 		$p{$pn}{total_rounds}++;
 		$p{$pn}{total_strokes} += $shot;
 		$p{$pn}{$course}{xplayed}++;
+		$p{$pn}{$date}{score} = $shot;
 
 		for ($h = 1; $h < 10; $h++) {
 		    $hole = abs(shift @score);

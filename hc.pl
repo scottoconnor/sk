@@ -11,29 +11,35 @@ use Getopt::Long;
 $debug = 0;
 $include_subs = 0;
 $trend = 0;
-$output = 0;
+$output = 1;
+$pps = 0;	# Per player stats in their own file.
 
 GetOptions (
         "t" =>  \$trend,
+        "s" =>  \$pps,
         "d" => \$debug)
 or die("Error in command line arguments\n");
 
 for ($x = 200; $x < 400; $x++) {
 	if (-e "golfers/$x") {
-		&gen_hc("golfers/$x");
 		if ($trend) {
-			&gen_hc_trend("golfers/$x");
+			&gen_hc_trend("golfers/$x", $output);
+		} else {
+			&gen_hc("golfers/$x");
 		}
-		close(PT), if $output;
+		close(PT), if $pps;
 	}
 }
 
+#foreach $p (sort keys %hc) {
+	#print "$p $hc{$p}\n";
+#}
+
 sub gen_hc {
 	my ($fn) = @_;
-	my (@scores, $x, $y, $hi, $use, @p, @n);
+	my (@scores, $y, $hi, $use, @n, $pn);
 
 	undef @n;
-	undef @p;
 
 	open(FD, $fn);
 	@scores = <FD>;
@@ -46,6 +52,8 @@ sub gen_hc {
 		return;
 	}
 
+	$pn = $first . " " . $last;
+
 	shift @scores;
 
 	$num = @scores;
@@ -53,17 +61,17 @@ sub gen_hc {
 	$out_filename = "/tmp/$first $last";
 
 	if (-e $out_filename) {
-		unlink $out_filename, if ($output == 0);
+		unlink $out_filename, if ($pps == 0);
 	}
 
-	open(PT, ">", "/tmp/$first $last"), if $output;
-	select PT, if $output;
+	open(PT, ">", "/tmp/$first $last"), if $pps;
+	select PT, if $pps;
 
 	#
 	# If player has less than 5 scores, a handicap can not be generated.
 	#
 	if ($num < 5) {
-		#print "$first $last: Only $num scores, can not generate handicap\n";
+		print "$first $last: Only $num scores, can not generate handicap\n", if $debug;
 		return;
 	}
 
@@ -84,31 +92,31 @@ sub gen_hc {
 	foreach my $s (@scores) {
 
 		chomp($s);
-		($course, $par, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $n) =
+		($course, $par, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $ni) =
 			split(/:/, $s);
 
-		print "$course, $par, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $n\n", if $debug;
+		print "$course, $par, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $ni\n", if $debug;
 
-		$p[$y] = ((($post - $par) * 113) / $slope);
+		$n[$y] = ((($post - $par) * 113) / $slope);
 
-		printf("date=%s: post=%d: differential: %.3f\n", $date, $post, $p[$y]), if $debug;
+		printf("date=%s: post=%d: differential: %.3f\n", $date, $post, $n[$y]), if $debug;
 
 		#
 		# First round to the nearest hundredth, then to the tenth.
 		#
-		$p[$y] = sprintf("%0.1f",$p[$y]);
-		printf("date=%s: post=%d: differential: %.3f\n", $date, $post, $p[$y]), if $debug;
+		$n[$y] = sprintf("%0.1f",$n[$y]);
+		printf("date=%s: post=%d: differential: %.3f\n", $date, $post, $n[$y]), if $debug;
 
 		$y++;
 	}
 
-	@n = sort {$a <=> $b} @p;
+	@n = sort {$a <=> $b} @n;
 
 	$hi = 0;
 
-	for ($x = 0; $x < $use; $x++) {
-		printf("%d: %.1f\n", $x, $n[$x]), if $debug;
-		$hi += $n[$x];
+	for ($y = 0; $y < $use; $y++) {
+		printf("%d: %.1f\n", $y, $n[$y]), if $debug;
+		$hi += $n[$y];
 	}
 
 	$hi /= $use;
@@ -116,91 +124,15 @@ sub gen_hc {
 	$hi = (int($hi * 10) / 10);
 
 	if ($first eq "Scott") {
-		#$hi = 5.5;
+		#$hi = 5.9;
 	}
 
 	$sf = int(($hi * $c{SF}->{slope} / 113) + 0.5);
 	$sb = int(($hi * $c{SB}->{slope} / 113) + 0.5);
 	$nf = int(($hi * $c{NF}->{slope} / 113) + 0.5);
 	$nb = int(($hi * $c{NB}->{slope} / 113) + 0.5);
-	$hcave = int(($hi * $c{AVE}->{slope} / 113) + 0.5);
 
-	printf ("%-8s %-10s - %5.1fN  HC=%-2d\n", $first, $last, $hi, $sf);
-	#printf ("%-8s %-10s - %5.1fN  SF=%-3d SB=%-3d NF=%-3d NB=%-3d  AVE=%-3d\n", $first, $last, $hi, $sf, $sb, $nf, $nb, $hcave);
-}
-
-
-sub gen_hc_trend {
-	my ($fn) = @_;
-	my (@scores, $x, $y, $hi, $use, @p, @n);
-
-	undef @n;
-	undef @p;
-
-	open(FD, $fn);
-	@scores = <FD>;
-	close(FD);
-
-	chomp($scores[0]);
-	($first, $last, $team) = split(/:/, $scores[0]);
-
-	if (($team eq "Sub") && ($include_subs == 0)) {
-		return;
-	}
-
-	shift @scores;
-
-	$num = @scores;
-
-	#
-	# If player has less than 30 scores, do not generate a handicap trend.
-	#
-	if ($num < 30) {
-		print "$first $last: Only $num scores, not enough to generate a trend.\n";
-		return;
-	}
-
-	#
-	# With a handicap trend, we will always have at least 20 scores.
-	#
-	$use = &nscores($num);
-
-	$y = 0; $first_score = 0; $last_score = 20;
-
-	while ($last_score <= $num) {
-		$y = 0; undef @p; undef @n;
-		while ($first_score < $last_score) {
-
-			$s = $scores[$first_score];
-			chomp($s);
-			($course, $par, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $n) =
-				split(/:/, $s);
-			$p[$y] = ((($post - $par) * 113) / $slope);
-			$p[$y] = sprintf("%0.1f",$p[$y]);
-
-			printf("date=%s: post=%d: differential: %.1f\n", $date, $post, $p[$y]), if $debug;
-			#print "first score = $first_score, last score = $last_score\n";
-			$first_score++;
-			$y++;
-		}
-		@n = sort {$a <=> $b} @p;
-
-		$hi = 0;
-
-		for ($x = 0; $x < $use; $x++) {
-			printf("%d: %.1f\n", $x, $n[$x]), if $debug;
-			$hi += $n[$x];
-		}
-
-		$hi /= $use;
-		$hi *= 0.90;  # 90% is used for match play
-		$hi = (int($hi * 10) / 10);
-
-		$sf = int(($hi * $c{SF}->{slope} / 113) + 0.5);
-
-		#printf ("%-9s:  %-10s %-8s - %5.1fN  HC=%-3d\n", $date, $last, $first, $hi, $sf);
-		printf ("%-9s:  %5.1fN  HC=%-3d\n", $date, $hi, $sf);
-		$last_score++;
-		$first_score = ($last_score - 20);
-	}
+	$hc{$pn} = $sf;
+	printf ("%-16s - %4.1fN  HC = %2d\n", $pn, $hi, $sf);
+	printf ("%-8s %-10s - %5.1fN  SF=%-3d SB=%-3d NF=%-3d NB=%-3d\n", $first, $last, $hi, $sf, $sb, $nf, $nb), if $debug;
 }
