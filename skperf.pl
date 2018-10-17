@@ -299,14 +299,14 @@ sub print_tables {
 
     if (%{$bt{$yp}}) {
 	%birds = %{$bt{$yp}};
-	print "<b>Birdie Table:</b></br>\n", if $html;
+	print "<b>Birdie Table: $yp</b></br>\n", if $html;
 	print "<head>\n<style>\n", if $html;
 	print "table, th, td {\n    border: 1px solid black;\n    border-collapse: collapse;\n}\n", if $html;
 	print "th, td {\n    text-align: left;\n}\n", if $html;
 	print "</style>\n</head>\n", if $html;
 	print "<table style=\"width:25\%\"></br>\n", if $html;
 	print "  <tr>\n    <th>Name</th>\n    <th>Birdies</th>\n  </tr>\n", if $html;
-	print "Birdie Table:\n", if !$html;
+	print "Birdie Table: $yp\n", if !$html;
 	    foreach my $key (sort { $birds{$b} <=> $birds{$a} } keys %birds) {
 		printf "%-20s %4d\n", $key, $birds{$key}, if !$html;
 		print "  <tr>\n", if $html;
@@ -319,14 +319,14 @@ sub print_tables {
 
     if (%{$et{$yp}}) {
 	%eagles = %{$et{$yp}};
-	print "<b>Eagle Table:</b></br>\n", if $html;
+	print "<b>Eagle Table: $yp</b></br>\n", if $html;
 	print "<head>\n<style>\n", if $html;
 	print "table, th, td {\n    border: 1px solid black;\n    border-collapse: collapse;\n}\n", if $html;
 	print "th, td {\n    text-align: left;\n}\n", if $html;
 	print "</style>\n</head>\n", if $html;
 	print "<table style=\"width:25\%\"></br>\n", if $html;
 	print "  <tr>\n    <th>Name</th>\n    <th>Eagles</th>\n  </tr>\n", if $html;
-	print "Eagle Table:\n", if !$html;
+	print "Eagle Table: $yp\n", if !$html;
 	foreach my $key (sort { $eagles{$b} <=> $eagles{$a} } keys %eagles) {
 	    printf "%-20s %4d\n", $key, $eagles{$key}, if !$html;
 	    print "  <tr>\n", if $html;
