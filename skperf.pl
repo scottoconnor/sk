@@ -77,12 +77,12 @@ for (; ($start_year <= $end_year); $start_year++) {
 #
 if ($vhc) {
     foreach $pn (keys %p) {
-	if ($p{$pn}{total_strokes} == 0 || ($p{$pn}{total_rounds} < 10) || ($p{$pn}{team} eq "Sub")) {
+	if (($p{$pn}{total_strokes} == 0) || ($p{$pn}{total_rounds} == 0) || ($p{$pn}{team} eq "Sub")) {
 	    next;
 	}
 
 	foreach $yp (reverse sort keys %y) {
-	    foreach $w (reverse 1..15) {
+	    foreach $w (1..$end_week) {
 		if ($p{$pn}{$dates{$yp}{$w}}{score} && defined($p{$pn}{$dates{$yp}{$w}}{hc})) {
 		    $p{$pn}{diff} += (($p{$pn}{$dates{$yp}{$w}}{score} - $p{$pn}{$dates{$yp}{$w}}{hc}) - 36);
 		    printf("%-20s: week %-2s shot %d, hc %2d, net %d, diff %d\n", $pn, $w, $p{$pn}{$dates{$yp}{$w}}{score},
@@ -93,12 +93,12 @@ if ($vhc) {
 		}
 	    }
 	}
-	$p{$pn}{avediff} = ($p{$pn}{diff} / $p{$pn}{total_rounds});
+	$p{$pn}{avediff} = ($p{$pn}{diff} / $p{$pn}{total_rounds}), if ($p{$pn}{total_rounds} > 0);
     }
     print "\n";
 
     foreach $pn (sort { $p{$a}{avediff} <=> $p{$b}{avediff} } (keys(%p))) {
-	if (($p{$pn}{diff} == 0) || ($p{$pn}{team} eq "Sub")) {
+	if (($p{$pn}{avediff} == 0) || ($p{$pn}{team} eq "Sub")) {
 	    next;
 	}
 	printf("%-25s %-17s: Ave = %.2f \(total rounds %d\)\n", $p{$pn}{team},
@@ -140,9 +140,9 @@ if ($all_time) {
 	if ($p{$key}{te} == 0 || ($p{$key}{total_rounds} < 30)) {
 	    next;
 	}
-	printf("%-17s: %d\t(%.2f eagles per 9 holes)\n", $key, $p{$key}{te}, ($p{$key}{te} / $p{$key}{total_rounds})), if !$html;
+	printf("%-17s: %d\t(%.3f eagles per 9 holes)\n", $key, $p{$key}{te}, ($p{$key}{te} / $p{$key}{total_rounds})), if !$html;
 	print "  <tr>\n", if $html;
-	printf("    <td>%-20s</td>\n    <td>%4d</td>    <td>%.2f", $key, $p{$key}{te}, ($p{$key}{te} / $p{$key}{total_rounds})), if $html;
+	printf("    <td>%-20s</td>\n    <td>%4d</td>    <td>%.3f", $key, $p{$key}{te}, ($p{$key}{te} / $p{$key}{total_rounds})), if $html;
 	print "  </tr>\n", if $html;
     }
 
