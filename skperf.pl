@@ -19,7 +19,7 @@ $end_week = 15;
 $all_time = 0;
 $vhc = 0;
 $stats = 0;
-$include_subs = 1;
+$include_subs = 0;
 $player_stats = 0;
 $tables = 0;
 $output = 0;
@@ -30,6 +30,7 @@ GetOptions (
 	"ey=i" => \$end_year,
 	"sw=i" => \$start_week,
 	"ew=i" => \$end_week,
+	"is" => \$include_subs,
 	"vhc" => \$vhc,
 	"at" => \$all_time,
 	"s" =>  \$stats,
@@ -77,15 +78,16 @@ for (; ($start_year <= $end_year); $start_year++) {
 #
 if ($vhc) {
     foreach $pn (keys %p) {
-	if (($p{$pn}{total_strokes} == 0) || ($p{$pn}{total_rounds} == 0) || ($p{$pn}{team} eq "Sub")) {
+	if (($p{$pn}{total_strokes} == 0) || ($p{$pn}{total_rounds} == 0) ||
+	    (($p{$pn}{team} eq "Sub") && ($include_subs == 0))) {
 	    next;
 	}
 
-	foreach $yp (reverse sort keys %y) {
+	foreach $yp (sort keys %y) {
 	    foreach $w (1..$end_week) {
 		if ($p{$pn}{$dates{$yp}{$w}}{score} && defined($p{$pn}{$dates{$yp}{$w}}{hc})) {
 		    $p{$pn}{diff} += (($p{$pn}{$dates{$yp}{$w}}{score} - $p{$pn}{$dates{$yp}{$w}}{hc}) - 36);
-		    printf("%-20s: week %-2s shot %d, hc %2d, net %d, diff %d\n", $pn, $w, $p{$pn}{$dates{$yp}{$w}}{score},
+		    printf("%-17s: year %-4d week %-2s shot %d, hc %2d, net %d, diff %d\n", $pn, $yp, $w, $p{$pn}{$dates{$yp}{$w}}{score},
 			$p{$pn}{$dates{$yp}{$w}}{hc}, ($p{$pn}{$dates{$yp}{$w}}{score} - $p{$pn}{$dates{$yp}{$w}}{hc}),
 			    (($p{$pn}{$dates{$yp}{$w}}{score} - $p{$pn}{$dates{$yp}{$w}}{hc}) - 36));
 		} elsif ($p{$pn}{$dates{$yp}{$w}}{score} && !defined($p{$pn}{$dates{$yp}{$w}}{hc})) {
@@ -98,7 +100,7 @@ if ($vhc) {
     print "\n";
 
     foreach $pn (sort { $p{$a}{avediff} <=> $p{$b}{avediff} } (keys(%p))) {
-	if (($p{$pn}{avediff} == 0) || ($p{$pn}{team} eq "Sub")) {
+	if ($p{$pn}{avediff} == 0 || (($p{$pn}{team} eq "Sub") && ($include_subs == 0))) {
 	    next;
 	}
 	printf("%-25s %-17s: Ave = %.2f \(total rounds %d\)\n", $p{$pn}{team},

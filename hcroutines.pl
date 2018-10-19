@@ -69,21 +69,21 @@ sub gen_hc_trend {
 	$num = @scores;
 
 	#
-	# If player has less than 20 scores, do not generate a handicap trend.
+	# If player has less than 5 scores, do not generate a handicap trend.
 	#
-	if ($num < 20) {
+	if ($num < 5) {
 		print "$first $last: Only $num scores, not enough to generate a trend.\n", if $debug;
 		return;
 	}
 
 	$pn = $first . " " . $last;
 
+	$first_score = 0; $last_score = 5;
+
 	#
-	# With a handicap trend, we will always have at least 20 scores.
+	# Find out how many scores to use.
 	#
 	$use = &nscores($num);
-
-	$first_score = 0; $last_score = 20;
 
 	while ($last_score <= $num) {
 		$y = 0; undef @n;
@@ -132,8 +132,13 @@ sub gen_hc_trend {
 		printf ("%s:%s:%.1f:%d\n", $pn, $date, $hi, $sf), if $output;
 		#printf ("%-9s:  %5.1fN  HC=%-3d\n", $date, $hi, $sf), if ($output == 0);
 		$p{$pn}{$date}{hc} = $sf, if ($output == 0);
-		$last_score++;
-		$first_score = ($last_score - 20);
+		if ($last_score < 20) {
+			$last_score++;
+			$first_score = 0;
+		} else {
+			$last_score++;
+			$first_score = ($last_score - 20);
+		}
 	}
 }
 1;

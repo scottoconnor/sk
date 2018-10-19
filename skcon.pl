@@ -59,6 +59,16 @@ while ($line = <FD>) {
 	if ($line =~ /^\d{6,7}\054/) {
 		print "$line", if $debug;
 		$num = @fields = split(',', $line);
+		if ($num == 8 && $fields[2] != 0 && $fields[3] != 0) {
+			# 18-Hole score, discard.
+			$line = <FD>;
+			$line = <FD>;
+			$line = <FD>;
+			$line = <FD>;
+			$line = <FD>;
+			$line = <FD>;
+			next;
+		}
 		if ($num == 7) {
 			$date = @fields[0];
 			$shot = @fields[3];

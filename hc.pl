@@ -9,7 +9,7 @@ require "hcroutines.pl";
 use Getopt::Long;
 
 $debug = 0;
-$include_subs = 0;
+$include_subs = 1;
 $trend = 0;
 $output = 1;
 $pps = 0;	# Per player stats in their own file.
