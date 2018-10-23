@@ -60,10 +60,6 @@ sub gen_hc_trend {
 	chomp($scores[0]);
 	($first, $last, $team) = split(/:/, $scores[0]);
 
-	if (($team eq "Sub") && ($include_subs == 0)) {
-		return;
-	}
-
 	shift @scores;
 
 	$num = @scores;

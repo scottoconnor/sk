@@ -5,6 +5,7 @@
 
 require "courses.pl";
 require "hcroutines.pl";
+require "tnfb.pl";
 
 use Getopt::Long;
 
@@ -31,9 +32,30 @@ for ($x = 200; $x < 400; $x++) {
 	}
 }
 
-#foreach $p (sort keys %hc) {
-	#print "$p $hc{$p}\n";
-#}
+if ($trend == 0) {
+    $cnt = 1;
+    foreach $p (sort { $golfers{$a}{team} cmp $golfers{$b}{team} } (keys(%golfers))) {
+	if ($golfers{$p}{team} eq "Sub") {
+		next;
+	}
+	$gn = $golfers{$p}{first} . " " . $golfers{$p}{last};
+	printf("%-25s: %-17s: %4.1fN / %d\n", $golfers{$p}{team}, $gn, $hc{$gn}{hi}, $hc{$gn}{hc});
+	print "\n", if (($cnt % 2) == 0);
+	$cnt++
+    }
+
+    print "\014";
+    print "Subs\n";
+    foreach $p (sort { $golfers{$a}{last} cmp $golfers{$b}{last} } (keys(%golfers))) {
+	if ($golfers{$p}{team} ne "Sub") {
+		next;
+	}
+	$gn = $golfers{$p}{first} . " " . $golfers{$p}{last};
+	if (defined($hc{$gn}{hc})) {
+		printf("%-17s: %4.1fN / %d\n", $gn, $hc{$gn}{hi}, $hc{$gn}{hc});
+	}
+    }
+}
 
 sub gen_hc {
 	my ($fn) = @_;
@@ -132,7 +154,8 @@ sub gen_hc {
 	$nf = int(($hi * $c{NF}->{slope} / 113) + 0.5);
 	$nb = int(($hi * $c{NB}->{slope} / 113) + 0.5);
 
-	$hc{$pn} = $sf;
-	printf ("%-16s - %4.1fN  HC = %2d\n", $pn, $hi, $sf);
+	$hc{$pn}{hi} = $hi;
+	$hc{$pn}{hc} = $sf;
+	#printf ("%-16s - %4.1fN  HC = %2d\n", $pn, $hi, $sf);
 	printf ("%-8s %-10s - %5.1fN  SF=%-3d SB=%-3d NF=%-3d NB=%-3d\n", $first, $last, $hi, $sf, $sb, $nf, $nb), if $debug;
 }

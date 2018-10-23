@@ -44,6 +44,10 @@ if ($all_time) {
 	$start_year = 1997;
 }
 
+if ($stats || $tables) {
+	$include_subs = 1;
+}
+
 $cur_week = $start_week;
 
 undef(%y);
