@@ -12,9 +12,7 @@ while ($line = <FD>) {
 
 	if ($line =~ /^0,"\d\d\d\056ID/) {
 		$line =~ s/["]//g;
-print "line 1 -> $line\n";
 		$line =~ s/,/:/g;
-print "line 2 -> $line\n";
 
 		@new = split(/:/, $line);
 		$new[1] =~ s/^\s+|\s+$//g;
