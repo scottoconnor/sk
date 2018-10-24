@@ -69,16 +69,18 @@ sub convert_player {
 	    }
 	    if ($fields[2] != 0 && $fields[3] != 0) {
 		# 18-Hole score, discard.
-		$line = <FD>;
-		$line = <FD>;
-		$line = <FD>;
-		$line = <FD>;
-		$line = <FD>;
-		$line = <FD>;
-		next;
+		#$line = <FD>;
+		#$line = <FD>;
+		#$line = <FD>;
+		#$line = <FD>;
+		#$line = <FD>;
+		#$line = <FD>;
+		#next;
+	        $shot = @fields[5];
+	    } else {
+		$shot = @fields[4];
 	    }
 	    $date = @fields[0];
-	    $shot = @fields[4];
 	    $post = @fields[6];
 
 	    if ($line =~ /^9\d{5}/) {

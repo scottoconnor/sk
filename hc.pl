@@ -40,11 +40,11 @@ if ($trend == 0) {
 	}
 	$gn = $golfers{$p}{first} . " " . $golfers{$p}{last};
 	printf("%-25s: %-17s: %4.1fN / %d\n", $golfers{$p}{team}, $gn, $hc{$gn}{hi}, $hc{$gn}{hc});
-	print "\n", if (($cnt % 2) == 0);
-	$cnt++
+	$cnt++;
+	print "\n", if (($cnt % 2) && ($cnt < 32));
     }
 
-    print "\014";
+    print "\014\n";
     print "Subs\n";
     foreach $p (sort { $golfers{$a}{last} cmp $golfers{$b}{last} } (keys(%golfers))) {
 	if ($golfers{$p}{team} ne "Sub") {
@@ -122,6 +122,10 @@ sub gen_hc {
 		$n[$y] = ((($post - $par) * 113) / $slope);
 
 		printf("date=%s: post=%d: differential: %.3f\n", $date, $post, $n[$y]), if $debug;
+
+		if ($shot > 75) {
+		    $n[$y] /= 2;
+		}
 
 		#
 		# First round to the nearest hundredth, then to the tenth.

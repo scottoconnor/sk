@@ -103,7 +103,7 @@ if ($vhc) {
     print "\n";
 
     foreach $pn (sort { $p{$a}{avediff} <=> $p{$b}{avediff} } (keys(%p))) {
-	if ($p{$pn}{avediff} == 0 || (($p{$pn}{team} eq "Sub") && ($include_subs == 0))) {
+	if ($p{$pn}{total_strokes} == 0 || (($p{$pn}{team} eq "Sub") && ($include_subs == 0))) {
 	    next;
 	}
 	printf("%-25s %-17s: Ave = %.2f \(total rounds %d\)\n", $p{$pn}{team},

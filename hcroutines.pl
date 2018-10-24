@@ -92,6 +92,9 @@ sub gen_hc_trend {
 
 			($year, $month, $day) = split(/-/, $date);
 			$n[$y] = ((($post - $par) * 113) / $slope);
+			if ($shot > 75) {
+			    $n[$y] /= 2;
+			}
 			$n[$y] = sprintf("%0.1f", $n[$y]);
 
 			printf("date=%s: post=%d: differential: %.1f\n", $date, $post, $n[$y]), if $debug;
