@@ -22,8 +22,8 @@ closedir ($dh);
 
 $cnt = 200;
 while ($fna = shift @golfer_list) {
-	&convert_player("golfers/$fna", "golfers/$cnt");
-	$cnt++;
+    &convert_player("golfers/$fna", "golfers/$cnt");
+    $cnt++;
 }
 
 sub convert_player {
