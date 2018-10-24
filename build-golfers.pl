@@ -10,16 +10,18 @@ print NFD "%golfers = (\n";
 
 while ($line = <FD>) {
 
-	if ($line =~ /^"\d\d\d\056ID/) {
+	if ($line =~ /^0,"\d\d\d\056ID/) {
 		$line =~ s/["]//g;
+print "line 1 -> $line\n";
 		$line =~ s/,/:/g;
+print "line 2 -> $line\n";
 
 		@new = split(/:/, $line);
-		$new[0] =~ s/^\s+|\s+$//g;
 		$new[1] =~ s/^\s+|\s+$//g;
 		$new[2] =~ s/^\s+|\s+$//g;
 		$new[3] =~ s/^\s+|\s+$//g;
-		print NFD "\t\"golfers/$new[0]\" => { first => \"$new[2]\", last => \"$new[1]\", team => \"$new[3]\" },\n";
+		$new[4] =~ s/^\s+|\s+$//g;
+		print NFD "\t\"golfers/$new[1]\" => { first => \"$new[3]\", last => \"$new[2]\", team => \"$new[4]\" },\n";
 	}
 }
 
