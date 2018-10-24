@@ -67,7 +67,6 @@ undef(%p);
 # After we get that, the other routines can use that data to generate stats.
 #
 for (; ($start_year <= $end_year); $start_year++) {
-
 	for ($x = 200; $x < 400; $x++) {
 		if (-e "golfers/$x") {
 			print "$x: exists.\n", if $debug;
@@ -118,12 +117,12 @@ if ($vhc) {
 # The years are printed in descending order.
 #
 foreach $yp (reverse sort keys %y) {
-	if ($stats) {
-		&print_stats($yp);
-	}
-	if ($tables) {
-		&print_tables($yp);
-	}
+    if ($stats) {
+	&print_stats($yp);
+    }
+    if ($tables) {
+	&print_tables($yp);
+    }
 }
 
 #
@@ -421,14 +420,14 @@ sub print_player_stats {
 
 sub get_player_trend {
 
-	open(TD, "trend"), or die "Can't open file trend.\n";
-	my (@ary);
+    open(TD, "trend"), or die "Can't open file trend.\n";
+    my (@ary);
 
-	while (<TD>) {
-		@ary = split(/:/, $_);
-		$p{$ary[0]}{$ary[1]}{hc} = $ary[3];
-	}
-	close(TD);
+    while (<TD>) {
+	@ary = split(/:/, $_);
+	$p{$ary[0]}{$ary[1]}{hc} = $ary[3];
+    }
+    close(TD);
 }
 
 sub get_player_scores {
