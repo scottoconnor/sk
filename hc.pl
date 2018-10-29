@@ -13,11 +13,9 @@ $debug = 0;
 $include_subs = 1;
 $trend = 0;
 $output = 1;
-$pps = 0;	# Per player stats in their own file.
 
 GetOptions (
         "t" =>  \$trend,
-        "s" =>  \$pps,
         "d" => \$debug)
 or die("Error in command line arguments\n");
 
@@ -28,7 +26,6 @@ for ($x = 200; $x < 400; $x++) {
 		} else {
 			&gen_hc("golfers/$x");
 		}
-		close(PT), if $pps;
 	}
 }
 
@@ -79,15 +76,6 @@ sub gen_hc {
 	shift @scores;
 
 	$num = @scores;
-
-	$out_filename = "/tmp/$first $last";
-
-	if (-e $out_filename) {
-		unlink $out_filename, if ($pps == 0);
-	}
-
-	open(PT, ">", "/tmp/$first $last"), if $pps;
-	select PT, if $pps;
 
 	#
 	# If player has less than 5 scores, a handicap can not be generated.

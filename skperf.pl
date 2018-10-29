@@ -18,6 +18,7 @@ $cur_week = $start_week = 1;
 $end_week = 15;
 $all_time = 0;
 $vhc = 0;
+$top_gun = 0;
 $stats = 0;
 $include_subs = 0;
 $player_stats = 0;
@@ -36,6 +37,7 @@ GetOptions (
 	"s" =>  \$stats,
 	"p" =>  \$player_stats,
 	"t" =>  \$tables,
+	"g" =>  \$top_gun,
 	"h" =>  \$html,
 	"d" => \$debug)
 or die("Error in command line arguments\n");
@@ -108,6 +110,29 @@ if ($vhc) {
 	}
 	printf("%-25s %-17s: Ave = %.2f \(total rounds %d\)\n", $p{$pn}{team},
 	    $pn, $p{$pn}{avediff}, $p{$pn}{total_rounds});
+    }
+}
+
+if ($top_gun) {
+    my $has_rounds = 0;
+    foreach $pn (keys %p) {
+	if (($p{$pn}{total_strokes} == 0) || ($p{$pn}{total_rounds} == 0) ||
+            (($p{$pn}{team} eq "Sub") && ($include_subs == 0))) {
+            next;
+        }
+
+        foreach $yp (sort keys %y) {
+            foreach $w (1..$end_week) {
+		if ($p{$pn}{$dates{$yp}{$w}}{score} != 0 && $p{$pn}{$dates{$yp}{$w}}{score} < 40) {
+		    printf("%-17s: year %-4d week %-2s shot %d\n", $pn, $yp, $w, $p{$pn}{$dates{$yp}{$w}}{score});
+		    $has_rounds = 1;
+		}
+	    }
+	}
+	if ($has_rounds) {
+	    print "\n";
+	    $has_rounds = 0;
+	}
     }
 }
 
