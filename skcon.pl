@@ -122,7 +122,7 @@ sub convert_player {
 	    $par = $c{$course}{par};
 	    $slope = $c{$course}{slope};
 	} else {
-	$course = 'NL';
+	    $course = 'NL';
 	    #$line = <FD>;
 	    #$line = <FD>;
 	    #$line = <FD>;

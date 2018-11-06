@@ -12,8 +12,7 @@ use Getopt::Long;
 #
 # Default to running stats on current year.
 #
-$start_year = 2018;
-$end_year = (1900 + (localtime)[5]);
+$start_year = $end_year = (1900 + (localtime)[5]);
 $cur_week = $start_week = 1;
 $end_week = 15;
 $all_time = 0;
@@ -101,8 +100,8 @@ if ($vhc) {
 	    }
 	}
 	$p{$pn}{avediff} = ($p{$pn}{diff} / $p{$pn}{total_rounds}), if ($p{$pn}{total_rounds} > 0);
+	print "\n", if ($p{$pn}{total_rounds} > 0);
     }
-    print "\n";
 
     foreach $pn (sort { $p{$a}{avediff} <=> $p{$b}{avediff} } (keys(%p))) {
 	if ($p{$pn}{total_strokes} == 0 || (($p{$pn}{team} eq "Sub") && ($include_subs == 0))) {
