@@ -12,7 +12,7 @@ while (readdir $dh) {
     if ($_ eq '.' or $_ eq '..') {
 	next;
     }
-    if ($_ =~ /\d{3}.ID/) {
+    if ($_ =~ /\d+\056ID/) {
 	push @golfer_list, $_;
     }
 }
@@ -20,10 +20,10 @@ closedir ($dh);
 
 @golfer_list = sort @golfer_list;
 
-$cnt = 1001;
 while ($fna = shift @golfer_list) {
+    ($cnt) = $fna =~ /(\d+)\056ID/;
+    $cnt += 1000;
     &convert_player("golfers/$fna", "golfers/$cnt");
-    $cnt++;
 }
 
 sub convert_player {

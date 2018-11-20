@@ -19,13 +19,28 @@ GetOptions (
         "d" => \$debug)
 or die("Error in command line arguments\n");
 
-for ($x = 200; $x < 400; $x++) {
-	if (-e "golfers/$x") {
-		if ($trend) {
-			&gen_hc_trend("golfers/$x", $output);
-		} else {
-			&gen_hc("golfers/$x");
-		}
+#
+# Only used files processed by skcon.pl (ScoreKeeper Convert).
+#
+opendir($dh, "./golfers") || die "Can't open \"golfers\" directory.";
+
+while (readdir $dh) {
+    if ($_ eq '.' or $_ eq '..') {
+	next;
+    }
+    if ($_ =~ /(\d{4}$)/) {
+	push @golfer_list, $_;
+    }
+}
+closedir ($dh);
+
+@golfer_list = sort @golfer_list;
+
+while ($fna = shift @golfer_list) {
+	if ($trend) {
+		&gen_hc_trend("golfers/$fna", $output);
+	} else {
+		&gen_hc("golfers/$fna");
 	}
 }
 
