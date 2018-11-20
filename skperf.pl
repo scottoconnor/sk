@@ -60,6 +60,24 @@ undef(%p);
 &get_player_trend();
 
 #
+# Open the golfers directory and only read the files that
+# have been processed via skcon.pl (ScoreKeeper convert).
+#
+opendir($dh, "./golfers") || die "Can't open \"golfers\" directory.";
+
+while (readdir $dh) {
+    if ($_ eq '.' or $_ eq '..') {
+	next;
+    }
+    if ($_ =~ /(\d{4}$)/) {
+	push @global_golfer_list, $_;
+    }
+}
+closedir ($dh);
+
+@global_golfer_list = sort @global_golfer_list;
+
+#
 # First get all the players scores/stats for the requested years/weeks.
 # Calling get_player_scores will load up the hashes:
 # 	%p  with all the player data on a per player basis
@@ -68,11 +86,9 @@ undef(%p);
 # After we get that, the other routines can use that data to generate stats.
 #
 for (; ($start_year <= $end_year); $start_year++) {
-	for ($x = 200; $x < 400; $x++) {
-		if (-e "golfers/$x") {
-			print "$x: exists.\n", if $debug;
-			&get_player_scores("golfers/$x");
-		}
+	@golfer_list = @global_golfer_list;
+	while ($fna = shift @golfer_list) {
+		&get_player_scores("golfers/$fna");
 	}
 }
 

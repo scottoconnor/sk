@@ -20,7 +20,7 @@ closedir ($dh);
 
 @golfer_list = sort @golfer_list;
 
-$cnt = 200;
+$cnt = 1001;
 while ($fna = shift @golfer_list) {
     &convert_player("golfers/$fna", "golfers/$cnt");
     $cnt++;
@@ -142,6 +142,10 @@ sub convert_player {
 
 	if ($line =~ /^\d{9}\0540/) {
 
+	    #
+	    # A 9,0 format is score where each hole has a single digit score.
+	    #
+
 	    print NFD "$course:$par:$slope:$year-$month-$day:$shot:$post";
 
             ($a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8]) = $line =~
@@ -162,6 +166,10 @@ sub convert_player {
 		print "9: $fn: $shot: $check_shot, Incorrect! -- $line\n";
 	    }
 	} elsif ($line =~ /^\d{8}\0540/) {
+
+	    #
+	    # A 8,0 format is a score with a 10 on the first hole.
+	    #
 
 	    print NFD "$course:$par:$slope:$year-$month-$day:$shot:$post";
 
