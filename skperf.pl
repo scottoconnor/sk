@@ -66,9 +66,6 @@ undef(%p);
 opendir($dh, "./golfers") || die "Can't open \"golfers\" directory.";
 
 while (readdir $dh) {
-    if ($_ eq '.' or $_ eq '..') {
-	next;
-    }
     if ($_ =~ /(\d{4}$)/) {
 	push @global_golfer_list, $_;
     }

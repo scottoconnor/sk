@@ -25,9 +25,6 @@ or die("Error in command line arguments\n");
 opendir($dh, "./golfers") || die "Can't open \"golfers\" directory.";
 
 while (readdir $dh) {
-    if ($_ eq '.' or $_ eq '..') {
-	next;
-    }
     if ($_ =~ /(\d{4}$)/) {
 	push @golfer_list, $_;
     }

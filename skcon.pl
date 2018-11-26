@@ -9,9 +9,6 @@ require 'courses.pl';
 opendir($dh, "./golfers") || die "Can't open \"golfers\" directory.";
 
 while (readdir $dh) {
-    if ($_ eq '.' or $_ eq '..') {
-	next;
-    }
     if ($_ =~ /\d+\056ID/) {
 	push @golfer_list, $_;
     }
