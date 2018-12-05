@@ -45,7 +45,7 @@ if ($all_time) {
 	$start_year = 1997;
 }
 
-if ($stats || $tables) {
+if ($stats || $tables || $top_gun || $vhc) {
 	$include_subs = 1;
 }
 
@@ -57,7 +57,10 @@ undef(%p);
 #
 # Load the players handcaip trend in case they are needed.
 #
-&get_player_trend();
+if ($vhc) {
+	print "Need trend...\n";
+	&get_player_trend();
+}
 
 #
 # Open the golfers directory and only read the files that

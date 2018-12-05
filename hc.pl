@@ -121,8 +121,6 @@ sub gen_hc {
 
 		$n[$y] = ((($post - $par) * 113) / $slope);
 
-		printf("date=%s: post=%d: differential: %.3f\n", $date, $post, $n[$y]), if $debug;
-
 		if ($shot > 75) {
 		    $n[$y] /= 2;
 		}
@@ -131,7 +129,7 @@ sub gen_hc {
 		# First round to the nearest hundredth, then to the tenth.
 		#
 		$n[$y] = sprintf("%0.1f",$n[$y]);
-		printf("date=%s: post=%d: differential: %.3f\n", $date, $post, $n[$y]), if $debug;
+		printf("date=%s: post=%d: differential: %.1f\n", $date, $post, $n[$y]), if $debug;
 
 		$y++;
 	}
@@ -160,6 +158,5 @@ sub gen_hc {
 
 	$hc{$pn}{hi} = $hi;
 	$hc{$pn}{hc} = $sf;
-	#printf ("%-16s - %4.1fN  HC = %2d\n", $pn, $hi, $sf);
 	printf ("%-8s %-10s - %5.1fN  SF=%-3d SB=%-3d NF=%-3d NB=%-3d\n", $first, $last, $hi, $sf, $sb, $nf, $nb), if $debug;
 }
