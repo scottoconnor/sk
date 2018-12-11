@@ -440,17 +440,16 @@ sub print_player_stats {
 		printf("Hole %d (par %d): Total shots: %3d  ", ($h + $offset), $c{$sc}->{$h}, $p{$x}{$sc}{$h}{shots});
 
 		if ($c{$sc}->{$h} > 3) {
-		    printf("ave=%.2f, %.2f vs. par, B: %d, E: %d\n", ($p{$x}{$sc}{$h}{shots} / $p{$x}{$sc}{xplayed}),
+		    printf("ave=%.2f, %.2f vs. par, E: %d\n", ($p{$x}{$sc}{$h}{shots} / $p{$x}{$sc}{xplayed}),
 			(($p{$x}{$sc}{$h}{shots} / $p{$x}{$sc}{xplayed}) - $c{$sc}->{$h}),
-			    $p{$x}{$sc}{$h}{b} ? $p{$x}{$sc}{$h}{b} : 0, $p{$x}{$sc}{$h}{e} ? $p{$x}{$sc}{$h}{e} : 0);
+			    $p{$x}{$sc}{$h}{e} ? $p{$x}{$sc}{$h}{e} : 0);
 		} elsif ($c{$sc}->{$h} == 3) {
-		    printf("ave=%.2f, %.2f vs. par, B: %d,", ($p{$x}{$sc}{$h}{shots} / $p{$x}{$sc}{xplayed}),
-			(($p{$x}{$sc}{$h}{shots} / $p{$x}{$sc}{xplayed}) - $c{$sc}->{$h}),
-			    $p{$x}{$sc}{$h}{b} ? $p{$x}{$sc}{$h}{b} : 0);
+		    printf("ave=%.2f, %.2f vs. par", ($p{$x}{$sc}{$h}{shots} / $p{$x}{$sc}{xplayed}),
+			(($p{$x}{$sc}{$h}{shots} / $p{$x}{$sc}{xplayed}) - $c{$sc}->{$h}));
 		    printf(" H: %d\n", $p{$x}{$sc}{$h}{e} ? $p{$x}{$sc}{$h}{e} : 0);
 		}
-		printf("\tPars=%d, Bogies=%d, Double Bogies=%d, Others=%d\n\n", $p{$x}{$sc}{$h}{p}, $p{$x}{$sc}{$h}{bo},
-		    $p{$x}{$sc}{$h}{db}, $p{$x}{$sc}{$h}{o});
+		printf("    Birdies=%d, Pars=%d, Bogies=%d, Double Bogies=%d, Others=%d\n\n", $p{$x}{$sc}{$h}{b},
+		    $p{$x}{$sc}{$h}{p}, $p{$x}{$sc}{$h}{bo}, $p{$x}{$sc}{$h}{db}, $p{$x}{$sc}{$h}{o});
 	    }
 	    print "\n";
 	}
@@ -516,6 +515,11 @@ sub get_player_scores {
 	    if (($start_year == $year) && ($dates{$start_year}{$cur_week} eq $date)) {
 
 		print "$_\n", if $debug;
+
+		if (defined($p{$pn}{$date}{score})) {
+		    print "Possible double score: $pn: $date\n";
+		    next;
+		}
 
 		$y{$start_year}{total_strokes} += $shot;
 		$y{$start_year}{total_scores}++;
