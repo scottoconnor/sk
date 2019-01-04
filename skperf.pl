@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 #
-# Copyright (c) 2018 Scott O'Connor
+# Copyright (c) 2018, 2019 Scott O'Connor
 #
 
 require 'tnfb_years.pl';
@@ -12,8 +12,9 @@ use Getopt::Long;
 #
 # Default to running stats on current year.
 #
+$cur_month = (localtime)[4];
 $start_year = $end_year = (1900 + (localtime)[5]);
-$cur_week = $start_week = 1;
+$start_week = 1;
 $end_week = 15;
 $all_time = 0;
 $vhc = 0;
@@ -24,6 +25,10 @@ $player_stats = 0;
 $tables = 0;
 $output = 0;
 $html = 0;
+
+if ($cur_month < 4) {
+    $start_year = $end_year = ((1900 + (localtime)[5]) - 1);
+}
 
 GetOptions (
 	"sy=i" => \$start_year,
@@ -45,11 +50,11 @@ if ($all_time) {
 	$start_year = 1997;
 }
 
+$cy = $start_year;
+
 if ($stats || $tables || $top_gun || $vhc) {
 	$include_subs = 1;
 }
-
-$cur_week = $start_week;
 
 undef(%y);
 undef(%p);
@@ -58,7 +63,6 @@ undef(%p);
 # Load the players handcaip trend in case they are needed.
 #
 if ($vhc) {
-	print "Need trend...\n";
 	&get_player_trend();
 }
 
@@ -69,7 +73,7 @@ if ($vhc) {
 opendir($dh, "./golfers") || die "Can't open \"golfers\" directory.";
 
 while (readdir $dh) {
-    if ($_ =~ /(\d{4}$)/) {
+    if ($_ =~ /(1\d{3}$)/) {
 	push @global_golfer_list, $_;
     }
 }
@@ -85,10 +89,10 @@ closedir ($dh);
 #
 # After we get that, the other routines can use that data to generate stats.
 #
-for (; ($start_year <= $end_year); $start_year++) {
+for (; ($cy <= $end_year); $cy++) {
 	@golfer_list = @global_golfer_list;
 	while ($fna = shift @golfer_list) {
-		&get_player_scores("golfers/$fna");
+		&get_player_scores("golfers/$fna", $cy);
 	}
 }
 
@@ -105,12 +109,12 @@ if ($vhc) {
 
 	foreach $yp (sort keys %y) {
 	    foreach $w (1..$end_week) {
-		if ($p{$pn}{$dates{$yp}{$w}}{score} && defined($p{$pn}{$dates{$yp}{$w}}{hc})) {
-		    $p{$pn}{diff} += (($p{$pn}{$dates{$yp}{$w}}{score} - $p{$pn}{$dates{$yp}{$w}}{hc}) - 36);
-		    printf("%-17s: year %-4d week %-2s shot %d, hc %2d, net %d, diff %d\n", $pn, $yp, $w, $p{$pn}{$dates{$yp}{$w}}{score},
-			$p{$pn}{$dates{$yp}{$w}}{hc}, ($p{$pn}{$dates{$yp}{$w}}{score} - $p{$pn}{$dates{$yp}{$w}}{hc}),
-			    (($p{$pn}{$dates{$yp}{$w}}{score} - $p{$pn}{$dates{$yp}{$w}}{hc}) - 36));
-		} elsif ($p{$pn}{$dates{$yp}{$w}}{score} && !defined($p{$pn}{$dates{$yp}{$w}}{hc})) {
+		if ($p{$pn}{$yp}{$w} && defined($p{$pn}{$dates{$yp}{$w}}{hc})) {
+		    $p{$pn}{diff} += (($p{$pn}{$yp}{$w} - $p{$pn}{$dates{$yp}{$w}}{hc}) - 36);
+		    printf("%-17s: year %-4d week %-2s shot %d, hc %2d, net %d, diff %d\n", $pn, $yp, $w, $p{$pn}{$yp}{$w},
+			$p{$pn}{$dates{$yp}{$w}}{hc}, ($p{$pn}{$yp}{$w} - $p{$pn}{$dates{$yp}{$w}}{hc}),
+			    (($p{$pn}{$yp}{$w} - $p{$pn}{$dates{$yp}{$w}}{hc}) - 36));
+		} elsif ($p{$pn}{$yp}{$w} && !defined($p{$pn}{$dates{$yp}{$w}}{hc})) {
 		    $p{$pn}{total_rounds}--;
 		}
 	    }
@@ -138,15 +142,15 @@ if ($top_gun) {
 
         foreach $yp (sort keys %y) {
             foreach $w (1..$end_week) {
-		if ($p{$pn}{$dates{$yp}{$w}}{score} != 0 && $p{$pn}{$dates{$yp}{$w}}{score} < 40) {
-		    printf("%-17s: year %-4d week %-2s shot %d\n", $pn, $yp, $w, $p{$pn}{$dates{$yp}{$w}}{score});
+		if ($p{$pn}{$yp}{$w} != 0 && $p{$pn}{$yp}{$w} < 40) {
+		    printf("%-17s: year %-4d week %-2s shot %d\n", $pn, $yp, $w, $p{$pn}{$yp}{$w});
 		    $has_rounds = 1;
 		}
 	    }
 	}
 	if ($has_rounds) {
-	    print "\n";
 	    $has_rounds = 0;
+	    print "\n";
 	}
     }
 }
@@ -298,43 +302,43 @@ sub print_stats {
 
     my($yp) = @_;
 
-    print "$yp", if !$html;
-    print " - Weeks $start_week through $end_week", if !$html &&
-	(($end_week - $start_week) < 14) && (($end_week - $start_week) > 0);
-    print " - Week $start_week", if !$html && ($start_week == $end_week);
-    print ":\n", if !$html;
+    if ($y{$yp}{total_strokes} && !$html) {
+	print "$yp";
+	print " - Weeks $start_week through $end_week",
+	    if (($end_week - $start_week) < 14) && (($end_week - $start_week) > 0);
+	print " - Week $start_week", if ($start_week == $end_week);
+	print ":\n";
 
-    print "<b><font color=\"green\">$yp</b></font>", if $html;
-    print "&nbsp<b><font color=\"green\">- Weeks $start_week through $end_week</b></font></br", if $html &&
-	(($end_week - $start_week) < 14) && (($end_week - $start_week) > 0);
-    print "&nbsp<b><font color=\"green\">- Week $start_week</b></font>", if $html && ($start_week == $end_week);
-    print "<b><font color=\"green\">:</b></font></br>", if $html;
-
-
-    if ($y{$yp}{total_strokes} && $stats) {
-	printf("Total Posted scores: %d\n", $y{$yp}{total_scores}), if !$html;
-	printf("Total holes played: %d\n", ($y{$yp}{total_scores} * 9)), if !$html;
-	printf("Total Strokes = %d\n", $y{$yp}{total_strokes}), if !$html;
+	printf("Total Posted scores: %d\n", $y{$yp}{total_scores});
+	printf("Total holes played: %d\n", ($y{$yp}{total_scores} * 9));
+	printf("Total Strokes = %d\n", $y{$yp}{total_strokes});
 	printf("League Stroke Average = %.2f\n",
-	    ($y{$yp}{total_strokes} / $y{$yp}{total_scores})), if !$html;
-	printf("Total Eagles  = %d\n", $y{$yp}{total_eagles}), if !$html;
-	printf("Total Birdies = %d\n", $y{$yp}{total_birdies}), if !$html;
-	printf("Total Pars = %d\n", $y{$yp}{total_pars}), if !$html;
-	printf("Total Bogies = %d\n", $y{$yp}{total_bogies}), if !$html;
-	printf("Total Double Bogies = %d\n", $y{$yp}{total_db}), if !$html;
-	printf("Total Others = %d\n\n", $y{$yp}{total_other}), if !$html;
+	    ($y{$yp}{total_strokes} / $y{$yp}{total_scores}));
+	printf("Total Eagles  = %d\n", $y{$yp}{total_eagles});
+	printf("Total Birdies = %d\n", $y{$yp}{total_birdies});
+	printf("Total Pars = %d\n", $y{$yp}{total_pars});
+	printf("Total Bogies = %d\n", $y{$yp}{total_bogies});
+	printf("Total Double Bogies = %d\n", $y{$yp}{total_db});
+	printf("Total Others = %d\n\n", $y{$yp}{total_other});
 
-	printf("Total Posted scores: <font color=\"green\">%d</font></br>\n", $y{$yp}{total_scores}), if $html;
-	printf("Total holes played: <font color=\"green\">%d</font></br>\n", ($y{$yp}{total_scores} * 9)), if $html;
-	printf("Total Strokes = <font color=\"green\">%d</font></br>\n", $y{$yp}{total_strokes}), if $html;
+    } elsif ($y{$yp}{total_strokes} && $html) {
+	print "<b><font color=\"green\">$yp</b></font>";
+	print "&nbsp<b><font color=\"green\">- Weeks $start_week through $end_week</b></font></br",
+	    if (($end_week - $start_week) < 14) && (($end_week - $start_week) > 0);
+	print "&nbsp<b><font color=\"green\">- Week $start_week</b></font>", if ($start_week == $end_week);
+	print "<b><font color=\"green\">:</b></font></br>";
+
+	printf("Total Posted scores: <font color=\"green\">%d</font></br>\n", $y{$yp}{total_scores});
+	printf("Total holes played: <font color=\"green\">%d</font></br>\n", ($y{$yp}{total_scores} * 9));
+	printf("Total Strokes = <font color=\"green\">%d</font></br>\n", $y{$yp}{total_strokes});
 	printf("League Stroke Average = <font color=\"green\">%.2f</font></br>\n",
-	    ($y{$yp}{total_strokes} / $y{$yp}{total_scores})), if $html;
-	printf("Total Eagles  = <font color=\"green\">%d</font></br>\n", $y{$yp}{total_eagles}), if $html;
-	printf("Total Birdies = <font color=\"green\">%d</font></br>\n", $y{$yp}{total_birdies}), if $html;
-	printf("Total Pars = <font color=\"green\">%d</font></br>\n", $y{$yp}{total_pars}), if $html;
-	printf("Total Bogies = <font color=\"green\">%d</font></br>\n", $y{$yp}{total_bogies}), if $html;
-	printf("Total Double Bogies = <font color=\"green\">%d</font></br>\n", $y{$yp}{total_db}), if $html;
-	printf("Total Others = <font color=\"green\">%d</font></br></br>\n", $y{$yp}{total_other}), if $html;
+	    ($y{$yp}{total_strokes} / $y{$yp}{total_scores}));
+	printf("Total Eagles  = <font color=\"green\">%d</font></br>\n", $y{$yp}{total_eagles});
+	printf("Total Birdies = <font color=\"green\">%d</font></br>\n", $y{$yp}{total_birdies});
+	printf("Total Pars = <font color=\"green\">%d</font></br>\n", $y{$yp}{total_pars});
+	printf("Total Bogies = <font color=\"green\">%d</font></br>\n", $y{$yp}{total_bogies});
+	printf("Total Double Bogies = <font color=\"green\">%d</font></br>\n", $y{$yp}{total_db});
+	printf("Total Others = <font color=\"green\">%d</font></br></br>\n", $y{$yp}{total_other});
     }
 }
 
@@ -342,7 +346,7 @@ sub print_tables {
 
     my($yp) = @_;
 
-    if (%{$bt{$yp}}) {
+    if ($bt{$yp}) {
 	%birds = %{$bt{$yp}};
 	print "<b>Birdie Table: $yp</b></br>\n", if $html;
 	print "<head>\n<style>\n", if $html;
@@ -352,17 +356,17 @@ sub print_tables {
 	print "<table style=\"width:25\%\"></br>\n", if $html;
 	print "  <tr>\n    <th>Name</th>\n    <th>Birdies</th>\n  </tr>\n", if $html;
 	print "Birdie Table: $yp\n", if !$html;
-	    foreach my $key (sort { $birds{$b} <=> $birds{$a} } keys %birds) {
-		printf "%-20s %4d\n", $key, $birds{$key}, if !$html;
-		print "  <tr>\n", if $html;
-		printf "    <td>%-20s</td>\n    <td>%4d</td>", $key, $birds{$key}, if $html;
-		print "  </tr>\n", if $html;
-	    }
+	foreach my $key (sort { $birds{$b} <=> $birds{$a} } keys %birds) {
+	    printf "%-20s %4d\n", $key, $birds{$key}, if !$html;
+	    print "  <tr>\n", if $html;
+	    printf "    <td>%-20s</td>\n    <td>%4d</td>", $key, $birds{$key}, if $html;
+	    print "  </tr>\n", if $html;
+	}
 	print "</table></br>", if $html;
+	print "\n", if !$html;
     }
-    print "\n", if !$html;
 
-    if (%{$et{$yp}}) {
+    if ($et{$yp}) {
 	%eagles = %{$et{$yp}};
 	print "<b>Eagle Table: $yp</b></br>\n", if $html;
 	print "<head>\n<style>\n", if $html;
@@ -378,10 +382,9 @@ sub print_tables {
 	    printf "    <td>%-20s</td>\n    <td>%4d</td>", $key, $eagles{$key}, if $html;
 	    print "  </tr>\n", if $html;
 	}
-	print "</table>\n", if $html;
+	print "</table></br>", if $html;
+	print "\n", if !$html;
     }
-    print "\n", if !$html;
-    print "</br>", if $html;
 }
 
 sub print_player_stats {
@@ -471,7 +474,8 @@ sub get_player_trend {
 
 sub get_player_scores {
 
-    my($fn) = @_;
+    my($fn, $cy) = @_;
+    my($cw);
 
     open(FD, $fn);
 
@@ -511,23 +515,23 @@ sub get_player_scores {
 	#
 	($year, $month, $day) = split(/-/, $date);
 
-	for ($cur_week = $start_week; $cur_week <= $end_week; $cur_week++) {
-	    if (($start_year == $year) && ($dates{$start_year}{$cur_week} eq $date)) {
+	for ($cw = $start_week; $cw <= $end_week; $cw++) {
+	    if (($cy == $year) && ($dates{$cy}{$cw} eq $date)) {
 
 		print "$_\n", if $debug;
 
-		if (defined($p{$pn}{$date}{score})) {
+		if (defined($p{$pn}{$cy}{$cw})) {
 		    print "Possible double score: $pn: $date\n";
 		    next;
 		}
 
-		$y{$start_year}{total_strokes} += $shot;
-		$y{$start_year}{total_scores}++;
+		$y{$cy}{total_strokes} += $shot;
+		$y{$cy}{total_scores}++;
 
 		$p{$pn}{total_rounds}++;
 		$p{$pn}{total_strokes} += $shot;
 		$p{$pn}{$course}{xplayed}++;
-		$p{$pn}{$date}{score} = $shot;
+		$p{$pn}{$cy}{$cw} = $shot;
 
 		for ($h = 1; $h < 10; $h++) {
 		    $hole = abs(shift @score);
@@ -535,34 +539,34 @@ sub get_player_scores {
 		    if (($c{$course}->{$h} - $hole) < -2) {
 			$p{$pn}{to}++;
 			$p{$pn}{$course}{$h}{o}++;
-			$y{$start_year}{total_other}++;
+			$y{$cy}{total_other}++;
 		    };
 		    if (($c{$course}->{$h} - $hole) == -2) {
 			$p{$pn}{tdb}++;
 			$p{$pn}{$course}{$h}{db}++;
-			$y{$start_year}{total_db}++;
+			$y{$cy}{total_db}++;
 		    }
 		    if (($c{$course}->{$h} - $hole) == -1) {
 			$p{$pn}{bo}++;
 			$p{$pn}{$course}{$h}{bo}++;
-			$y{$start_year}{total_bogies}++;
+			$y{$cy}{total_bogies}++;
 		    }
 		    if (($c{$course}->{$h} - $hole) == 0) {
 			$p{$pn}{tp}++;
 			$p{$pn}{$course}{$h}{p}++;
-			$y{$start_year}{total_pars}++;
+			$y{$cy}{total_pars}++;
 		    }
 		    if (($c{$course}->{$h} - $hole) == 1) {
 			$p{$pn}{$course}{$h}{b}++;
 			$p{$pn}{tb}++;
-			$y{$start_year}{total_birdies}++;
-			$bt{$start_year}{$pn} += 1;
+			$y{$cy}{total_birdies}++;
+			$bt{$cy}{$pn} += 1;
 		    }
 		    if (($c{$course}->{$h} - $hole) == 2) {
 			$p{$pn}{$course}{$h}{e}++;
 			$p{$pn}{te}++;
-			$y{$start_year}{total_eagles}++;
-			$et{$start_year}{$pn} += 1;
+			$y{$cy}{total_eagles}++;
+			$et{$cy}{$pn} += 1;
 		    };
 		}
 	    }

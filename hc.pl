@@ -1,11 +1,10 @@
 #! /usr/bin/perl
 #
-# Copyright (c) 2018 Scott O'Connor
+# Copyright (c) 2018, 2019 Scott O'Connor
 #
 
 require "courses.pl";
 require "hcroutines.pl";
-require "tnfb.pl";
 
 use Getopt::Long;
 
@@ -43,25 +42,23 @@ while ($fna = shift @golfer_list) {
 
 if ($trend == 0) {
     $cnt = 1;
-    foreach $p (sort { $golfers{$a}{team} cmp $golfers{$b}{team} } (keys(%golfers))) {
-	if ($golfers{$p}{team} eq "Sub") {
+    foreach $p (sort { $hc{$a}{team} cmp $hc{$b}{team} } (keys(%hc))) {
+	if ($hc{$p}{team} eq "Sub") {
 		next;
 	}
-	$gn = $golfers{$p}{first} . " " . $golfers{$p}{last};
-	printf("%-25s: %-17s: %4.1fN / %d\n", $golfers{$p}{team}, $gn, $hc{$gn}{hi}, $hc{$gn}{hc});
+	printf("%-25s: %-17s: %4.1fN / %d\n", $hc{$p}{team}, $p, $hc{$p}{hi}, $hc{$p}{hc});
 	$cnt++;
 	print "\n", if (($cnt % 2) && ($cnt < 32));
     }
 
     print "\014\n";
     print "Subs\n";
-    foreach $p (sort { $golfers{$a}{last} cmp $golfers{$b}{last} } (keys(%golfers))) {
-	if ($golfers{$p}{team} ne "Sub") {
+    foreach $p (sort keys %hc) {
+	if ($hc{$p}{team} ne "Sub") {
 		next;
 	}
-	$gn = $golfers{$p}{first} . " " . $golfers{$p}{last};
-	if (defined($hc{$gn}{hc})) {
-		printf("%-17s: %4.1fN / %d\n", $gn, $hc{$gn}{hi}, $hc{$gn}{hc});
+	if (defined($hc{$p}{hc})) {
+		printf("%-17s: %4.1fN / %d\n", $p, $hc{$p}{hi}, $hc{$p}{hc});
 	}
     }
 }
@@ -84,6 +81,8 @@ sub gen_hc {
 	}
 
 	$pn = $first . " " . $last;
+
+	$hc{$pn}{team} = $team;
 
 	shift @scores;
 
