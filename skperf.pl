@@ -134,6 +134,15 @@ if ($vhc) {
 
 if ($top_gun) {
     my $has_rounds = 0;
+
+    print "<b>30's club:</b>", if $html;
+    print "<head>\n<style>", if $html;
+    print "table, th, td {\n    border: 1px solid black;\n    border-collapse: collapse;\n}\n", if $html;
+    print "th, td {\n    text-align: left;\n}\n", if $html;
+    print "</style>\n</head>\n", if $html;
+    print "<table style=\"width:25\%\"></br>\n", if $html;
+    print "  <tr>\n    <th>Name</th>\n    <th>Week</th>\n    <th>Score</th>\n  </tr>\n", if $html;
+
     foreach $pn (keys %p) {
 	if (($p{$pn}{total_strokes} == 0) || ($p{$pn}{total_rounds} == 0) ||
             (($p{$pn}{team} eq "Sub") && ($include_subs == 0))) {
@@ -141,18 +150,22 @@ if ($top_gun) {
         }
 
         foreach $yp (sort keys %y) {
-            foreach $w (1..$end_week) {
+            foreach $w ($start_week..$end_week) {
 		if ($p{$pn}{$yp}{$w} != 0 && $p{$pn}{$yp}{$w} < 40) {
-		    printf("%-17s: year %-4d week %-2s shot %d\n", $pn, $yp, $w, $p{$pn}{$yp}{$w});
+		    print "  <tr>\n", if $html;
+		    printf("    <td>%-20s</td>\n    <td>%4d</td>    <td>%d", $pn, $w, $p{$pn}{$yp}{$w}), if $html;
+		    print "  </tr>\n", if $html;
+		    printf("%-17s: year %-4d week %-2s shot %d\n", $pn, $yp, $w, $p{$pn}{$yp}{$w}), if !$html;
 		    $has_rounds = 1;
 		}
 	    }
 	}
 	if ($has_rounds) {
 	    $has_rounds = 0;
-	    print "\n";
+	    print "\n", if !$html;
 	}
     }
+    print "</table></br>", if $html;
 }
 
 #
@@ -348,7 +361,7 @@ sub print_tables {
 
     if ($bt{$yp}) {
 	%birds = %{$bt{$yp}};
-	print "<b>Birdie Table: $yp</b></br>\n", if $html;
+	print "<b>Birdie Table: $yp</b>", if $html;
 	print "<head>\n<style>\n", if $html;
 	print "table, th, td {\n    border: 1px solid black;\n    border-collapse: collapse;\n}\n", if $html;
 	print "th, td {\n    text-align: left;\n}\n", if $html;
@@ -368,7 +381,7 @@ sub print_tables {
 
     if ($et{$yp}) {
 	%eagles = %{$et{$yp}};
-	print "<b>Eagle Table: $yp</b></br>\n", if $html;
+	print "<b>Eagle Table: $yp</b>", if $html;
 	print "<head>\n<style>\n", if $html;
 	print "table, th, td {\n    border: 1px solid black;\n    border-collapse: collapse;\n}\n", if $html;
 	print "th, td {\n    text-align: left;\n}\n", if $html;
