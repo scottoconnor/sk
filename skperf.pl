@@ -124,8 +124,9 @@ if ($vhc) {
     }
 
     foreach $pn (sort { $p{$a}{avediff} <=> $p{$b}{avediff} } (keys(%p))) {
-	if ($p{$pn}{total_strokes} == 0 || (($p{$pn}{team} eq "Sub") && ($include_subs == 0))) {
-	    next;
+	if ($p{$pn}{total_strokes} == 0 || $p{$pn}{avediff} == 0 ||
+	    (($p{$pn}{team} eq "Sub") && ($include_subs == 0))) {
+		next;
 	}
 	printf("%-25s %-17s: Ave = %.2f \(total rounds %d\)\n", $p{$pn}{team},
 	    $pn, $p{$pn}{avediff}, $p{$pn}{total_rounds});
@@ -418,7 +419,7 @@ sub print_player_stats {
 	# Not all players play each year, so skip those that don't have posted scores.
 	#
 	if ($p{$x}{total_strokes} == 0) {
-		next;
+	    next;
 	}
 
 	print "$x\n\n";
@@ -456,15 +457,13 @@ sub print_player_stats {
 		printf("Hole %d (par %d): Total shots: %3d  ", ($h + $offset), $c{$sc}->{$h}, $p{$x}{$sc}{$h}{shots});
 
 		if ($c{$sc}->{$h} > 3) {
-		    printf("ave=%.2f, %.2f vs. par, E: %d\n", ($p{$x}{$sc}{$h}{shots} / $p{$x}{$sc}{xplayed}),
-			(($p{$x}{$sc}{$h}{shots} / $p{$x}{$sc}{xplayed}) - $c{$sc}->{$h}),
-			    $p{$x}{$sc}{$h}{e} ? $p{$x}{$sc}{$h}{e} : 0);
+		    printf("ave=%.2f\n  Eagles=%d, ", ($p{$x}{$sc}{$h}{shots} / $p{$x}{$sc}{xplayed}),
+			$p{$x}{$sc}{$h}{e} ? $p{$x}{$sc}{$h}{e} : 0);
 		} elsif ($c{$sc}->{$h} == 3) {
-		    printf("ave=%.2f, %.2f vs. par", ($p{$x}{$sc}{$h}{shots} / $p{$x}{$sc}{xplayed}),
-			(($p{$x}{$sc}{$h}{shots} / $p{$x}{$sc}{xplayed}) - $c{$sc}->{$h}));
-		    printf(" H: %d\n", $p{$x}{$sc}{$h}{e} ? $p{$x}{$sc}{$h}{e} : 0);
+		    printf("ave=%.2f\n  Hole-in-Ones=%d, ", ($p{$x}{$sc}{$h}{shots} / $p{$x}{$sc}{xplayed}),
+			$p{$x}{$sc}{$h}{e} ? $p{$x}{$sc}{$h}{e} : 0);
 		}
-		printf("    Birdies=%d, Pars=%d, Bogies=%d, Double Bogies=%d, Others=%d\n\n", $p{$x}{$sc}{$h}{b},
+		printf("Birdies=%d, Pars=%d, Bogies=%d, Double Bogies=%d, Others=%d\n\n", $p{$x}{$sc}{$h}{b},
 		    $p{$x}{$sc}{$h}{p}, $p{$x}{$sc}{$h}{bo}, $p{$x}{$sc}{$h}{db}, $p{$x}{$sc}{$h}{o});
 	    }
 	    print "\n";
@@ -534,7 +533,7 @@ sub get_player_scores {
 		print "$_\n", if $debug;
 
 		if (defined($p{$pn}{$cy}{$cw})) {
-		    print "Possible double score: $pn: $date\n";
+		    print "Possible double score: $pn: Week=$cw, Date=$date\n";
 		    next;
 		}
 
