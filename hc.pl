@@ -74,13 +74,11 @@ sub gen_hc {
 	close(FD);
 
 	chomp($scores[0]);
-	($first, $last, $team) = split(/:/, $scores[0]);
+	($pn, $team, $active) = split(/:/, $scores[0]);
 
-	if (($team eq "Sub") && ($include_subs == 0)) {
-		return;
+	if ((($team eq "Sub") && ($include_subs == 0)) || ($active == 0)) {
+	    return;
 	}
-
-	$pn = $first . " " . $last;
 
 	$hc{$pn}{team} = $team;
 
@@ -92,7 +90,7 @@ sub gen_hc {
 	# If player has less than 5 scores, a handicap can not be generated.
 	#
 	if ($num < 5) {
-		print "$first $last: Only $num scores, can not generate handicap\n", if $debug;
+		print "$pn: Only $num scores, can not generate handicap\n", if $debug;
 		return;
 	}
 
@@ -146,9 +144,9 @@ sub gen_hc {
 	$hi *= 0.90;  # 90% is used for match play
 	$hi = (int($hi * 10) / 10);
 
-	if ($first eq "Scott") {
+	#if ($pn eq "Scott O'Connor") {
 		#$hi = 5.9;
-	}
+	#}
 
 	$sf = int(($hi * $c{SF}->{slope} / 113) + 0.5);
 	$sb = int(($hi * $c{SB}->{slope} / 113) + 0.5);
@@ -157,5 +155,5 @@ sub gen_hc {
 
 	$hc{$pn}{hi} = $hi;
 	$hc{$pn}{hc} = $sf;
-	printf ("%-8s %-10s - %5.1fN  SF=%-3d SB=%-3d NF=%-3d NB=%-3d\n", $first, $last, $hi, $sf, $sb, $nf, $nb), if $debug;
+	printf ("%-17s - %5.1fN  SF=%-3d SB=%-3d NF=%-3d NB=%-3d\n", $pn, $hi, $sf, $sb, $nf, $nb), if $debug;
 }

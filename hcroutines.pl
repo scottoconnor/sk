@@ -58,7 +58,7 @@ sub gen_hc_trend {
 	close(FD);
 
 	chomp($scores[0]);
-	($first, $last, $team) = split(/:/, $scores[0]);
+	($pn, $team, $active) = split(/:/, $scores[0]);
 
 	shift @scores;
 
@@ -68,11 +68,9 @@ sub gen_hc_trend {
 	# If player has less than 5 scores, do not generate a handicap trend.
 	#
 	if ($num < 5) {
-		print "$first $last: Only $num scores, not enough to generate a trend.\n", if $debug;
+		print "$pn: Only $num scores, not enough to generate a trend.\n", if $debug;
 		return;
 	}
-
-	$pn = $first . " " . $last;
 
 	$first_score = 0; $last_score = 5;
 
@@ -127,10 +125,10 @@ sub gen_hc_trend {
 
 		$sf = int(($hi * $c{SF}->{slope} / 113) + 0.5);
 
-		printf ("%-9s:  %-10s %-8s - %5.1fN  HC=%-3d\n", $date, $last, $first, $hi, $sf), if $debug;
 		printf ("%s:%s:%.1f:%d\n", $pn, $date, $hi, $sf), if $output;
-		#printf ("%-9s:  %5.1fN  HC=%-3d\n", $date, $hi, $sf), if ($output == 0);
+
 		$p{$pn}{$date}{hc} = $sf, if ($output == 0);
+
 		if ($last_score < 20) {
 			$last_score++;
 			$first_score = 0;

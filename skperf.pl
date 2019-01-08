@@ -509,15 +509,15 @@ sub get_player_scores {
     $name = <FD>;
     chop($name);
 
-    ($first, $last, $team) = split(/:/, $name);
+    ($pn, $team, $active) = split(/:/, $name);
 
     if ($team eq "Sub" && ($include_subs == 0)) {
 	close (FD);
 	return;
     }
 
-    $pn = $first . " " . $last;
     $p{$pn}{team} = $team;
+    $p{$pn}{active} = $active;
 
     while (<FD>) {
 
