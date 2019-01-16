@@ -42,7 +42,9 @@ sub convert_player {
     if (defined($golfers{$fn})) {
 	print NFD "$first $last:$golfers{$fn}->{team}:$golfers{$fn}->{active}\n";
     } else {
-	print NFD "$first $last:Sub\n";
+	close(FD);
+	close(NFD); 
+	die "Golfer unknown: might need to run build-golfers.pl\n";
     }
 
     $line = <FD>;

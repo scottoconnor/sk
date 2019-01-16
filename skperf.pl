@@ -25,6 +25,7 @@ $player_stats = 0;
 $tables = 0;
 $output = 0;
 $html = 0;
+$others = 0;
 
 if ($cur_month < 4) {
     $start_year = $end_year = ((1900 + (localtime)[5]) - 1);
@@ -43,6 +44,7 @@ GetOptions (
 	"t" =>  \$tables,
 	"g" =>  \$top_gun,
 	"h" =>  \$html,
+	"o" => \$others,
 	"d" => \$debug)
 or die("Error in command line arguments\n");
 
@@ -52,7 +54,7 @@ if ($all_time) {
 
 $cy = $start_year;
 
-if ($stats || $tables || $top_gun || $vhc) {
+if ($stats || $tables || $top_gun || $vhc || $others) {
 	$include_subs = 1;
 }
 
@@ -73,7 +75,7 @@ if ($vhc) {
 opendir($dh, "./golfers") || die "Can't open \"golfers\" directory.";
 
 while (readdir $dh) {
-    if ($_ =~ /(1\d{3}$)/) {
+    if ($_ =~ /(\d{4}$)/) {
 	push @global_golfer_list, $_;
     }
 }
@@ -180,6 +182,18 @@ foreach $yp (reverse sort keys %y) {
     }
     if ($tables) {
 	&print_tables($yp);
+    }
+}
+
+if ($others) {
+
+    my @courses = ("SF", "SB", "NF", "NB");
+
+    for ($par = 3; $par < 6; $par++) {
+	print "Par $par\'s:\n";
+	for ($xx = 6; $xx < 15; $xx++) {
+	    print "    The score of $xx was shot $t{$par}{$xx} times\n", if defined($t{$par}{$xx});
+	}
     }
 }
 
@@ -566,6 +580,7 @@ sub get_player_scores {
 			$p{$pn}{to}++;
 			$p{$pn}{$course}{$h}{o}++;
 			$y{$cy}{total_other}++;
+			$t{$c{$course}->{$h}}{$hole}++;
 		    };
 		    if (($c{$course}->{$h} - $hole) == -2) {
 			$p{$pn}{tdb}++;
