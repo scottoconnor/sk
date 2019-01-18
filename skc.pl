@@ -48,23 +48,47 @@ while ($fna = shift @golfer_list) {
 	while (<FD>) {
 		if ($_ =~ /South Front/) {
 			($par, $slope, $course) = split(/,/);
-			$par = $c{SF}{par};
-			$slope = $c{SF}{slope};
+			if ($par != $c{SF}{par}) {
+				print "$fna:  fixing SF par.\n";
+				$par = $c{SF}{par};
+			}
+			if ($slope != $c{SF}{slope}) {
+				print "$fna:  fixing SF slope.\n";
+				$slope = $c{SF}{slope};
+			}
 			print OFD "$par,$slope,$course";
 		} elsif ($_ =~ /South Back/) {
 			($par, $slope, $course) = split(/,/);
-			$par = $c{SB}{par};
-			$slope = $c{SB}{slope};
+			if ($par != $c{SB}{par}) {
+				print "$fna:  fixing SB par.\n";
+				$par = $c{SB}{par};
+			}
+			if ($slope != $c{SB}{slope}) {
+				print "$fna:  fixing SB slope.\n";
+				$slope = $c{SB}{slope};
+			}
 			print OFD "$par,$slope,$course";
 		} elsif ($_ =~ /North Front/) {
 			($par, $slope, $course) = split(/,/);
-			$par = $c{NF}{par};
-			$slope = $c{NF}{slope};
+			if ($par != $c{NF}{par}) {
+				print "$fna:  fixing NF par.\n";
+				$par = $c{NF}{par};
+			}
+			if ($slope != $c{NF}{slope}) {
+				print "$fna:  fixing NF slope.\n";
+				$slope = $c{NF}{slope};
+			}
 			print OFD "$par,$slope,$course";
 		} elsif ($_ =~ /North Back/) {
 			($par, $slope, $course) = split(/,/);
-			$par = $c{NB}{par};
-			$slope = $c{NB}{slope};
+			if ($par != $c{NB}{par}) {
+				print "$fna:  fixing NB par.\n";
+				$par = $c{NB}{par};
+			}
+			if ($slope != $c{NB}{slope}) {
+				print "$fna:  fixing NB slope.\n";
+				$slope = $c{NB}{slope};
+			}
 			print OFD "$par,$slope,$course";
 		} else {
 			print OFD;
