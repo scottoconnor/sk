@@ -190,8 +190,13 @@ if ($others) {
     for ($par = 3; $par < 6; $par++) {
 	print "On par $par\'s:\n";
 	for ($xx = 6; $xx < 15; $xx++) {
-	    print "    The score of $xx was shot $t{$par}{$xx} times\n", if defined($t{$par}{$xx});
+	    if ($t{$par}{$xx} == 1) {
+		print "    The score of $xx was shot $t{$par}{$xx} time.\n", if defined($t{$par}{$xx});
+	    } else {
+		print "    The score of $xx was shot $t{$par}{$xx} times.\n", if defined($t{$par}{$xx});
+	    }
 	}
+	print "\n";
     }
 }
 
