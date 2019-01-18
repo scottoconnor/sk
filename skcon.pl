@@ -37,10 +37,13 @@ sub convert_player {
     $line = <FD>;
 
     $line = <FD>;
-    ($last, $first) = $line =~ /\042(.+)\054\s(.+)\042/;
+    $line =~ s/"//g;
+    ($last, $first) = split(/,/, $line);
+    $last =~ s/^\s+|\s+$//g;
+    $first =~ s/^\s+|\s+$//g;
 
     if (defined($golfers{$fn})) {
-	print NFD "$first $last:$golfers{$fn}->{team}:$golfers{$fn}->{active}\n";
+	print NFD "$first:$last:$golfers{$fn}->{team}:$golfers{$fn}->{active}\n";
     } else {
 	close(FD);
 	close(NFD); 

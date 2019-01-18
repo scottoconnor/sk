@@ -52,8 +52,6 @@ if ($all_time) {
 	$start_year = 1997;
 }
 
-$cy = $start_year;
-
 if ($stats || $tables || $top_gun || $vhc || $others) {
 	$include_subs = 1;
 }
@@ -91,7 +89,7 @@ closedir ($dh);
 #
 # After we get that, the other routines can use that data to generate stats.
 #
-for (; ($cy <= $end_year); $cy++) {
+for ($cy = $start_year; $cy <= $end_year; $cy++) {
 	@golfer_list = @global_golfer_list;
 	while ($fna = shift @golfer_list) {
 		&get_player_scores("golfers/$fna", $cy);
@@ -138,7 +136,7 @@ if ($vhc) {
 if ($top_gun) {
     my $has_rounds = 0;
 
-    print "<b>30's club:</b>", if $html;
+    print "<b>30's Club:</b>", if $html;
     print "<head>\n<style>", if $html;
     print "table, th, td {\n    border: 1px solid black;\n    border-collapse: collapse;\n}\n", if $html;
     print "th, td {\n    text-align: left;\n}\n", if $html;
@@ -190,7 +188,7 @@ if ($others) {
     my @courses = ("SF", "SB", "NF", "NB");
 
     for ($par = 3; $par < 6; $par++) {
-	print "Par $par\'s:\n";
+	print "On par $par\'s:\n";
 	for ($xx = 6; $xx < 15; $xx++) {
 	    print "    The score of $xx was shot $t{$par}{$xx} times\n", if defined($t{$par}{$xx});
 	}
@@ -523,7 +521,8 @@ sub get_player_scores {
     $name = <FD>;
     chop($name);
 
-    ($pn, $team, $active) = split(/:/, $name);
+    ($first, $last, $team, $active) = split(/:/, $name);
+    $pn = $first . " " . $last;
 
     if ($team eq "Sub" && ($include_subs == 0)) {
 	close (FD);

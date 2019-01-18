@@ -4,6 +4,7 @@
 #
 
 require "courses.pl";
+require "tnfb.pl";
 require "hcroutines.pl";
 
 use Getopt::Long;
@@ -11,12 +12,19 @@ use Getopt::Long;
 $debug = 0;
 $include_subs = 1;
 $trend = 0;
+$convert = 0;
 $output = 1;
 
 GetOptions (
         "t" =>  \$trend,
+        "c" =>  \$convert,
         "d" => \$debug)
 or die("Error in command line arguments\n");
+
+if ($convert) {
+    &con_skhist;
+    exit;
+}
 
 #
 # Only used files processed by skcon.pl (ScoreKeeper Convert).
@@ -41,24 +49,25 @@ while ($fna = shift @golfer_list) {
 }
 
 if ($trend == 0) {
-    $cnt = 1;
-    foreach $p (sort { $hc{$a}{team} cmp $hc{$b}{team} } (keys(%hc))) {
-	if ($hc{$p}{team} eq "Sub") {
+    printf("\n");
+    foreach $team (sort keys(%t)) {
+	if ($team eq "Sub") {
 		next;
 	}
-	printf("%-25s: %-17s: %4.1fN / %d\n", $hc{$p}{team}, $p, $hc{$p}{hi}, $hc{$p}{hc});
-	$cnt++;
-	print "\n", if (($cnt % 2) && ($cnt < 32));
+	printf("%s\n", $team);
+	printf("%-17s %4.1fN / %d\n", $t{$team}{1}, $hc{$t{$team}{1}}{hi}, $hc{$t{$team}{1}}{hc});
+	printf("%-17s %4.1fN / %d\n", $t{$team}{2}, $hc{$t{$team}{2}}{hi}, $hc{$t{$team}{2}}{hc});
+	print "\n";
     }
 
     print "\014\n";
-    print "Subs\n";
+    print "Sub\n";
     foreach $p (sort keys %hc) {
 	if ($hc{$p}{team} ne "Sub") {
 		next;
 	}
 	if (defined($hc{$p}{hc})) {
-		printf("%-17s: %4.1fN / %d\n", $p, $hc{$p}{hi}, $hc{$p}{hc});
+		printf("%-17s %4.1fN / %d\n", $p, $hc{$p}{hi}, $hc{$p}{hc});
 	}
     }
 }
@@ -74,9 +83,17 @@ sub gen_hc {
 	close(FD);
 
 	chomp($scores[0]);
-	($pn, $team, $active) = split(/:/, $scores[0]);
+	($first, $last, $team, $active) = split(/:/, $scores[0]);
+	$pn = $last . ", " . $first;
 
-	if ((($team eq "Sub") && ($include_subs == 0)) || ($active == 0)) {
+	if ($pn eq "Elkort, Mike") {
+		#$debug = 1;
+	} else {
+		$debug = 0;
+	}
+
+	#if ((($team eq "Sub") && ($include_subs == 0)) || ($active == 0)) {
+	if (($team eq "Sub") && ($include_subs == 0)) {
 	    return;
 	}
 
@@ -156,4 +173,62 @@ sub gen_hc {
 	$hc{$pn}{hi} = $hi;
 	$hc{$pn}{hc} = $sf;
 	printf ("%-17s - %5.1fN  SF=%-3d SB=%-3d NF=%-3d NB=%-3d\n", $pn, $hi, $sf, $sb, $nf, $nb), if $debug;
+}
+
+sub con_skhist {
+
+    open (FD, "skhist.txt");
+
+    while (<FD>) {
+
+	if ($_ =~ /^All\s+Hand/) {
+	    ($date) = $_ =~ /\: (\d+\055\d+\055\d+)/;
+	    #print "$date\n";
+	}
+
+	if ($_ =~ /^\s+/) {
+	    next;
+	}
+
+	if ($_ =~ /^TNFB/) {
+	    $team = "TNFB"; 
+	    $_ =~ s/^\s+|\s+$//g;
+	    print "\n$_\n";
+	}
+
+	if ($team eq "TNFB") {
+	    if (($last, $first, $index, $hc) = $_ =~ /^(\S+)\054\s*(\S+)\s+(\d+\056\d+)N\s+\/\s+(\d+)/) {
+		$pn = $last . ", " . $first;
+		printf("%-17s %4.1fN / %d\n", $pn, $index, $hc);
+	    }
+	}
+    }
+
+    seek(FD, 0, SEEK_SET);
+
+    while (<FD>) {
+
+	if ($_ =~ /^\s+/) {
+	    next;
+	}
+
+	if ($_ =~ /Sub/) {
+	    $team = "Sub";
+	    print "\n\014\n";
+	    $_ =~ s/^\s+|\s+$//g;
+	    print "$_\n";
+	}
+
+	if ($_ =~ /^TNFB/) {
+	    $team = "TNFB";
+	}
+
+	if ($team eq "Sub") {
+	    if (($last, $first, $index, $hc) = $_ =~ /^(\S+)\054\s*(\S+)\s+(\d+\056\d+)N\s+\/\s+(\d+)/) {
+		$pn = $last . ", " . $first;
+		printf("%-17s %4.1fN / %d\n", $pn, $index, $hc);
+	    }
+	}
+    }
+    close(FD);
 }
