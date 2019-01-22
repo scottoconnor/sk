@@ -519,6 +519,7 @@ sub get_player_scores {
 
     my($fn, $cy) = @_;
     my($cw);
+    my ($year, $month, $day);
 
     open(FD, $fn);
 
@@ -539,8 +540,6 @@ sub get_player_scores {
 
     while (<FD>) {
 
-	my ($year, $month, $day);
-
 	chop;
 
 	$num = ($course, $par, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $n) = split(/:/, $_);
@@ -552,15 +551,20 @@ sub get_player_scores {
 		next;
 	}
 
-	@score = ($o, $t, $th, $f, $fv, $s, $sv, $e, $n);
-
 	#
 	# Get the year, month and day of the current score.
 	#
 	($year, $month, $day) = split(/-/, $date);
 
+	if ($cy != $year) {
+	    next;
+	}
+
 	for ($cw = $start_week; $cw <= $end_week; $cw++) {
-	    if (($cy == $year) && ($dates{$cy}{$cw} eq $date)) {
+
+	    if ($dates{$cy}{$cw} eq $date) {
+
+		@score = ($o, $t, $th, $f, $fv, $s, $sv, $e, $n);
 
 		print "$_\n", if $debug;
 
