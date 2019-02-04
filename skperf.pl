@@ -1,12 +1,13 @@
 #! /usr/bin/perl
 #
-# Copyright (c) 2018, 2019 Scott O'Connor
+# Copyright (c) 2018, 2019, Scott O'Connor
 #
 
 require 'tnfb_years.pl';
 require 'courses.pl';
 require 'hcroutines.pl';
 
+use Time::HiRes qw(gettimeofday);
 use Getopt::Long;
 
 #
@@ -26,8 +27,13 @@ $tables = 0;
 $output = 0;
 $html = 0;
 $others = 0;
+$hires = 0;
 
-if ($cur_month < 4) {
+if ($#ARGV < 0) {
+    exit;
+}
+
+if ($cur_month < 5) {
     $start_year = $end_year = ((1900 + (localtime)[5]) - 1);
 }
 
@@ -45,6 +51,7 @@ GetOptions (
 	"g" =>  \$top_gun,
 	"h" =>  \$html,
 	"o" => \$others,
+	"r" => \$hires,
 	"d" => \$debug)
 or die("Error in command line arguments\n");
 
@@ -73,7 +80,7 @@ if ($vhc) {
 opendir($dh, "./golfers") || die "Can't open \"golfers\" directory.";
 
 while (readdir $dh) {
-    if ($_ =~ /(\d{4}$)/) {
+    if ($_ =~ /(1\d{3}$)/) {
 	push @global_golfer_list, $_;
     }
 }
@@ -91,9 +98,13 @@ closedir ($dh);
 #
 for ($cy = $start_year; $cy <= $end_year; $cy++) {
 	@golfer_list = @global_golfer_list;
+	$t0 = gettimeofday(), if $hires;
 	while ($fna = shift @golfer_list) {
 		&get_player_scores("golfers/$fna", $cy);
 	}
+	$t1 = gettimeofday(), if $hires;
+	$total_time += ($t1 - $t0), if $hires;
+	printf("Year %d took %.8f\n", $cy, ($t1 - $t0)), if $hires;
 }
 
 #
@@ -120,6 +131,7 @@ if ($vhc) {
 	    }
 	}
 	$p{$pn}{avediff} = ($p{$pn}{diff} / $p{$pn}{total_rounds}), if ($p{$pn}{total_rounds} > 0);
+	$te{$p{$pn}{team}} += $p{$pn}{avediff};
 	print "\n", if ($p{$pn}{total_rounds} > 0);
     }
 
@@ -130,6 +142,14 @@ if ($vhc) {
 	}
 	printf("%-25s %-17s: Ave = %.2f \(total rounds %d\)\n", $p{$pn}{team},
 	    $pn, $p{$pn}{avediff}, $p{$pn}{total_rounds});
+    }
+
+    print "\n";
+    foreach $tt (sort { $te{$a} <=> $te{$b} } (keys (%te))) {
+	if ($tt eq "Sub") {
+	    next;
+	}
+	printf("%-25s: %.2f\n", $tt, $te{$tt});
     }
 }
 
@@ -190,10 +210,10 @@ if ($others) {
     for ($par = 3; $par < 6; $par++) {
 	print "On par $par\'s:\n";
 	for ($xx = 6; $xx < 15; $xx++) {
-	    if ($t{$par}{$xx} == 1) {
-		print "    The score of $xx was shot $t{$par}{$xx} time.\n", if defined($t{$par}{$xx});
+	    if ($to{$par}{$xx} == 1) {
+		print "    The score of $xx was shot $to{$par}{$xx} time.\n", if defined($to{$par}{$xx});
 	    } else {
-		print "    The score of $xx was shot $t{$par}{$xx} times.\n", if defined($t{$par}{$xx});
+		print "    The score of $xx was shot $to{$par}{$xx} times.\n", if defined($to{$par}{$xx});
 	    }
 	}
 	print "\n";
@@ -503,6 +523,8 @@ sub print_player_stats {
     }
 }
 
+print "Total time = $total_time\n", if $hires;
+
 sub get_player_trend {
 
     open(TD, "trend"), or die "Can't open file trend.\n";
@@ -588,7 +610,7 @@ sub get_player_scores {
 			$p{$pn}{to}++;
 			$p{$pn}{$course}{$h}{o}++;
 			$y{$cy}{total_other}++;
-			$t{$c{$course}->{$h}}{$hole}++;
+			$to{$c{$course}->{$h}}{$hole}++;
 		    };
 		    if (($c{$course}->{$h} - $hole) == -2) {
 			$p{$pn}{tdb}++;
@@ -616,7 +638,7 @@ sub get_player_scores {
 			$p{$pn}{te}++;
 			$y{$cy}{total_eagles}++;
 			$et{$cy}{$pn} += 1;
-		    };
+		    }
 		}
 	    }
 	}

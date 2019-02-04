@@ -32,13 +32,17 @@ if ($convert) {
 opendir($dh, "./golfers") || die "Can't open \"golfers\" directory.";
 
 while (readdir $dh) {
-    if ($_ =~ /(\d{4}$)/) {
+    if ($_ =~ /(1\d{3}$)/) {
 	push @golfer_list, $_;
     }
 }
 closedir ($dh);
 
 @golfer_list = sort @golfer_list;
+
+if (@golfer_list == 0) {
+    exit;
+}
 
 while ($fna = shift @golfer_list) {
 	if ($trend) {
@@ -92,8 +96,7 @@ sub gen_hc {
 		$debug = 0;
 	}
 
-	#if ((($team eq "Sub") && ($include_subs == 0)) || ($active == 0)) {
-	if (($team eq "Sub") && ($include_subs == 0)) {
+	if ((($team eq "Sub") && ($include_subs == 0)) || ($active == 0)) {
 	    return;
 	}
 
