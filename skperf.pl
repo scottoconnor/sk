@@ -28,6 +28,7 @@ $output = 0;
 $html = 0;
 $others = 0;
 $hires = 0;
+$hardest = 0;
 
 if ($#ARGV < 0) {
     exit;
@@ -52,15 +53,21 @@ GetOptions (
 	"h" =>  \$html,
 	"o" => \$others,
 	"r" => \$hires,
+	"ha" => \$hardest,
 	"d" => \$debug)
 or die("Error in command line arguments\n");
 
 if ($all_time) {
-	$start_year = 1997;
+    $start_year = 1997;
 }
 
 if ($stats || $tables || $top_gun || $vhc || $others) {
-	$include_subs = 1;
+    $include_subs = 1;
+}
+
+if ($hardest) {
+    $include_subs = 1;
+    $start_year = 2003;
 }
 
 undef(%y);
@@ -523,6 +530,53 @@ sub print_player_stats {
     }
 }
 
+if ($hardest) {
+
+    foreach $hp (keys %difficult) {
+	$difficult{$hp}{ave} = ($difficult{$hp}{score} / $difficult{$hp}{xplayed});
+	$offset = 0;
+	if ($hp > 0 && $hp < 10) {
+	    $course = 'SF';
+	    $index = $hp;
+	} elsif ($hp > 9 && $hp < 19) {
+	    $course = 'SB';
+	    $index = ($hp - 9);
+	} elsif ($hp > 18 && $hp < 28) {
+	    $course = 'NF';
+	    $offset = 18;
+	    $index = ($hp - 18);
+	} else {
+	    $course = 'NB';
+	    $offset = 18;
+	    $index = ($hp - 27);
+	}
+	$ph = ($hp - $offset);
+	$difficult{$hp}{ave} -= $c{$course}->{$index};
+    }
+
+    foreach $hp (reverse sort { $difficult{$a}{ave} <=> $difficult{$b}{ave} } (keys(%difficult))) {
+	$offset = 0;
+	if ($hp > 0 && $hp < 10) {
+	    $course = 'SF';
+	    $index = $hp;
+	} elsif ($hp > 9 && $hp < 19) {
+	    $course = 'SB';
+	    $index = ($hp - 9);
+	} elsif ($hp > 18 && $hp < 28) {
+	    $course = 'NF';
+	    $offset = 18;
+	    $index = ($hp - 18);
+	} else {
+	    $course = 'NB';
+	    $offset = 18;
+	    $index = ($hp - 27);
+	}
+	$ph = ($hp - $offset);
+	printf("%-11s hole %2d (par %d) average over par = %.2f (played %d times)\n", $c{$course}->{name}, $ph,
+	    $c{$course}->{$index}, $difficult{$hp}{ave}, $difficult{$hp}{xplayed});
+    }
+}
+
 print "Total time = $total_time\n", if $hires;
 
 sub get_player_trend {
@@ -605,6 +659,12 @@ sub get_player_scores {
 
 		for ($h = 1; $h < 10; $h++) {
 		    $hole = abs(shift @score);
+
+		    $md = ($h + (($course eq 'SF') ? 0 : ($course eq 'SB') ? 9 :
+			($course eq 'NF') ? 18 : ($course eq 'NB') ? 27 : 0)), if $hardest;
+		    $difficult{$md}{score} += $hole, if $hardest;
+		    $difficult{$md}{xplayed}++, if $hardest;
+
 		    $p{$pn}{$course}{$h}{shots} += $hole;
 		    if (($c{$course}->{$h} - $hole) < -2) {
 			$p{$pn}{to}++;
