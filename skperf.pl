@@ -57,7 +57,7 @@ GetOptions (
 	"d" => \$debug)
 or die("Error in command line arguments\n");
 
-if ($all_time) {
+if ($all_time || ($start_year < 1997)) {
     $start_year = 1997;
 }
 
@@ -67,7 +67,6 @@ if ($stats || $tables || $top_gun || $vhc || $others) {
 
 if ($hardest) {
     $include_subs = 1;
-    $start_year = 2003;
 }
 
 undef(%y);
@@ -111,7 +110,7 @@ for ($cy = $start_year; $cy <= $end_year; $cy++) {
 	}
 	$t1 = gettimeofday(), if $hires;
 	$total_time += ($t1 - $t0), if $hires;
-	printf("Year %d took %.8f\n", $cy, ($t1 - $t0)), if $hires;
+	printf("Year %d took %.8f\n", $cy, ($t1 - $t0)), if $debug;
 }
 
 #
@@ -577,7 +576,7 @@ if ($hardest) {
     }
 }
 
-print "Total time = $total_time\n", if $hires;
+printf("Total time = %.2f seconds - processed %d scores\n", $total_time, $totals{total_scores}), if $hires;
 
 sub get_player_trend {
 
@@ -651,6 +650,7 @@ sub get_player_scores {
 
 		$y{$cy}{total_strokes} += $shot;
 		$y{$cy}{total_scores}++;
+		$totals{total_scores}++;
 
 		$p{$pn}{total_rounds}++;
 		$p{$pn}{total_strokes} += $shot;

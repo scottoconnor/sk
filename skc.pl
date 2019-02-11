@@ -97,6 +97,6 @@ while ($fna = shift @golfer_list) {
 	
 	close (FD);
 	close (OFD);
-	unlink $fna;
-	rename ($ofna, $fna);
+	#unlink $fna;
+	#rename ($ofna, $fna);
 }
