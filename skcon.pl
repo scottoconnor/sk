@@ -9,7 +9,7 @@ require 'courses.pl';
 opendir($dh, "./golfers") || die "Can't open \"golfers\" directory.";
 
 while (readdir $dh) {
-    if ($_ =~ /\d+\056ID/) {
+    if ($_ =~ /^\d+\056ID/) {
 	push @golfer_list, $_;
     }
 }
@@ -59,9 +59,6 @@ sub convert_player {
     $line = <FD>;
 
     while ($line = <FD>) {
-
-	undef $course;
-	$shot = 0;
 
 	if ($line =~ /^\d{6,7}\054/) {
 	    print "$line", if $debug;

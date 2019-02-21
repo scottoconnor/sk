@@ -164,8 +164,8 @@ sub gen_hc {
 	$hi *= 0.90;  # 90% is used for match play
 	$hi = (int($hi * 10) / 10);
 
-	#if ($pn eq "Scott O'Connor") {
-		#$hi = 5.9;
+	#if ($pn eq "O'Connor, Scott") {
+		#$hi = 1.9;
 	#}
 
 	$sf = int(($hi * $c{SF}->{slope} / 113) + 0.5);
@@ -180,7 +180,7 @@ sub gen_hc {
 
 sub con_skhist {
 
-    open (FD, "skhist.txt");
+    open (FD, "skhist.txt") || die "skhist.txt does not exist.\n";
 
     while (<FD>) {
 
