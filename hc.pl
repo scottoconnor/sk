@@ -46,9 +46,9 @@ if (@golfer_list == 0) {
 
 while ($fna = shift @golfer_list) {
 	if ($trend) {
-		&gen_hc_trend("golfers/$fna", $output);
+		gen_hc_trend("golfers/$fna", $output);
 	} else {
-		&gen_hc("golfers/$fna");
+		gen_hc("golfers/$fna");
 	}
 }
 

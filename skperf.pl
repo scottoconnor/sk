@@ -76,7 +76,7 @@ undef(%p);
 # Load the players handcaip trend in case they are needed.
 #
 if ($vhc) {
-	&get_player_trend();
+	get_player_trend();
 }
 
 #
@@ -106,7 +106,7 @@ for ($cy = $start_year; $cy <= $end_year; $cy++) {
 	@golfer_list = @global_golfer_list;
 	$t0 = gettimeofday(), if $hires;
 	while ($fna = shift @golfer_list) {
-		&get_player_scores("golfers/$fna", $cy);
+		get_player_scores("golfers/$fna", $cy);
 	}
 	$t1 = gettimeofday(), if $hires;
 	$total_time += ($t1 - $t0), if $hires;
@@ -202,10 +202,10 @@ if ($top_gun) {
 #
 foreach $yp (reverse sort keys %y) {
     if ($stats) {
-	&print_stats($yp);
+	print_stats($yp);
     }
     if ($tables) {
-	&print_tables($yp);
+	print_tables($yp);
     }
 }
 
@@ -230,7 +230,7 @@ if ($others) {
 # Print out player's hole-by-hole stats if requested.
 #
 if ($player_stats) {
-	&print_player_stats;
+	print_player_stats;
 }
 
 if ($all_time) {

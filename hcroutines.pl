@@ -77,7 +77,7 @@ sub gen_hc_trend {
 	#
 	# Find out how many scores to use.
 	#
-	$use = &nscores($num);
+	$use = nscores($num);
 
 	while ($last_score <= $num) {
 		$y = 0; undef @n;
