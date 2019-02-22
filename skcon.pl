@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 #
-# Copyright (c) 2018 Scott O'Connor
+# Copyright (c) 2018, 2019 Scott O'Connor
 #
 
 require 'tnfb.pl';
@@ -20,14 +20,13 @@ closedir ($dh);
 while ($fna = shift @golfer_list) {
     ($cnt) = $fna =~ /(\d+)\056ID/;
     $cnt += 1000;
-    &convert_player("golfers/$fna", "golfers/$cnt");
+    convert_player("golfers/$fna", "golfers/$cnt");
 }
 
 sub convert_player {
 
-    my($fn, $fnnew) = @_;
-
-    $debug = 0;
+    my($fn) = $_[0];
+    my($fnnew) = $_[1];
 
     open(FD, $fn);
     open(NFD, ">", $fnnew); 
@@ -61,9 +60,10 @@ sub convert_player {
     while ($line = <FD>) {
 
 	if ($line =~ /^\d{6,7}\054/) {
-	    print "$line", if $debug;
 	    $num = @fields = split(',', $line);
 	    if ($num != 8) {
+		close(FD);
+		close(NFD); 
 		die "Error on getting date, shot, post! line: $line\n";
 	    }
 	    if ($fields[2] != 0 && $fields[3] != 0) {
@@ -87,13 +87,11 @@ sub convert_player {
 		$year = "19" . $year;
 		$month = abs($month);
 		$day = abs($day);
-		print "Date = $date - $year, $month, $day - $shot - $post\n", if $debug;
 	    } elsif ($line =~ /^1\d{6}/) {
 		($year, $month, $day) = $line =~ /^1(\d\d)(\d\d)(\d\d)/;
 		$year = "20" . $year;
 		$month = abs($month);
 		$day = abs($day);
-		print "Date = $date - $year, $month, $day - $shot - $post\n", if $debug;
 	    } else {
 		print "Can't determine date!\n";
 	    }
@@ -102,7 +100,6 @@ sub convert_player {
 	$line = <FD>;
 
 	($par, $slope, $course) = $line =~ /^(\d\d\056{0,1}\d{0,1})\054(\d{2,3})\054\042(.+)\042/;
-	print "$course: $par $slope\n", if $debug;
 
 	if ($course =~ /Stow\/South Front/) {
 	    $course = 'SF';
