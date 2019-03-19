@@ -67,7 +67,7 @@ sub convert_player {
 		die "Error on getting date, shot, post! line: $line\n";
 	    }
 	    if ($fields[2] != 0 && $fields[3] != 0) {
-		# 18-Hole score, discard.
+		# 18-Hole score.
 		#$line = <FD>;
 		#$line = <FD>;
 		#$line = <FD>;

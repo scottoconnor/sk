@@ -50,10 +50,10 @@ GetOptions (
 	"p" =>  \$player_stats,
 	"t" =>  \$tables,
 	"g" =>  \$top_gun,
-	"h" =>  \$html,
 	"o" => \$others,
-	"r" => \$hires,
 	"ha" => \$hardest,
+	"r" => \$hires,
+	"h" =>  \$html,
 	"d" => \$debug)
 or die("Error in command line arguments\n");
 
@@ -61,11 +61,7 @@ if ($all_time || ($start_year < 1997)) {
     $start_year = 1997;
 }
 
-if ($stats || $tables || $top_gun || $vhc || $others) {
-    $include_subs = 1;
-}
-
-if ($hardest) {
+if ($all_time || $stats || $tables || $top_gun || $vhc || $others || $hardest) {
     $include_subs = 1;
 }
 
@@ -230,7 +226,7 @@ if ($others) {
 # Print out player's hole-by-hole stats if requested.
 #
 if ($player_stats) {
-	print_player_stats;
+    print_player_stats();
 }
 
 if ($all_time) {

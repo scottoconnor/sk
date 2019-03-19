@@ -35,9 +35,8 @@ while ($line = <FD>) {
 
     if ($line =~ /^0|-1,"\d+\056ID/) {
 	$line =~ s/["]//g;
-	$line =~ s/,/:/g;
 
-	@new = split(/:/, $line);
+	@new = split(/,/, $line);
 	$active = ($new[0] + 1);
 	$new[1] =~ s/^\s+|\s+$//g;
 	$new[2] =~ s/^\s+|\s+$//g;
@@ -55,9 +54,8 @@ while ($line = <FD>) {
 
     if ($line =~ /^0|-1,"\d+\056ID/) {
 	$line =~ s/["]//g;
-	$line =~ s/,/:/g;
 
-	@new = split(/:/, $line);
+	@new = split(/,/, $line);
 	$active = ($new[0] + 1);
 	$new[1] =~ s/^\s+|\s+$//g;
 	$new[2] =~ s/^\s+|\s+$//g;
