@@ -118,25 +118,16 @@ sub convert_player {
 	    $par = $c{$course}{par};
 	    $slope = $c{$course}{slope};
 	} else {
+	    # non-league or away course.
 	    $course = 'NL';
-	    #$line = <FD>;
-	    #$line = <FD>;
-	    #$line = <FD>;
-	    #$line = <FD>;
-	    #$line = <FD>;
-	    #next;
 	}
 
 	$line = <FD>;
 	$line = <FD>;
 
-	$stlen = length($line);
-	$stlen -= 2;
-	$line = substr($line, 0, $stlen);
-
 	$check_shot = 0;
 
-	if ($line =~ /^\d{9}\0540/) {
+	if ($line =~ /^\d{9}\054/) {
 
 	    #
 	    # A 9,0 format is score where each hole has a single digit score.
@@ -159,9 +150,9 @@ sub convert_player {
 	    print NFD "\n";
 
 	    if ($check_shot != $shot) {
-		print "9: $fn: $shot: $check_shot, Incorrect! -- $line\n";
+		print "9,0: $fn: $shot: $check_shot, Incorrect! -- $line\n";
 	    }
-	} elsif ($line =~ /^\d{8}\0540/) {
+	} elsif ($line =~ /^\d{8}\054/) {
 
 	    #
 	    # A 8,0 format is a score with a 10 on the first hole.
@@ -186,7 +177,7 @@ sub convert_player {
 	    print NFD "\n";
 
 	    if ($check_shot != $shot) {
-		print "8: $fn: $shot: $check_shot, Incorrect! -- $line\n";
+		print "8,0: $fn: $shot: $check_shot, Incorrect! -- $line\n";
 	    }
 	} elsif ($line =~ /^\d{13}\056\d{3}\054/) {
 
@@ -197,7 +188,7 @@ sub convert_player {
 	    print NFD "$course:$par:$slope:$year-$month-$day:$shot:$post";
 
 	    ($a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8]) = $line =~
-		/^(\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)\056(\d\d)(\d)\054/;
+		/^(\d)(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})\056(\d{2})(\d)\054/;
 
 	    $a[8] = 10;  # in this format
 
@@ -216,7 +207,7 @@ sub convert_player {
 	    print NFD "$course:$par:$slope:$year-$month-$day:$shot:$post";
 
 	    ($a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8]) = $line =~
-		/^(\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)\056(\d\d)(\d\d)\054/;
+		/^(\d)(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})\056(\d{2})(\d{2})\054/;
 
 	    while (defined($v = shift(@a))) {
 		$v = abs($v);
@@ -237,7 +228,7 @@ sub convert_player {
 	    print NFD "$course:$par:$slope:$year-$month-$day:$shot:$post";
 
 	    ($a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8]) = $line =~
-		/^(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)\056(\d\d)(\d)\054/;
+		/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})\056(\d{2})(\d)\054/;
 
 	    $a[8] = 10;  # in this format
 
@@ -274,6 +265,9 @@ sub convert_player {
 		print "14,4: $fn, $shot: $check_shot, $line Issue!\n";
 	    }
 	} elsif ($line =~ /^0\0540/) {
+	    #
+	    # This is a non hole-by-hole score. "0,0" in ScoreKeeper file
+	    #
 	    print NFD "$course:$par:$slope:$year-$month-$day:$shot:$post\n";
 	} else {
 	    print "Unexpected line: $fn: $line -- $course\n"
