@@ -18,9 +18,10 @@ closedir ($dh);
 @golfer_list = sort @golfer_list;
 
 while ($fna = shift @golfer_list) {
-    ($cnt) = $fna =~ /(\d+)\056ID/;
-    $cnt += 1000;
-    convert_player("golfers/$fna", "golfers/$cnt");
+    ($nfna) = $fna =~ /(\d+)\056ID/;
+    $nfna += 1000;
+    unlink "golfers/$nfna", if (-e "golfers/$nfna");
+    convert_player("golfers/$fna", "golfers/$nfna");
 }
 
 sub convert_player {
@@ -46,7 +47,7 @@ sub convert_player {
     } else {
 	close(FD);
 	close(NFD); 
-	die "Golfer unknown: might need to run build-golfers.pl\n";
+	die "Unknown golfer: might need to run build-golfers.pl\n";
     }
 
     $line = <FD>;
@@ -68,15 +69,9 @@ sub convert_player {
 	    }
 	    if ($fields[2] != 0 && $fields[3] != 0) {
 		# 18-Hole score.
-		#$line = <FD>;
-		#$line = <FD>;
-		#$line = <FD>;
-		#$line = <FD>;
-		#$line = <FD>;
-		#$line = <FD>;
-		#next;
 	        $shot = @fields[5];
 	    } else {
+		# 9-Hole score.
 		$shot = @fields[4];
 	    }
 	    $date = @fields[0];
@@ -97,9 +92,8 @@ sub convert_player {
 	    }
 	}
 
-	$line = <FD>;
-
-	($par, $slope, $course) = $line =~ /^(\d\d\056{0,1}\d{0,1})\054(\d{2,3})\054\042(.+)\042/;
+	chomp($line = <FD>);
+	($par, $slope, $course) = split(/,/, $line);
 
 	if ($course =~ /Stow\/South Front/) {
 	    $course = 'SF';
@@ -123,7 +117,7 @@ sub convert_player {
 	}
 
 	$line = <FD>;
-	$line = <FD>;
+	chomp($line = <FD>);
 
 	$check_shot = 0;
 
@@ -190,6 +184,8 @@ sub convert_player {
 	    ($a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8]) = $line =~
 		/^(\d)(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})\056(\d{2})(\d)\054/;
 
+	    die, if ($a[8] != 1);
+
 	    $a[8] = 10;  # in this format
 
 	    while (defined($v = shift(@a))) {
@@ -245,7 +241,7 @@ sub convert_player {
 	} elsif ($line =~ /^\d{14}\056\d{4}\054/) {
 
 	    #
-	    # Lines with score in the format 14.4,0 have scores that hole number 1 is
+	    # Lines with score in the format 14.4 have scores that hole number 1 is
 	    # a 10 or higher.
 	    #
 

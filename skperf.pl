@@ -14,6 +14,7 @@ use Getopt::Long;
 # Default to running stats on current year.
 #
 $cur_month = (localtime)[4];
+$cur_day = (localtime)[3];
 $start_year = $end_year = (1900 + (localtime)[5]);
 $start_week = 1;
 $end_week = 15;
@@ -34,7 +35,7 @@ if ($#ARGV < 0) {
     exit;
 }
 
-if ($cur_month < 5) {
+if ($cur_month < 5 && $cur_day < 30) {
     $start_year = $end_year = ((1900 + (localtime)[5]) - 1);
 }
 
@@ -72,7 +73,7 @@ undef(%p);
 # Load the players handcaip trend in case they are needed.
 #
 if ($vhc) {
-	get_player_trend();
+    get_player_trend();
 }
 
 #
@@ -99,14 +100,14 @@ closedir ($dh);
 # After we get that, the other routines can use that data to generate stats.
 #
 for ($cy = $start_year; $cy <= $end_year; $cy++) {
-	@golfer_list = @global_golfer_list;
-	$t0 = gettimeofday(), if $hires;
-	while ($fna = shift @golfer_list) {
-		get_player_scores("golfers/$fna", $cy);
-	}
-	$t1 = gettimeofday(), if $hires;
-	$total_time += ($t1 - $t0), if $hires;
-	printf("Year %d took %.8f\n", $cy, ($t1 - $t0)), if $debug;
+    @golfer_list = @global_golfer_list;
+    $t0 = gettimeofday(), if $hires;
+    while ($fna = shift @golfer_list) {
+	get_player_scores("golfers/$fna", $cy);
+    }
+    $t1 = gettimeofday(), if $hires;
+    $total_time += ($t1 - $t0), if $hires;
+    printf("Year %d took %.8f\n", $cy, ($t1 - $t0)), if $debug;
 }
 
 #
@@ -156,6 +157,30 @@ if ($vhc) {
 }
 
 if ($top_gun) {
+
+    $thirty = 0;
+
+    #
+    # First check to see if anyone shot in the 30's, if not just exit.
+    #
+    foreach $pn (keys %p) {
+	if (($p{$pn}{total_strokes} == 0) || ($p{$pn}{total_rounds} == 0) ||
+            (($p{$pn}{team} eq "Sub") && ($include_subs == 0))) {
+            next;
+        }
+	foreach $yp (sort keys %y) {
+	    foreach $w ($start_week..$end_week) {
+		if ($p{$pn}{$yp}{$w} != 0 && $p{$pn}{$yp}{$w} < 40) {
+		    $thirty++;
+		}
+	    }
+	}
+    }
+
+    if ($thirty == 0) {
+	exit;
+    }
+
     my $has_rounds = 0;
 
     print "<b>30's Club:</b>", if $html;
@@ -164,7 +189,7 @@ if ($top_gun) {
     print "th, td {\n    text-align: left;\n}\n", if $html;
     print "</style>\n</head>\n", if $html;
     print "<table style=\"width:25\%\"></br>\n", if $html;
-    print "  <tr>\n    <th>Name</th>\n    <th>Week</th>\n    <th>Score</th>\n  </tr>\n", if $html;
+    print "  <tr>\n    <th>Name</th>\n    <th>Score</th>\n  </tr>\n", if $html;
 
     foreach $pn (keys %p) {
 	if (($p{$pn}{total_strokes} == 0) || ($p{$pn}{total_rounds} == 0) ||
@@ -176,7 +201,7 @@ if ($top_gun) {
             foreach $w ($start_week..$end_week) {
 		if ($p{$pn}{$yp}{$w} != 0 && $p{$pn}{$yp}{$w} < 40) {
 		    print "  <tr>\n", if $html;
-		    printf("    <td>%-20s</td>\n    <td>%4d</td>    <td>%d", $pn, $w, $p{$pn}{$yp}{$w}), if $html;
+		    printf("    <td>%-20s</td>\n    <td>%d", $pn, $p{$pn}{$yp}{$w}), if $html;
 		    print "  </tr>\n", if $html;
 		    printf("%-17s: year %-4d week %-2s shot %d\n", $pn, $yp, $w, $p{$pn}{$yp}{$w}), if !$html;
 		    $has_rounds = 1;
