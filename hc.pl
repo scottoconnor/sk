@@ -10,15 +10,14 @@ require "hcroutines.pl";
 use Getopt::Long;
 
 $debug = 0;
-$include_subs = 1;
 $trend = 0;
 $convert = 0;
 $output = 1;
 
 GetOptions (
-        "t" =>  \$trend,
-        "c" =>  \$convert,
-        "d" => \$debug)
+    "t" =>  \$trend,
+    "c" =>  \$convert,
+    "d" => \$debug)
 or die("Error in command line arguments\n");
 
 if ($convert) {
@@ -45,18 +44,18 @@ if (@golfer_list == 0) {
 }
 
 while ($fna = shift @golfer_list) {
-	if ($trend) {
-		gen_hc_trend("golfers/$fna", $output);
-	} else {
-		gen_hc("golfers/$fna");
-	}
+    if ($trend) {
+	gen_hc_trend("golfers/$fna", $output);
+    } else {
+	gen_hc("golfers/$fna");
+    }
 }
 
 if ($trend == 0) {
     printf("\n");
     foreach $team (sort keys(%t)) {
 	if ($team eq "Sub") {
-		next;
+	    next;
 	}
 	printf("%s\n", $team);
 	printf("%-17s %4.1fN / %d\n", $t{$team}{1}, $hc{$t{$team}{1}}{hi}, $hc{$t{$team}{1}}{hc});
@@ -68,114 +67,114 @@ if ($trend == 0) {
     print "Sub\n";
     foreach $p (sort keys %hc) {
 	if ($hc{$p}{team} ne "Sub") {
-		next;
+	    next;
 	}
 	if (defined($hc{$p}{hc})) {
-		printf("%-17s %4.1fN / %d\n", $p, $hc{$p}{hi}, $hc{$p}{hc});
+	    printf("%-17s %4.1fN / %d\n", $p, $hc{$p}{hi}, $hc{$p}{hc});
 	}
     }
 }
 
 sub gen_hc {
-	my ($fn) = @_;
-	my (@scores, $y, $hi, $use, @n, $pn);
+    my ($fn) = @_;
+    my (@scores, $y, $hi, $use, @n, $pn);
 
-	undef @n;
+    undef @n;
 
-	open(FD, $fn);
-	@scores = <FD>;
-	close(FD);
+    open(FD, $fn);
+    @scores = <FD>;
+    close(FD);
 
-	chomp($scores[0]);
-	($first, $last, $team, $active) = split(/:/, $scores[0]);
-	$pn = $last . ", " . $first;
+    chomp($scores[0]);
+    ($first, $last, $team, $active) = split(/:/, $scores[0]);
+    $pn = $last . ", " . $first;
 
-	if ($pn eq "Elkort, Mike") {
-		#$debug = 1;
-	} else {
-		$debug = 0;
+    if ($pn eq "Elkort, Mike") {
+	#$debug = 1;
+    } else {
+	$debug = 0;
+    }
+
+    if ($active == 0) {
+	return;
+    }
+
+    $hc{$pn}{team} = $team;
+
+    shift @scores;
+
+    $num = @scores;
+
+    #
+    # If player has less than 5 scores, a handicap can not be generated.
+    #
+    if ($num < 5) {
+	print "$pn: Only $num scores, can not generate handicap\n", if $debug;
+	return;
+    }
+
+    #
+    # If the golfer has more than 20 scores, only grab the last 20.
+    #
+    if ($num > 20) {
+	@scores = splice(@scores, ($num - 20), 20);
+    }
+
+    #
+    # Using the USGA formula, determine how many scores will be used
+    # to generate this player handicap.
+    #
+    $use = &nscores($num);
+
+    $y = 0;
+    foreach my $s (@scores) {
+
+	chomp($s);
+	($course, $par, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $ni) =
+	    split(/:/, $s);
+
+	print "$course, $par, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $ni\n", if $debug;
+
+	$n[$y] = ((($post - $par) * 113) / $slope);
+
+	if ($shot > 75) {
+	    $n[$y] /= 2;
 	}
 
-	if ((($team eq "Sub") && ($include_subs == 0)) || ($active == 0)) {
-	    return;
-	}
-
-	$hc{$pn}{team} = $team;
-
-	shift @scores;
-
-	$num = @scores;
-
 	#
-	# If player has less than 5 scores, a handicap can not be generated.
+	# First round to the nearest hundredth, then to the tenth.
 	#
-	if ($num < 5) {
-		print "$pn: Only $num scores, can not generate handicap\n", if $debug;
-		return;
-	}
+	$n[$y] = sprintf("%0.1f",$n[$y]);
+	printf("date=%s: post=%d: differential: %.1f\n", $date, $post, $n[$y]), if $debug;
 
-	#
-	# If the golfer has more than 20 scores, only grab the last 20.
-	#
-	if ($num > 20) {
-		@scores = splice(@scores, ($num - 20), 20);
-	}
+	$y++;
+    }
 
-	#
-	# Using the USGA formula, determine how many scores will be used
-	# to generate this player handicap.
-	#
-	$use = &nscores($num);
+    @n = sort {$a <=> $b} @n;
 
-	$y = 0;
-	foreach my $s (@scores) {
+    $hi = 0;
 
-		chomp($s);
-		($course, $par, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $ni) =
-			split(/:/, $s);
+    for ($y = 0; $y < $use; $y++) {
+	printf("%d: %.1f\n", $y, $n[$y]), if $debug;
+	$hi += $n[$y];
+    }
 
-		print "$course, $par, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $ni\n", if $debug;
+    $hi /= $use;
+    $hi *= 0.90;  # 90% is used for match play
+    $hi = (int($hi * 10) / 10);
 
-		$n[$y] = ((($post - $par) * 113) / $slope);
+    #if ($pn eq "O'Connor, Scott") {
+	#$hi = 1.9;
+    #}
 
-		if ($shot > 75) {
-		    $n[$y] /= 2;
-		}
+    $sf = int(($hi * $c{SF}->{slope} / 113) + 0.5);
+    $sb = int(($hi * $c{SB}->{slope} / 113) + 0.5);
+    $nf = int(($hi * $c{NF}->{slope} / 113) + 0.5);
+    $nb = int(($hi * $c{NB}->{slope} / 113) + 0.5);
 
-		#
-		# First round to the nearest hundredth, then to the tenth.
-		#
-		$n[$y] = sprintf("%0.1f",$n[$y]);
-		printf("date=%s: post=%d: differential: %.1f\n", $date, $post, $n[$y]), if $debug;
-
-		$y++;
-	}
-
-	@n = sort {$a <=> $b} @n;
-
-	$hi = 0;
-
-	for ($y = 0; $y < $use; $y++) {
-		printf("%d: %.1f\n", $y, $n[$y]), if $debug;
-		$hi += $n[$y];
-	}
-
-	$hi /= $use;
-	$hi *= 0.90;  # 90% is used for match play
-	$hi = (int($hi * 10) / 10);
-
-	#if ($pn eq "O'Connor, Scott") {
-		#$hi = 1.9;
-	#}
-
-	$sf = int(($hi * $c{SF}->{slope} / 113) + 0.5);
-	$sb = int(($hi * $c{SB}->{slope} / 113) + 0.5);
-	$nf = int(($hi * $c{NF}->{slope} / 113) + 0.5);
-	$nb = int(($hi * $c{NB}->{slope} / 113) + 0.5);
-
-	$hc{$pn}{hi} = $hi;
-	$hc{$pn}{hc} = $sf;
-	printf ("%-17s - %5.1fN  SF=%-3d SB=%-3d NF=%-3d NB=%-3d\n", $pn, $hi, $sf, $sb, $nf, $nb), if $debug;
+    $hc{$pn}{hi} = $hi;
+    $hc{$pn}{hc} = $sf;
+    printf ("%-17s - %5.1fN  SF=%-3d SB=%-3d NF=%-3d NB=%-3d\n", $pn, $hi, $sf, $sb, $nf, $nb), if $debug;
 }
 
 sub con_skhist {
