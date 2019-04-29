@@ -35,7 +35,11 @@ if ($#ARGV < 0) {
     exit;
 }
 
-if ($cur_month < 5 && $cur_day < 30) {
+#
+# If the league hasn't started this year, give stats from the previous year.
+#
+$year_day = $end_year = ((localtime)[7] + 1);
+if ($start_year == 2019 && $year_day < 128) {
     $start_year = $end_year = ((1900 + (localtime)[5]) - 1);
 }
 
@@ -156,6 +160,20 @@ if ($vhc) {
     }
 }
 
+#
+# Now print out the data for those years/weeks.
+#
+# The years are printed in descending order.
+#
+foreach $yp (reverse sort keys %y) {
+    if ($stats) {
+	print_stats($yp);
+    }
+    if ($tables) {
+	print_tables($yp);
+    }
+}
+
 if ($top_gun) {
 
     $thirty = 0;
@@ -214,20 +232,6 @@ if ($top_gun) {
 	}
     }
     print "</table></br>", if $html;
-}
-
-#
-# Now print out the data for those years/weeks.
-#
-# The years are printed in descending order.
-#
-foreach $yp (reverse sort keys %y) {
-    if ($stats) {
-	print_stats($yp);
-    }
-    if ($tables) {
-	print_tables($yp);
-    }
 }
 
 if ($others) {
@@ -392,7 +396,7 @@ sub print_stats {
 	printf("Total Strokes = %d\n", $y{$yp}{total_strokes});
 	printf("League Stroke Average = %.2f\n",
 	    ($y{$yp}{total_strokes} / $y{$yp}{total_scores}));
-	printf("Total Eagles  = %d\n", $y{$yp}{total_eagles});
+	printf("Total Eagles = %d\n", $y{$yp}{total_eagles});
 	printf("Total Birdies = %d\n", $y{$yp}{total_birdies});
 	printf("Total Pars = %d\n", $y{$yp}{total_pars});
 	printf("Total Bogies = %d\n", $y{$yp}{total_bogies});
