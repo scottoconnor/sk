@@ -103,7 +103,6 @@
     "golfers/013.ID" => { name => "Carl Humphreys", team => "Sub", active => 1 },
     "golfers/107.ID" => { name => "Jeff Kerrigan", team => "Sub", active => 1 },
     "golfers/029.ID" => { name => "Jeff LaPlante", team => "Sub", active => 1 },
-    "golfers/104.ID" => { name => "Steve LaRosee", team => "Sub", active => 1 },
     "golfers/086.ID" => { name => "Paul LeBlanc", team => "Sub", active => 1 },
     "golfers/100.ID" => { name => "Ken Leigh", team => "Sub", active => 1 },
     "golfers/043.ID" => { name => "Al Litchfield", team => "Sub", active => 1 },
@@ -156,4 +155,5 @@
     "golfers/064.ID" => { name => "Alex Williams", team => "Sub", active => 1 },
     "golfers/127.ID" => { name => "Chris Williams", team => "Sub", active => 1 },
     "golfers/044.ID" => { name => "Rick Wood", team => "Sub", active => 1 },
+    "golfers/104.ID" => { name => "Steve LaRosee", team => "Sub", active => 0 },
 );

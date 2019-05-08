@@ -7,44 +7,44 @@
 # Using the Handicap formula, determine how many scores to use.
 #
 sub nscores {
-        my ($x) = @_;
+    my ($x) = @_;
 
-        if ($x < 5) { return 0; }
+    if ($x < 5) { return 0; }
 
-        if ($x >= 5 && $x <= 6) { return 1; }
-        if ($x >= 7 && $x <= 8) { return 2; }
-        if ($x >= 9 && $x <= 10) { return 3; }
-        if ($x >= 11 && $x <= 12) { return 4; }
-        if ($x >= 13 && $x <= 14) { return 5; }
-        if ($x >= 15 && $x <= 16) { return 6; }
-        if ($x == 17) { return 7; }
-        if ($x == 18) { return 8; }
-        if ($x == 19) { return 9; }
-        return(10);
+    if ($x >= 5 && $x <= 6) { return 1; }
+    if ($x >= 7 && $x <= 8) { return 2; }
+    if ($x >= 9 && $x <= 10) { return 3; }
+    if ($x >= 11 && $x <= 12) { return 4; }
+    if ($x >= 13 && $x <= 14) { return 5; }
+    if ($x >= 15 && $x <= 16) { return 6; }
+    if ($x == 17) { return 7; }
+    if ($x == 18) { return 8; }
+    if ($x == 19) { return 9; }
+    return(10);
 }
 
 #
 # Rounds to the nearest hundredth position.
 #
 sub round_hundredth {
-	my ($r) = @_;
+    my ($r) = @_;
 
-	$r *= 100;
-	$r = int($r + 0.5);
-	$r /= 100;
-	return ($r);
+    $r *= 100;
+    $r = int($r + 0.5);
+    $r /= 100;
+    return ($r);
 }
 
 #
 # Rounds to the nearest tenth position.
 #
 sub round_tenth {
-	my ($r) = @_;
+    my ($r) = @_;
 
-	$r *= 10;
-	$r = int($r + 0.5);
-	$r /= 10;
-	return ($r);
+    $r *= 10;
+    $r = int($r + 0.5);
+    $r /= 10;
+    return ($r);
 }
 
 sub gen_hc_trend {
@@ -58,7 +58,8 @@ sub gen_hc_trend {
 	close(FD);
 
 	chomp($scores[0]);
-	($pn, $team, $active) = split(/:/, $scores[0]);
+	($first, $last, $team, $active) = split(/:/, $scores[0]);
+	$pn = $first . " " . $last;
 
 	shift @scores;
 

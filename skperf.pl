@@ -38,7 +38,7 @@ if ($#ARGV < 0) {
 #
 # If the league hasn't started this year, give stats from the previous year.
 #
-$year_day = $end_year = ((localtime)[7] + 1);
+$year_day = ((localtime)[7] + 1);
 if ($start_year == 2019 && $year_day < 128) {
     $start_year = $end_year = ((1900 + (localtime)[5]) - 1);
 }
@@ -143,7 +143,7 @@ if ($vhc) {
     }
 
     foreach $pn (sort { $p{$a}{avediff} <=> $p{$b}{avediff} } (keys(%p))) {
-	if ($p{$pn}{total_strokes} == 0 || $p{$pn}{avediff} == 0 ||
+	if ($p{$pn}{total_strokes} == 0 ||
 	    (($p{$pn}{team} eq "Sub") && ($include_subs == 0))) {
 		next;
 	}
@@ -610,6 +610,9 @@ sub get_player_trend {
 
     while (<TD>) {
 	@ary = split(/:/, $_);
+	if ($ary[1] eq "current") {
+	    next;
+	}
 	$p{$ary[0]}{$ary[1]}{hc} = $ary[3];
     }
     close(TD);
