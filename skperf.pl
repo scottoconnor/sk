@@ -401,7 +401,9 @@ sub print_stats {
 	printf("Total Pars = %d\n", $y{$yp}{total_pars});
 	printf("Total Bogies = %d\n", $y{$yp}{total_bogies});
 	printf("Total Double Bogies = %d\n", $y{$yp}{total_db});
-	printf("Total Others = %d\n\n", $y{$yp}{total_other});
+	printf("Total Others = %d\n", $y{$yp}{total_other});
+	printf("Total 30's = %d\n", $y{$yp}{thirties});
+	printf("Total 50+ = %d\n\n", $y{$yp}{fifty_plus});
 
     } elsif ($y{$yp}{total_strokes} && $html) {
 	print "<b><font color=\"green\">$yp</b></font>";
@@ -684,6 +686,12 @@ sub get_player_scores {
 		$p{$pn}{total_strokes} += $shot;
 		$p{$pn}{$course}{xplayed}++;
 		$p{$pn}{$cy}{$cw} = $shot;
+		if ($shot >= 50) {
+		    $y{$cy}{fifty_plus}++;
+		}
+		if ($shot < 40) {
+		    $y{$cy}{thirties}++;
+		}
 
 		for ($h = 1; $h < 10; $h++) {
 		    $hole = abs(shift @score);

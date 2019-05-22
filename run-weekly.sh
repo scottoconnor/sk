@@ -1,38 +1,59 @@
 #! /bin/sh
 #
-# Copyright (c) 2018, 2019 Scott O'Connor
+# Copyright (c) 2018, 2019, Scott O'Connor
 #
 
-if [ -z $1 ]; then
-	echo "usuage: run-weekly.sh <week number>"
-	exit
-fi
-
-WEEK=${1}
-#START_YEAR=`date +"%Y"`
-START_YEAR=2018
-END_YEAR=2006
-
-YEAR=${START_YEAR}
+CUR_YEAR=`date +"%Y"`
+START_YEAR=2003
 
 rm -f /tmp/*.html
 
-./skperf.pl -s -t -h -sy ${YEAR} -ey ${YEAR} > /tmp/${YEAR}.html
-
-#./skperf.pl -at -h -sy 1997 -ey ${YEAR} > /tmp/table-totals.html
-
-
-until [  $YEAR -lt $END_YEAR ]; do
-	./skperf.pl -s -t -h -sy $YEAR -ey $YEAR -sw 1 -ew $WEEK >> /tmp/${START_YEAR}-${END_YEAR}-week${WEEK}.html
-	let YEAR-=1
+#
+# First, find out how many weeks of golf have been played this year.
+#
+WEEK=1
+NUM_WEEKS=0
+while [ ${WEEK} -lt 15 ]; do
+    s=`./skperf.pl -p -is -sy ${CUR_YEAR} -ey ${CUR_YEAR} -sw ${WEEK} -ew ${WEEK} | grep "Total Strokes" | wc -l`
+    if [ $s -gt 0 ]; then
+	let NUM_WEEKS+=1
+    fi
+    let WEEK+=1
 done
 
+WEEK=${NUM_WEEKS}
 
-YEAR=${START_YEAR}
+#
+# Now generate the weekly stats for these week from start year to cur year
+#
+YEAR=${CUR_YEAR}
+until [  $YEAR -lt $START_YEAR ]; do
+    ./skperf.pl -s -t -h -sy $YEAR -ey $YEAR -sw 1 -ew $WEEK >> /tmp/${START_YEAR}-${CUR_YEAR}-week${WEEK}.html
+    ./skperf.pl -s -t -h -sy $YEAR -ey $YEAR -sw $WEEK -ew $WEEK >> /tmp/${START_YEAR}-${CUR_YEAR}-only-week${WEEK}.html
+    echo "</br></br>" >> /tmp/${START_YEAR}-${CUR_YEAR}-week${WEEK}.html
+    let YEAR-=1
+done
+
+#
+# Get the stats and table for the current year, then tack the
+# weekly stats below the overall stats.
+#
+YEAR=${CUR_YEAR}
+./skperf.pl -s -t -h -sy ${YEAR} -ey ${YEAR} > /tmp/${YEAR}.html
+echo "</br></br>" >> /tmp/${YEAR}.html
 
 until [  ${WEEK} -lt 1 ]; do
-	./skperf.pl -h -s -t -sy $YEAR -ey $YEAR -sw ${WEEK} -ew ${WEEK} >> /tmp/${YEAR}-weekly.html
-	./skperf.pl -h -g -sy $YEAR -ey $YEAR -sw ${WEEK} -ew ${WEEK} >> /tmp/${YEAR}-weekly.html
-	echo "</br></br>" >> /tmp/${YEAR}-weekly.html
-	let WEEK-=1
+    s=`./skperf.pl -p -is -sy ${YEAR} -ey ${YEAR} -sw ${WEEK} -ew ${WEEK} | grep "Total Strokes" | wc -l`
+    if [ $s -gt 0 ]; then
+	./skperf.pl -h -s -t -sy ${YEAR} -ey ${YEAR} -sw ${WEEK} -ew ${WEEK} >> /tmp/${YEAR}.html
+	./skperf.pl -h -g -sy ${YEAR} -ey ${YEAR} -sw ${WEEK} -ew ${WEEK} >> /tmp/${YEAR}.html
+	echo "</br></br>" >> /tmp/${YEAR}.html
+    fi
+    let WEEK-=1
 done
+
+
+#
+# All time table stats since START_YEAR 
+#
+#./skperf.pl -at -h -sy ${START_YEAR} -ey ${CUR_YEAR} > /tmp/table-totals.html
