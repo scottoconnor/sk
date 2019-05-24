@@ -3,9 +3,9 @@
 # Copyright (c) 2018, 2019, Scott O'Connor
 #
 
-require 'tnfb_years.pl';
-require 'courses.pl';
-require 'hcroutines.pl';
+require './tnfb_years.pl';
+require './courses.pl';
+require './hcroutines.pl';
 
 use Time::HiRes qw(gettimeofday);
 use Getopt::Long;

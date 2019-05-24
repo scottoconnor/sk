@@ -3,8 +3,8 @@
 # Copyright (c) 2018, 2019 Scott O'Connor
 #
 
-require 'tnfb.pl';
-require 'courses.pl';
+require './tnfb.pl';
+require './courses.pl';
 
 opendir($dh, "./golfers") || die "Can't open \"golfers\" directory.";
 
