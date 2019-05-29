@@ -3,9 +3,9 @@
 # Copyright (c) 2018, 2019 Scott O'Connor
 #
 
-require "courses.pl";
-require "tnfb.pl";
-require "hcroutines.pl";
+require './courses.pl';
+require './tnfb.pl';
+require './hcroutines.pl';
 
 use Getopt::Long;
 
