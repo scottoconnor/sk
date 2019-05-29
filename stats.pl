@@ -245,7 +245,7 @@ if ($all_time) {
 
     print "\nAll time League Stroke Average.\n";
     $cnt = 1;
-    foreach $xx (reverse sort { $y{$a}{lsa} <=> $y{$b}{lsa} } (keys(%y))) {
+    foreach $xx (sort { $y{$a}{lsa} <=> $y{$b}{lsa} } (keys(%y))) {
 	printf("%2d: %d -> %.2f\n", $cnt++, $xx, $y{$xx}{lsa});
     }
     print "\nAll time scores in 30's.\n";
