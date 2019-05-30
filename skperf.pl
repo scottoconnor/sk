@@ -406,23 +406,23 @@ sub print_stats {
 	printf("Total 50+ = %d\n\n", $y{$yp}{fifty_plus});
 
     } elsif ($y{$yp}{total_strokes} && $html) {
-	print "<b><font color=\"green\">$yp</b></font>";
-	print "&nbsp<b><font color=\"green\">- Weeks $start_week through $end_week</b></font></br",
+	print "<b><font color=\"green\">$yp</font></b>";
+	print "<b><font color=\"green\"> - Weeks $start_week through $end_week</font></b>\n",
 	    if (($end_week - $start_week) < 14) && (($end_week - $start_week) > 0);
-	print "&nbsp<b><font color=\"green\">- Week $start_week</b></font>", if ($start_week == $end_week);
-	print "<b><font color=\"green\">:</b></font></br>";
+	print "<b><font color=\"green\"> - Week $start_week</font></b>", if ($start_week == $end_week);
+	print "<b><font color=\"green\">:</font></b></br>\n";
 
-	printf("Total Posted scores: <font color=\"green\">%d</font></br>\n", $y{$yp}{total_scores});
-	printf("Total holes played: <font color=\"green\">%d</font></br>\n", ($y{$yp}{total_scores} * 9));
-	printf("Total Strokes = <font color=\"green\">%d</font></br>\n", $y{$yp}{total_strokes});
-	printf("League Stroke Average = <font color=\"green\">%.2f</font></br>\n",
+	printf("Total Posted scores: <b><font color=\"green\">%d</font></b></br>\n", $y{$yp}{total_scores});
+	printf("Total holes played: <b><font color=\"green\">%d</font></b></br>\n", ($y{$yp}{total_scores} * 9));
+	printf("Total Strokes = <b><font color=\"green\">%d</font></b></br>\n", $y{$yp}{total_strokes});
+	printf("League Stroke Average = <b><font color=\"green\">%.2f</font></b></br>\n",
 	    ($y{$yp}{total_strokes} / $y{$yp}{total_scores}));
-	printf("Total Eagles  = <font color=\"green\">%d</font></br>\n", $y{$yp}{total_eagles});
-	printf("Total Birdies = <font color=\"green\">%d</font></br>\n", $y{$yp}{total_birdies});
-	printf("Total Pars = <font color=\"green\">%d</font></br>\n", $y{$yp}{total_pars});
-	printf("Total Bogies = <font color=\"green\">%d</font></br>\n", $y{$yp}{total_bogies});
-	printf("Total Double Bogies = <font color=\"green\">%d</font></br>\n", $y{$yp}{total_db});
-	printf("Total Others = <font color=\"green\">%d</font></br></br>\n", $y{$yp}{total_other});
+	printf("Total Eagles  = <b><font color=\"green\">%d</font></b></br>\n", $y{$yp}{total_eagles});
+	printf("Total Birdies = <b><font color=\"green\">%d</font></b></br>\n", $y{$yp}{total_birdies});
+	printf("Total Pars = <b><font color=\"green\">%d</font></b></br>\n", $y{$yp}{total_pars});
+	printf("Total Bogies = <b><font color=\"green\">%d</font></b></br>\n", $y{$yp}{total_bogies});
+	printf("Total Double Bogies = <b><font color=\"green\">%d</font></b></br>\n", $y{$yp}{total_db});
+	printf("Total Others = <b><font color=\"green\">%d</font></b></br></br>\n", $y{$yp}{total_other});
     }
 }
 
@@ -437,10 +437,10 @@ sub print_tables {
 	    if ((($end_week - $start_week) < 14) && ($end_week - $start_week) > 0) && !$html;
 	print " - Week $start_week", if ($start_week == $end_week) && !$html;
 	print ":\n", if !$html;
-	print "<b>Birdie Table $yp ", if $html;
-	print " - Weeks $start_week through $end_week:",
+	print "<b>Birdie Table $yp</b>", if $html;
+	print "<b> - Weeks $start_week through $end_week:</b>",
 	    if ((($end_week - $start_week) < 14) && ($end_week - $start_week) > 0) && $html;
-	print " - Week $start_week:", if ($start_week == $end_week) && $html;
+	print "<b> - Week $start_week:</b>", if ($start_week == $end_week) && $html;
 	print "<head>\n<style>\n", if $html;
 	print "table, th, td {\n    border: 1px solid black;\n    border-collapse: collapse;\n}\n", if $html;
 	print "th, td {\n    text-align: left;\n}\n", if $html;
@@ -464,10 +464,10 @@ sub print_tables {
 	    if ((($end_week - $start_week) < 14) && ($end_week - $start_week) > 0) && !$html;
 	print " - Week $start_week", if ($start_week == $end_week) && !$html;
 	print ":\n", if !$html;
-	print "<b>Eagle Table $yp ", if $html;
-	print " - Weeks $start_week through $end_week:",
+	print "<b>Eagle Table $yp</b>", if $html;
+	print "<b> - Weeks $start_week through $end_week:</b>",
 	    if ((($end_week - $start_week) < 14) && ($end_week - $start_week) > 0) && $html;
-	print " - Week $start_week:", if ($start_week == $end_week) && $html;
+	print "<b> - Week $start_week:</b>", if ($start_week == $end_week) && $html;
 	print "<head>\n<style>\n", if $html;
 	print "table, th, td {\n    border: 1px solid black;\n    border-collapse: collapse;\n}\n", if $html;
 	print "th, td {\n    text-align: left;\n}\n", if $html;
