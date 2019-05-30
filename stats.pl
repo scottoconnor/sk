@@ -155,42 +155,42 @@ for ($year = $start_year; $year <= $cur_year; $year++) {
 
 if ($weekly_stats) {
 
-    print "\nLeague Stroke Average in week $week.\n";
+    print "\nLeague Stroke Average on week $week.\n";
     $cnt = 1;
     foreach $xx (sort { $y{$a}{wlsa} <=> $y{$b}{wlsa} } (keys(%y))) {
 	printf("%2d: %d -> %.2f\n", $cnt++, $xx, $y{$xx}{wlsa});
     }
-    print "\nScores in 30's in week $week.\n";
+    print "\nScores in 30's on week $week.\n";
     $cnt = 1;
     foreach $xx (reverse sort { $y{$a}{wthirty} <=> $y{$b}{wthirty} } (keys(%y))) {
 	printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{wthirty}, (($y{$xx}{wthirty} / $y{$xx}{twposted}) * 100));
     }
-    print "\n50+ in week $week.\n";
+    print "\n50+ on week $week.\n";
     $cnt = 1;
     foreach $xx (sort { $y{$a}{wft} <=> $y{$b}{wft} } (keys(%y))) {
 	printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{wft}, (($y{$xx}{wft} / $y{$xx}{twposted}) * 100));
     }
-    print "\nOthers in week $week.\n";
+    print "\nOthers on week $week.\n";
     $cnt = 1;
     foreach $xx (sort { $y{$a}{two} <=> $y{$b}{two} } (keys(%y))) {
 	printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{two}, (($y{$xx}{two} / $y{$xx}{twh}) * 100));
     }
-    print "\nBogies in week $week.\n";
+    print "\nBogies on week $week.\n";
     $cnt = 1;
     foreach $xx (sort { $y{$a}{twbo} <=> $y{$b}{twbo} } (keys(%y))) {
 	printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{twbo}, (($y{$xx}{twbo} / $y{$xx}{twh}) * 100));
     }
-    print "\nPars in week $week.\n";
+    print "\nPars on week $week.\n";
     $cnt = 1;
     foreach $xx (reverse sort { $y{$a}{twp} <=> $y{$b}{twp} } (keys(%y))) {
 	printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{twp}, (($y{$xx}{twp} / $y{$xx}{twh}) * 100));
     }
-    print "\nBirdies in week $week.\n";
+    print "\nBirdies on week $week.\n";
     $cnt = 1;
     foreach $xx (reverse sort { $y{$a}{twb} <=> $y{$b}{twb} } (keys(%y))) {
 	printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{twb}, (($y{$xx}{twb} / $y{$xx}{twh}) * 100));
     }
-    print "\nEagles in week $week.\n";
+    print "\nEagles on week $week.\n";
     $cnt = 1;
     foreach $xx (reverse sort { $y{$a}{twe} <=> $y{$b}{twe} } (keys(%y))) {
 	printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{twe}, (($y{$xx}{twe} / $y{$xx}{twh}) * 100));
