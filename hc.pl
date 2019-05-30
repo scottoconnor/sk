@@ -52,7 +52,7 @@ while ($fna = shift @golfer_list) {
 }
 
 if ($trend == 0) {
-    printf("\n");
+    print "\n";
     foreach $team (sort keys(%t)) {
 	if ($team eq "Sub") {
 	    next;
