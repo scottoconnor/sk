@@ -202,12 +202,23 @@ if ($top_gun) {
     my $has_rounds = 0;
 
     print "<b>30's Club:</b>", if $html;
-    print "<head>\n<style>", if $html;
-    print "table, th, td {\n    border: 1px solid black;\n    border-collapse: collapse;\n}\n", if $html;
-    print "th, td {\n    text-align: left;\n}\n", if $html;
-    print "</style>\n</head>\n", if $html;
-    print "<table style=\"width:25\%\"></br>\n", if $html;
-    print "  <tr>\n    <th>Name</th>\n    <th>Score</th>\n  </tr>\n", if $html;
+
+    print "\n<head>\n", if $html;
+    print "<style>\n", if $html;
+    print " table {\n  border-collapse: collapse;  }\n", if $html;
+    print " table, td, th {\n  border: 1px solid black;\n  }\n", if $html;
+    print "</style>\n", if $html;
+    print "</head>\n", if $html;
+    print "<table border=\"1\" width = \"300\">\n", if $html;
+    print "  <tr>\n    <th style=\"text-align:left\">Name</th>\n", if $html;
+    print "    <th style=\"text-align:center\">Score</th>\n  </tr>\n", if $html;
+
+    #print "<head>\n<style>", if $html;
+    #print "table, th, td {\n    border: 1px solid black;\n    border-collapse: collapse;\n}\n", if $html;
+    #print "th, td {\n    text-align: left;\n}\n", if $html;
+    #print "</style>\n</head>\n", if $html;
+    #print "<table style=\"width:25\%\"></br>\n", if $html;
+    #print "  <tr>\n    <th>Name</th>\n    <th style=\"text-align:center\">Score</th>\n  </tr>\n", if $html;
 
     foreach $pn (keys %p) {
 	if (($p{$pn}{total_strokes} == 0) || ($p{$pn}{total_rounds} == 0) ||
@@ -441,16 +452,21 @@ sub print_tables {
 	print "<b> - Weeks $start_week through $end_week:</b>",
 	    if ((($end_week - $start_week) < 14) && ($end_week - $start_week) > 0) && $html;
 	print "<b> - Week $start_week:</b>", if ($start_week == $end_week) && $html;
-	print "<head>\n<style>\n", if $html;
-	print "table, th, td {\n    border: 1px solid black;\n    border-collapse: collapse;\n}\n", if $html;
-	print "th, td {\n    text-align: left;\n}\n", if $html;
-	print "</style>\n</head>\n", if $html;
-	print "<table style=\"width:25\%\"></br>\n", if $html;
-	print "  <tr>\n    <th>Name</th>\n    <th>Birdies</th>\n  </tr>\n", if $html;
+	print "\n<head>\n", if $html;
+	print "<style>\n", if $html;
+	print " table {\n  border-collapse: collapse;  }\n", if $html;
+	print " table, td, th {\n  border: 1px solid black;\n  }\n", if $html;
+	print "</style>\n", if $html;
+	print "</head>\n", if $html;
+	#print "<table style=\"width:25\%\"></br>\n", if $html;
+	print "<table border=\"1\" width = \"300\">\n", if $html;
+	print "  <tr>\n    <th style=\"text-align:left\">Name</th>\n", if $html;
+	print "    <th style=\"text-align:center\">Birdies</th>\n  </tr>\n", if $html;
+
 	foreach my $key (sort { $birds{$b} <=> $birds{$a} } keys %birds) {
 	    printf "%-20s %4d\n", $key, $birds{$key}, if !$html;
 	    print "  <tr>\n", if $html;
-	    printf "    <td>%-20s</td>\n    <td style=\"text-align:center\">%4d</td>", $key, $birds{$key}, if $html;
+	    printf "    <td>%-20s</td>\n    <td style=\"text-align:center\">%4d</td>\n", $key, $birds{$key}, if $html;
 	    print "  </tr>\n", if $html;
 	}
 	print "</table></br>", if $html;
@@ -464,16 +480,20 @@ sub print_tables {
 	    if ((($end_week - $start_week) < 14) && ($end_week - $start_week) > 0) && !$html;
 	print " - Week $start_week", if ($start_week == $end_week) && !$html;
 	print ":\n", if !$html;
-	print "<b>Eagle Table $yp</b>", if $html;
+	print "<b>Eagle Table $yp</b>\n", if $html;
 	print "<b> - Weeks $start_week through $end_week:</b>",
 	    if ((($end_week - $start_week) < 14) && ($end_week - $start_week) > 0) && $html;
 	print "<b> - Week $start_week:</b>", if ($start_week == $end_week) && $html;
-	print "<head>\n<style>\n", if $html;
-	print "table, th, td {\n    border: 1px solid black;\n    border-collapse: collapse;\n}\n", if $html;
-	print "th, td {\n    text-align: left;\n}\n", if $html;
-	print "</style>\n</head>\n", if $html;
-	print "<table style=\"width:25\%\"></br>\n", if $html;
-	print "  <tr>\n    <th>Name</th>\n    <th>Eagles</th>\n  </tr>\n", if $html;
+	print "\n<head>\n", if $html;
+	print "<style>\n", if $html;
+	print " table {\n  border-collapse: collapse;  }\n", if $html;
+	print " table, td, th {\n  border: 1px solid black;\n  }\n", if $html;
+	print "</style>\n", if $html;
+	print "</head>\n", if $html;
+	#print "<table style=\"width:25\%\"></br>\n", if $html;
+	print "<table border=\"1\" width = \"300\">\n", if $html;
+	print "  <tr>\n    <th style=\"text-align:left\">Name</th>\n", if $html;
+	print "    <th style=\"text-align:center\">Eagles</th>\n  </tr>\n", if $html;
 	foreach my $key (sort { $eagles{$b} <=> $eagles{$a} } keys %eagles) {
 	    printf "%-20s %4d\n", $key, $eagles{$key}, if !$html;
 	    print "  <tr>\n", if $html;

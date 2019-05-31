@@ -13,7 +13,7 @@ rm -f /tmp/*.html
 #
 WEEK=1
 NUM_WEEKS=0
-while [ ${WEEK} -lt 15 ]; do
+while [ ${WEEK} -le 15 ]; do
     s=`./skperf.pl -p -is -sy ${CUR_YEAR} -ey ${CUR_YEAR} -sw ${WEEK} -ew ${WEEK} | grep "Total Strokes" | wc -l`
     if [ $s -gt 0 ]; then
 	let NUM_WEEKS+=1
