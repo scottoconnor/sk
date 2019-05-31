@@ -219,7 +219,7 @@ if ($top_gun) {
             foreach $w ($start_week..$end_week) {
 		if ($p{$pn}{$yp}{$w} != 0 && $p{$pn}{$yp}{$w} < 40) {
 		    print "  <tr>\n", if $html;
-		    printf("    <td>%-20s</td>\n    <td>%d", $pn, $p{$pn}{$yp}{$w}), if $html;
+		    printf("    <td>%-20s</td>\n    <td style=\"text-align:center\">%d", $pn, $p{$pn}{$yp}{$w}), if $html;
 		    print "  </tr>\n", if $html;
 		    printf("%-17s: year %-4d week %-2s shot %d\n", $pn, $yp, $w, $p{$pn}{$yp}{$w}), if !$html;
 		    $has_rounds = 1;
@@ -450,7 +450,7 @@ sub print_tables {
 	foreach my $key (sort { $birds{$b} <=> $birds{$a} } keys %birds) {
 	    printf "%-20s %4d\n", $key, $birds{$key}, if !$html;
 	    print "  <tr>\n", if $html;
-	    printf "    <td>%-20s</td>\n    <td>%4d</td>", $key, $birds{$key}, if $html;
+	    printf "    <td>%-20s</td>\n    <td style=\"text-align:center\">%4d</td>", $key, $birds{$key}, if $html;
 	    print "  </tr>\n", if $html;
 	}
 	print "</table></br>", if $html;
@@ -477,7 +477,7 @@ sub print_tables {
 	foreach my $key (sort { $eagles{$b} <=> $eagles{$a} } keys %eagles) {
 	    printf "%-20s %4d\n", $key, $eagles{$key}, if !$html;
 	    print "  <tr>\n", if $html;
-	    printf "    <td>%-20s</td>\n    <td>%4d</td>", $key, $eagles{$key}, if $html;
+	    printf "    <td>%-20s</td>\n    <td style=\"text-align:center\">%4d</td>", $key, $eagles{$key}, if $html;
 	    print "  </tr>\n", if $html;
 	}
 	print "</table></br>", if $html;
