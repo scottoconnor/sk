@@ -201,24 +201,17 @@ if ($top_gun) {
 
     my $has_rounds = 0;
 
+    print "30's Club:\n", if !$html;
     print "<b>30's Club:</b>", if $html;
-
     print "\n<head>\n", if $html;
     print "<style>\n", if $html;
-    print " table {\n  border-collapse: collapse;  }\n", if $html;
-    print " table, td, th {\n  border: 1px solid black;\n  }\n", if $html;
+    print " table {\n  border-collapse: collapse;\n }\n", if $html;
+    print " table, td, th {\n  border: 1px solid black;\n }\n", if $html;
     print "</style>\n", if $html;
     print "</head>\n", if $html;
     print "<table border=\"1\" width = \"300\">\n", if $html;
     print "  <tr>\n    <th style=\"text-align:left\">Name</th>\n", if $html;
     print "    <th style=\"text-align:center\">Score</th>\n  </tr>\n", if $html;
-
-    #print "<head>\n<style>", if $html;
-    #print "table, th, td {\n    border: 1px solid black;\n    border-collapse: collapse;\n}\n", if $html;
-    #print "th, td {\n    text-align: left;\n}\n", if $html;
-    #print "</style>\n</head>\n", if $html;
-    #print "<table style=\"width:25\%\"></br>\n", if $html;
-    #print "  <tr>\n    <th>Name</th>\n    <th style=\"text-align:center\">Score</th>\n  </tr>\n", if $html;
 
     foreach $pn (keys %p) {
 	if (($p{$pn}{total_strokes} == 0) || ($p{$pn}{total_rounds} == 0) ||
@@ -230,9 +223,10 @@ if ($top_gun) {
             foreach $w ($start_week..$end_week) {
 		if ($p{$pn}{$yp}{$w} != 0 && $p{$pn}{$yp}{$w} < 40) {
 		    print "  <tr>\n", if $html;
-		    printf("    <td>%-20s</td>\n    <td style=\"text-align:center\">%d", $pn, $p{$pn}{$yp}{$w}), if $html;
+		    printf("    <td>%s</td>\n", $pn), if $html;
+		    printf("    <td style=\"text-align:center\">%d</td>\n", $p{$pn}{$yp}{$w}), if $html;
 		    print "  </tr>\n", if $html;
-		    printf("%-17s: year %-4d week %-2s shot %d\n", $pn, $yp, $w, $p{$pn}{$yp}{$w}), if !$html;
+		    printf("%-17s: shot %d\n", $pn, $p{$pn}{$yp}{$w}), if !$html;
 		    $has_rounds = 1;
 		}
 	    }
@@ -242,7 +236,7 @@ if ($top_gun) {
 	    print "\n", if !$html;
 	}
     }
-    print "</table></br>", if $html;
+    print "</table></br>\n", if $html;
 }
 
 if ($others) {
@@ -454,8 +448,8 @@ sub print_tables {
 	print "<b> - Week $start_week:</b>", if ($start_week == $end_week) && $html;
 	print "\n<head>\n", if $html;
 	print "<style>\n", if $html;
-	print " table {\n  border-collapse: collapse;  }\n", if $html;
-	print " table, td, th {\n  border: 1px solid black;\n  }\n", if $html;
+	print " table {\n  border-collapse: collapse;\n }\n", if $html;
+	print " table, td, th {\n  border: 1px solid black;\n }\n", if $html;
 	print "</style>\n", if $html;
 	print "</head>\n", if $html;
 	#print "<table style=\"width:25\%\"></br>\n", if $html;
@@ -466,10 +460,10 @@ sub print_tables {
 	foreach my $key (sort { $birds{$b} <=> $birds{$a} } keys %birds) {
 	    printf "%-20s %4d\n", $key, $birds{$key}, if !$html;
 	    print "  <tr>\n", if $html;
-	    printf "    <td>%-20s</td>\n    <td style=\"text-align:center\">%4d</td>\n", $key, $birds{$key}, if $html;
+	    printf "    <td>%s</td>\n    <td style=\"text-align:center\">%d</td>\n", $key, $birds{$key}, if $html;
 	    print "  </tr>\n", if $html;
 	}
-	print "</table></br>", if $html;
+	print "</table></br>\n", if $html;
 	print "\n", if !$html;
     }
 
@@ -486,8 +480,8 @@ sub print_tables {
 	print "<b> - Week $start_week:</b>", if ($start_week == $end_week) && $html;
 	print "\n<head>\n", if $html;
 	print "<style>\n", if $html;
-	print " table {\n  border-collapse: collapse;  }\n", if $html;
-	print " table, td, th {\n  border: 1px solid black;\n  }\n", if $html;
+	print " table {\n  border-collapse: collapse;\n }\n", if $html;
+	print " table, td, th {\n  border: 1px solid black;\n }\n", if $html;
 	print "</style>\n", if $html;
 	print "</head>\n", if $html;
 	#print "<table style=\"width:25\%\"></br>\n", if $html;
@@ -497,10 +491,10 @@ sub print_tables {
 	foreach my $key (sort { $eagles{$b} <=> $eagles{$a} } keys %eagles) {
 	    printf "%-20s %4d\n", $key, $eagles{$key}, if !$html;
 	    print "  <tr>\n", if $html;
-	    printf "    <td>%-20s</td>\n    <td style=\"text-align:center\">%4d</td>", $key, $eagles{$key}, if $html;
+	    printf "    <td>%s</td>\n    <td style=\"text-align:center\">%d</td>", $key, $eagles{$key}, if $html;
 	    print "  </tr>\n", if $html;
 	}
-	print "</table></br>", if $html;
+	print "</table></br>\n", if $html;
 	print "\n", if !$html;
     }
 }
