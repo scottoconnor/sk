@@ -238,14 +238,14 @@ if ($top_gun) {
 		    printf("    <td>%s</td>\n", $pn), if $html;
 		    printf("    <td style=\"text-align:center\">%d</td>\n", $p{$pn}{$yp}{$w}), if $html;
 		    print "  </tr>\n", if $html;
-		    printf("%-17s: shot %d\n", $pn, $p{$pn}{$yp}{$w}), if !$html;
+		    printf("%-17s: shot %d (week %d)\n", $pn, $p{$pn}{$yp}{$w}, $w), if !$html;
 		    $has_rounds = 1;
 		}
 	    }
 	}
 	if ($has_rounds) {
 	    $has_rounds = 0;
-	    print "\n", if !$html;
+	    print "\n", if (!$html && ($start_week != $end_week));
 	}
     }
     print "</table></br>\n", if $html;
