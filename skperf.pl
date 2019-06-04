@@ -19,6 +19,7 @@ $start_year = $end_year = (1900 + (localtime)[5]);
 $only_year = 0;
 $start_week = 1;
 $end_week = 15;
+$only_week = 0;
 $all_time = 0;
 $vhc = 0;
 $top_gun = 0;
@@ -50,6 +51,7 @@ GetOptions (
 	"y=i" => \$only_year,
 	"sw=i" => \$start_week,
 	"ew=i" => \$end_week,
+	"w=i" => \$only_week,
 	"is" => \$include_subs,
 	"vhc" => \$vhc,
 	"at" => \$all_time,
@@ -74,6 +76,10 @@ if ($all_time || $stats || $tables || $top_gun || $vhc || $others || $hardest) {
 
 if ($only_year) {
     $start_year = $end_year = $only_year;
+}
+
+if ($only_week) {
+    $start_week = $end_week = $only_week;
 }
 
 undef(%y);
