@@ -16,6 +16,7 @@ use Getopt::Long;
 $cur_month = (localtime)[4];
 $cur_day = (localtime)[3];
 $start_year = $end_year = (1900 + (localtime)[5]);
+$only_year = 0;
 $start_week = 1;
 $end_week = 15;
 $all_time = 0;
@@ -46,6 +47,7 @@ if ($start_year == 2019 && $year_day < 128) {
 GetOptions (
 	"sy=i" => \$start_year,
 	"ey=i" => \$end_year,
+	"y=i" => \$only_year,
 	"sw=i" => \$start_week,
 	"ew=i" => \$end_week,
 	"is" => \$include_subs,
@@ -68,6 +70,10 @@ if ($all_time || ($start_year < 1997)) {
 
 if ($all_time || $stats || $tables || $top_gun || $vhc || $others || $hardest) {
     $include_subs = 1;
+}
+
+if ($only_year) {
+    $start_year = $end_year = $only_year;
 }
 
 undef(%y);
