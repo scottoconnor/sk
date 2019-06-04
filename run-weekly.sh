@@ -43,7 +43,6 @@ YEAR=${CUR_YEAR}
 echo "</br></br>" >> /tmp/${YEAR}.html
 
 until [ ${WEEK} -lt 1 ]; do
-    echo $WEEK
     ./skperf.pl -h -s -t -y ${YEAR} -w ${WEEK} >> /tmp/${YEAR}.html
     ./skperf.pl -h -g -y ${YEAR} -w ${WEEK} >> /tmp/${YEAR}.html
     echo "</br></br>" >> /tmp/${YEAR}.html
