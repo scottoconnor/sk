@@ -24,7 +24,7 @@ $num_weeks = 0;
 #
 for ($year = $cur_year; $year <= $cur_year; $year++) {
     for ($week = 1; $week <= 15; $week++) {
-	$ret = `./skperf.pl -s -sy $year -ey $year -sw $week -ew $week | grep "Total holes played"`;
+	$ret = `./skperf.pl -s -y $year -w $week | grep "Total holes played"`;
 	($ret) = $ret =~ /Total holes played: (\d+)/;
 	if ($ret > 0) {
 	    $num_weeks++;
@@ -38,7 +38,7 @@ for ($year = $start_year; $year <= $cur_year; $year++) {
 
 
     if ($all_time) {
-    	@return = `./skperf.pl -s -sy $year -ey $year`;
+    	@return = `./skperf.pl -s -y $year`;
 	while ($line = shift @return) {
 	    chomp ($line);
 	    if (($ft) = $line =~ /50\053 = (\d+)/) {
@@ -79,7 +79,7 @@ for ($year = $start_year; $year <= $cur_year; $year++) {
 	# Weekly stats now
 	#
 
-        @return = `./skperf.pl -s -sy $year -ey $year -sw $week -ew $week`;
+        @return = `./skperf.pl -s -y $year -w $week`;
 	while ($line = shift @return) {
 	    chomp ($line);
 	    if (($wft) = $line =~ /50\053 = (\d+)/) {
@@ -116,7 +116,7 @@ for ($year = $start_year; $year <= $cur_year; $year++) {
     }
 
     if ($cumulative_stats) {
-        @return = `./skperf.pl -s -sy $year -ey $year -sw 1 -ew $week`;
+        @return = `./skperf.pl -s -y $year -sw 1 -ew $week`;
 	while ($line = shift @return) {
 	    chomp ($line);
 	    if (($cft) = $line =~ /50\053 = (\d+)/) {
