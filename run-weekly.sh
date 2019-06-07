@@ -49,6 +49,8 @@ until [ ${WEEK} -lt 1 ]; do
     let WEEK-=1
 done
 
+./stats.pl -w -h >> /tmp/${YEAR}.html
+./stats.pl -c -h >> /tmp/${YEAR}.html
 
 #
 # All time table stats since START_YEAR 
