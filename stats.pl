@@ -159,7 +159,7 @@ if ($weekly_stats) {
 
   if ($html) {
     print "<!DOCTYPE html>
-    <H2>Comparison for week $week\'s</H2>
+    <H2>Comparison of week $week\'s</H2>
     <html>
     <head>
     <style>
@@ -226,7 +226,7 @@ if ($weekly_stats) {
     <table style=\"width:30%\">
     ";
   }
-  print "<br><br>\n";
+  print "<br><br>\n", if $html;
   print "<caption><b>Scores in the 30's on week $week</b></caption>", if $html;
   if ($html) {
     print "
@@ -281,7 +281,7 @@ if ($weekly_stats) {
     <table style=\"width:30%\">
     ";
   }
-  print "<br><br>\n";
+  print "<br><br>\n", if $html;
   print "<caption><b>Scores in the 50's on week $week</b></caption>", if $html;
   if ($html) {
     print "
@@ -335,7 +335,7 @@ if ($weekly_stats) {
     <table style=\"width:30%\">
     ";
   }
-  print "<br><br>\n";
+  print "<br><br>\n", if $html;
   print "<caption><b>Others on week $week</b></caption>", if $html;
   if ($html) {
     print "
@@ -389,7 +389,7 @@ if ($weekly_stats) {
     <table style=\"width:30%\">
     ";
   }
-  print "<br><br>\n";
+  print "<br><br>\n", if $html;
   print "<caption><b>Bogies on week $week</b></caption>", if $html;
   if ($html) {
     print "
@@ -443,7 +443,7 @@ if ($weekly_stats) {
     <table style=\"width:30%\">
     ";
   }
-  print "<br><br>\n";
+  print "<br><br>\n", if $html;
   print "<caption><b>Pars on week $week</b></caption>", if $html;
   if ($html) {
     print "
@@ -497,7 +497,7 @@ if ($weekly_stats) {
     <table style=\"width:30%\">
     ";
   }
-  print "<br><br>\n";
+  print "<br><br>\n", if $html;
   print "<caption><b>Birdies on week $week</b></caption>", if $html;
   if ($html) {
     print "
@@ -551,7 +551,7 @@ if ($weekly_stats) {
     <table style=\"width:30%\">
     ";
   }
-  print "<br><br>\n";
+  print "<br><br>\n", if $html;
   print "<caption><b>Eagles on week $week</b></caption>", if $html;
   if ($html) {
     print "
@@ -593,7 +593,7 @@ if ($cumulative_stats) {
 
   if ($html) {
     print "<!DOCTYPE html>
-    <H2>Comparison for week 1 through $week</H2>
+    <H2>Comparison of weeks 1 through $week</H2>
     <html>
     <head>
     <style>
@@ -660,7 +660,7 @@ if ($cumulative_stats) {
     <table style=\"width:30%\">
     ";
   }
-  print "<br><br>\n";
+  print "<br><br>\n", if $html;
   print "<caption><b>Scores in the 30's<br>week 1 through $week</b></caption>", if $html;
   if ($html) {
     print "
@@ -714,7 +714,7 @@ if ($cumulative_stats) {
     <table style=\"width:30%\">
     ";
   }
-  print "<br><br>\n";
+  print "<br><br>\n", if $html;
   print "<caption><b>Scores in the 50+<br>week 1 through $week</b></caption>", if $html;
   if ($html) {
     print "
@@ -768,7 +768,7 @@ if ($cumulative_stats) {
     <table style=\"width:30%\">
     ";
   }
-  print "<br><br>\n";
+  print "<br><br>\n", if $html;
   print "<caption><b>Others<br>week 1 through $week</b></caption>", if $html;
   if ($html) {
     print "
@@ -822,7 +822,7 @@ if ($cumulative_stats) {
     <table style=\"width:30%\">
     ";
   }
-  print "<br><br>\n";
+  print "<br><br>\n", if $html;
   print "<caption><b>Bogies<br>week 1 through $week</b></caption>", if $html;
   if ($html) {
     print "
@@ -876,7 +876,7 @@ if ($cumulative_stats) {
     <table style=\"width:30%\">
     ";
   }
-  print "<br><br>\n";
+  print "<br><br>\n", if $html;
   print "<caption><b>Pars<br>week 1 through $week</b></caption>", if $html;
   if ($html) {
     print "
@@ -930,7 +930,7 @@ if ($cumulative_stats) {
     <table style=\"width:30%\">
     ";
   }
-  print "<br><br>\n";
+  print "<br><br>\n", if $html;
   print "<caption><b>Birdies<br>week 1 through $week</b></caption>", if $html;
   if ($html) {
     print "
@@ -984,7 +984,7 @@ if ($cumulative_stats) {
     <table style=\"width:30%\">
     ";
   }
-  print "<br><br>\n";
+  print "<br><br>\n", if $html;
   print "<caption><b>Eagles<br>week 1 through $week</b></caption>", if $html;
   if ($html) {
     print "
@@ -1093,7 +1093,7 @@ if ($all_time) {
     <table style=\"width:30%\">
     ";
   }
-  print "<br><br>\n";
+  print "<br><br>\n", if $html;
   print "<caption><b>Scores in the 30's</b></caption>", if $html;
   if ($html) {
     print "
@@ -1147,7 +1147,7 @@ if ($all_time) {
     <table style=\"width:30%\">
     ";
   }
-  print "<br><br>\n";
+  print "<br><br>\n", if $html;
   print "<caption><b>Scores in the 50+</b></caption>", if $html;
   if ($html) {
     print "
@@ -1201,7 +1201,7 @@ if ($all_time) {
     <table style=\"width:30%\">
     ";
   }
-  print "<br><br>\n";
+  print "<br><br>\n", if $html;
   print "<caption><b>Others</b></caption>", if $html;
   if ($html) {
     print "
@@ -1255,7 +1255,7 @@ if ($all_time) {
     <table style=\"width:30%\">
     ";
   }
-  print "<br><br>\n";
+  print "<br><br>\n", if $html;
   print "<caption><b>Bogies</b></caption>", if $html;
   if ($html) {
     print "
@@ -1309,7 +1309,7 @@ if ($all_time) {
     <table style=\"width:30%\">
     ";
   }
-  print "<br><br>\n";
+  print "<br><br>\n", if $html;
   print "<caption><b>Pars</b></caption>", if $html;
   if ($html) {
     print "
@@ -1363,7 +1363,7 @@ if ($all_time) {
     <table style=\"width:30%\">
     ";
   }
-  print "<br><br>\n";
+  print "<br><br>\n", if $html;
   print "<caption><b>Birdies</b></caption>", if $html;
   if ($html) {
     print "
@@ -1417,7 +1417,7 @@ if ($all_time) {
     <table style=\"width:30%\">
     ";
   }
-  print "<br><br>\n";
+  print "<br><br>\n", if $html;
   print "<caption><b>Eagles</b></caption>", if $html;
   if ($html) {
     print "
