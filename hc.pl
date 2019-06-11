@@ -52,7 +52,14 @@ while ($fna = shift @golfer_list) {
 }
 
 if ($trend == 0) {
-    print "\n";
+
+    $month = (localtime)[4];
+    $month++;
+    $day = (localtime)[3];
+    $year = (1900 + (localtime)[5]);
+
+    print "$month-$day-$year\n";
+
     foreach $team (sort keys(%t)) {
 	if ($team eq "Sub") {
 	    next;
