@@ -30,7 +30,8 @@ YEAR=${CUR_YEAR}
 until [ $YEAR -lt $START_YEAR ]; do
     ./skperf.pl -s -t -h -y $YEAR -sw 1 -ew $WEEK >> /tmp/${START_YEAR}-${CUR_YEAR}-week${WEEK}.html
     ./skperf.pl -s -t -h -y $YEAR -w $WEEK >> /tmp/${START_YEAR}-${CUR_YEAR}-only-week${WEEK}.html
-    echo "</br></br>" >> /tmp/${START_YEAR}-${CUR_YEAR}-week${WEEK}.html
+    echo "<br><br>" >> /tmp/${START_YEAR}-${CUR_YEAR}-week${WEEK}.html
+    echo "<br><br>" >> /tmp/${START_YEAR}-${CUR_YEAR}-only-week${WEEK}.html
     let YEAR-=1
 done
 
@@ -40,12 +41,12 @@ done
 #
 YEAR=${CUR_YEAR}
 ./skperf.pl -s -t -h -y ${YEAR} > /tmp/${YEAR}.html
-echo "</br></br>" >> /tmp/${YEAR}.html
+echo "<br><br>" >> /tmp/${YEAR}.html
 
 until [ ${WEEK} -lt 1 ]; do
     ./skperf.pl -h -s -t -y ${YEAR} -w ${WEEK} >> /tmp/${YEAR}.html
     ./skperf.pl -h -g -y ${YEAR} -w ${WEEK} >> /tmp/${YEAR}.html
-    echo "</br></br>" >> /tmp/${YEAR}.html
+    echo "<br><br>" >> /tmp/${YEAR}.html
     let WEEK-=1
 done
 

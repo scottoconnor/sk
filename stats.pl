@@ -250,7 +250,7 @@ if ($weekly_stats) {
 	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
 	    printf("      <td>%d</td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{wthirty}), if $html;
-	    printf("      <td>%.2f</td>\n    </tr>\n", (($y{$xx}{wthirty} / $y{$xx}{twposted}) * 100)), if $html;
+	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{wthirty} / $y{$xx}{twposted}) * 100)), if $html;
 	}
 	printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{wthirty}, (($y{$xx}{wthirty} / $y{$xx}{twposted}) * 100)), if !$html;
 
@@ -305,7 +305,7 @@ if ($weekly_stats) {
 	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
 	    printf("      <td>%d</td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{wft}), if $html;
-	    printf("      <td>%.2f</td>\n    </tr>\n", (($y{$xx}{wft} / $y{$xx}{twposted}) * 100)), if $html;
+	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{wft} / $y{$xx}{twposted}) * 100)), if $html;
 	}
 	printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{wft}, (($y{$xx}{wft} / $y{$xx}{twposted}) * 100)), if !$html;
     }
@@ -359,7 +359,7 @@ if ($weekly_stats) {
 	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
 	    printf("      <td>%d</td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{two}), if $html;
-	    printf("      <td>%.2f</td>\n    </tr>\n", (($y{$xx}{two} / $y{$xx}{twh}) * 100)), if $html;
+	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{two} / $y{$xx}{twh}) * 100)), if $html;
 	}
 	printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{two}, (($y{$xx}{two} / $y{$xx}{twh}) * 100)), if !$html;
     }
@@ -413,7 +413,7 @@ if ($weekly_stats) {
 	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
 	    printf("      <td>%d</td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{twbo}), if $html;
-	    printf("      <td>%.2f</td>\n    </tr>\n", (($y{$xx}{twbo} / $y{$xx}{twh}) * 100)), if $html;
+	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{twbo} / $y{$xx}{twh}) * 100)), if $html;
 	}
 	printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{twbo}, (($y{$xx}{twbo} / $y{$xx}{twh}) * 100)), if !$html;
     }
@@ -467,7 +467,7 @@ if ($weekly_stats) {
 	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
 	    printf("      <td>%d</td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{twp}), if $html;
-	    printf("      <td>%.2f</td>\n    </tr>\n", (($y{$xx}{twp} / $y{$xx}{twh}) * 100)), if $html;
+	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{twp} / $y{$xx}{twh}) * 100)), if $html;
 	}
 	printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{twp}, (($y{$xx}{twp} / $y{$xx}{twh}) * 100)), if !$html;
     }
@@ -521,7 +521,7 @@ if ($weekly_stats) {
 	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
 	    printf("      <td>%d</td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{twb}), if $html;
-	    printf("      <td>%.2f</td>\n    </tr>\n", (($y{$xx}{twb} / $y{$xx}{twh}) * 100)), if $html;
+	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{twb} / $y{$xx}{twh}) * 100)), if $html;
 	}
 	printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{twb}, (($y{$xx}{twb} / $y{$xx}{twh}) * 100)), if !$html;
     }
@@ -575,7 +575,7 @@ if ($weekly_stats) {
 	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
 	    printf("      <td>%d</td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{twe}), if $html;
-	    printf("      <td>%.2f</td>\n    </tr>\n", (($y{$xx}{twe} / $y{$xx}{twh}) * 100)), if $html;
+	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{twe} / $y{$xx}{twh}) * 100)), if $html;
 	}
 	printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{twe}, (($y{$xx}{twe} / $y{$xx}{twh}) * 100)), if !$html;
     }
@@ -684,7 +684,7 @@ if ($cumulative_stats) {
 	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
 	    printf("      <td>%d</td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{cthirty}), if $html;
-	    printf("      <td>%.2f</td>\n    </tr>\n", (($y{$xx}{cthirty} / $y{$xx}{tcuposted}) * 100)), if $html;
+	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{cthirty} / $y{$xx}{tcuposted}) * 100)), if $html;
 	}
 	printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{cthirty}, (($y{$xx}{cthirty} / $y{$xx}{tcuposted}) * 100)), if !$html;
     }
@@ -738,7 +738,7 @@ if ($cumulative_stats) {
 	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
 	    printf("      <td>%d</td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{cft}), if $html;
-	    printf("      <td>%.2f</td>\n    </tr>\n", (($y{$xx}{cft} / $y{$xx}{tcuposted}) * 100)), if $html;
+	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{cft} / $y{$xx}{tcuposted}) * 100)), if $html;
 	}
 	printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{cft}, (($y{$xx}{cft} / $y{$xx}{tcuposted}) * 100)), if !$html;
     }
@@ -792,7 +792,7 @@ if ($cumulative_stats) {
 	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
 	    printf("      <td>%d</td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{cto}), if $html;
-	    printf("      <td>%.2f</td>\n    </tr>\n", (($y{$xx}{cto} / $y{$xx}{cth}) * 100)), if $html;
+	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{cto} / $y{$xx}{cth}) * 100)), if $html;
 	}
 	printf("%2d: %d -> %d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{cto}, (($y{$xx}{cto} / $y{$xx}{cth}) * 100)), if !$html;
     }
@@ -846,7 +846,7 @@ if ($cumulative_stats) {
 	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
 	    printf("      <td>%d</td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{ctbo}), if $html;
-	    printf("      <td>%.2f</td>\n    </tr>\n", (($y{$xx}{ctbo} / $y{$xx}{cth}) * 100)), if $html;
+	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{ctbo} / $y{$xx}{cth}) * 100)), if $html;
 	}
 	printf("%2d: %d -> %d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{ctbo}, (($y{$xx}{ctbo} / $y{$xx}{cth}) * 100)), if !$html;
     }
@@ -900,7 +900,7 @@ if ($cumulative_stats) {
 	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
 	    printf("      <td>%d</td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{ctp}), if $html;
-	    printf("      <td>%.2f</td>\n    </tr>\n", (($y{$xx}{ctp} / $y{$xx}{cth}) * 100)), if $html;
+	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{ctp} / $y{$xx}{cth}) * 100)), if $html;
 	}
 	printf("%2d: %d -> %d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{ctp}, (($y{$xx}{ctp} / $y{$xx}{cth}) * 100)), if !$html;
     }
@@ -954,7 +954,7 @@ if ($cumulative_stats) {
 	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
 	    printf("      <td>%d</td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{ctb}), if $html;
-	    printf("      <td>%.2f</td>\n    </tr>\n", (($y{$xx}{ctb} / $y{$xx}{cth}) * 100)), if $html;
+	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{ctb} / $y{$xx}{cth}) * 100)), if $html;
 	}
 	printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{ctb}, (($y{$xx}{ctb} / $y{$xx}{cth}) * 100)), if !$html;
     }
@@ -1008,7 +1008,7 @@ if ($cumulative_stats) {
 	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
 	    printf("      <td>%d</td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{cte}), if $html;
-	    printf("      <td>%.2f</td>\n    </tr>\n", (($y{$xx}{cte} / $y{$xx}{cth}) * 100)), if $html;
+	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{cte} / $y{$xx}{cth}) * 100)), if $html;
 	}
 	printf("%2d: %d -> %d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{cte}, (($y{$xx}{cte} / $y{$xx}{cth}) * 100)), if !$html;
     }
@@ -1117,7 +1117,7 @@ if ($all_time) {
 	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
 	    printf("      <td>%d</td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{thirty}), if $html;
-	    printf("      <td>%.2f</td>\n    </tr>\n", (($y{$xx}{thirty} / $y{$xx}{tposted}) * 100)), if $html;
+	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{thirty} / $y{$xx}{tposted}) * 100)), if $html;
 	}
 	printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{thirty}, (($y{$xx}{thirty} / $y{$xx}{tposted}) * 100)), if !$html;
     }
@@ -1171,7 +1171,7 @@ if ($all_time) {
 	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
 	    printf("      <td>%d</td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{ft}), if $html;
-	    printf("      <td>%.2f</td>\n    </tr>\n", (($y{$xx}{ft} / $y{$xx}{tposted}) * 100)), if $html;
+	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{ft} / $y{$xx}{tposted}) * 100)), if $html;
 	}
 	printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{ft}, (($y{$xx}{ft} / $y{$xx}{tposted}) * 100)), if !$html;
     }
@@ -1225,7 +1225,7 @@ if ($all_time) {
 	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
 	    printf("      <td>%d</td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{to}), if $html;
-	    printf("      <td>%.2f</td>\n    </tr>\n", (($y{$xx}{to} / $y{$xx}{tposted}) * 100)), if $html;
+	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{to} / $y{$xx}{tposted}) * 100)), if $html;
 	}
 	printf("%2d: %d -> %d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{to}, (($y{$xx}{to} / $y{$xx}{th}) * 100)), if !$html;
     }
@@ -1279,7 +1279,7 @@ if ($all_time) {
 	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
 	    printf("      <td>%d</td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{tbo}), if $html;
-	    printf("      <td>%.2f</td>\n    </tr>\n", (($y{$xx}{tbo} / $y{$xx}{tposted}) * 100)), if $html;
+	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{tbo} / $y{$xx}{tposted}) * 100)), if $html;
 	}
 	printf("%2d: %d -> %d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{tbo}, (($y{$xx}{tbo} / $y{$xx}{th}) * 100)), if !$html;
     }
@@ -1333,7 +1333,7 @@ if ($all_time) {
 	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
 	    printf("      <td>%d</td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{tp}), if $html;
-	    printf("      <td>%.2f</td>\n    </tr>\n", (($y{$xx}{tp} / $y{$xx}{tposted}) * 100)), if $html;
+	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{tp} / $y{$xx}{tposted}) * 100)), if $html;
 	}
 	printf("%2d: %d -> %d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{tp}, (($y{$xx}{tp} / $y{$xx}{th}) * 100)), if !$html;
     }
@@ -1387,7 +1387,7 @@ if ($all_time) {
 	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
 	    printf("      <td>%d</td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{tb}), if $html;
-	    printf("      <td>%.2f</td>\n    </tr>\n", (($y{$xx}{tb} / $y{$xx}{tposted}) * 100)), if $html;
+	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{tb} / $y{$xx}{tposted}) * 100)), if $html;
 	}
 	printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{tb}, (($y{$xx}{tb} / $y{$xx}{th}) * 100)), if !$html;
     }
@@ -1441,7 +1441,7 @@ if ($all_time) {
 	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
 	    printf("      <td>%d</td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{te}), if $html;
-	    printf("      <td>%.2f</td>\n    </tr>\n", (($y{$xx}{te} / $y{$xx}{tposted}) * 100)), if $html;
+	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{te} / $y{$xx}{tposted}) * 100)), if $html;
 	}
 	printf("%2d: %d -> %d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{te}, (($y{$xx}{te} / $y{$xx}{th}) * 100)), if !$html;
     }
