@@ -544,7 +544,8 @@ sub print_player_stats {
 	    $total_player_rounds += $p{$x}{$sc}{xplayed};
 	}
 	print "\nTotal Strokes = $p{$x}{total_strokes}\n";
-	printf("Total Average Score = %.2f\n", ($p{$x}{total_strokes} / $total_player_rounds));
+	printf("Average Score = %.2f\n", ($p{$x}{total_strokes} / $total_player_rounds));
+	printf("Total Birdies = %d\n", $p{$x}{tb});
 
 	print "\n";
 
