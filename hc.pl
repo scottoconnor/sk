@@ -20,7 +20,13 @@ GetOptions (
     "d" => \$debug)
 or die("Error in command line arguments\n");
 
+$month = (localtime)[4];
+$month++;
+$day = (localtime)[3];
+$year = (1900 + (localtime)[5]);
+
 if ($convert) {
+    print "$month-$day-$year";
     &con_skhist;
     exit;
 }
@@ -52,11 +58,6 @@ while ($fna = shift @golfer_list) {
 }
 
 if ($trend == 0) {
-
-    $month = (localtime)[4];
-    $month++;
-    $day = (localtime)[3];
-    $year = (1900 + (localtime)[5]);
 
     print "$month-$day-$year\n";
 
