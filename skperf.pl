@@ -32,6 +32,7 @@ $html = 0;
 $others = 0;
 $hires = 0;
 $hardest = 0;
+$course_stats = 0;
 
 if ($#ARGV < 0) {
     exit;
@@ -55,6 +56,7 @@ GetOptions (
 	"is" => \$include_subs,
 	"vhc" => \$vhc,
 	"at" => \$all_time,
+	"c" => \$course_stats,
 	"s" =>  \$stats,
 	"p" =>  \$player_stats,
 	"t" =>  \$tables,
@@ -70,7 +72,7 @@ if ($all_time || ($start_year < 1997)) {
     $start_year = 1997;
 }
 
-if ($all_time || $stats || $tables || $top_gun || $vhc || $others || $hardest) {
+if ($all_time || $stats || $tables || $top_gun || $vhc || $others || $hardest || $course_stats) {
     $include_subs = 1;
 }
 
@@ -443,6 +445,22 @@ sub print_stats {
     }
 }
 
+if ($course_stats) {
+    @courses = ("SF", "SB", "NF", "NB");
+    while ($sc = shift @courses) {
+	if ($c{$sc}{total_strokes} == 0) {
+	    next;
+	}
+	$c{$sc}{ave_score} = ($c{$sc}{total_strokes} / $c{$sc}{total_scores});
+    }
+    foreach my $key (reverse sort { $c{$b}{ave_score} <=> $c{$a}{ave_score} } keys %c) {
+	if ($c{$key}{total_strokes} == 0) {
+	    next;
+	}
+	printf("%-11s: Stroke Average = %.2f\n", $c{$key}->{name}, ($c{$key}{ave_score}));
+    }
+}
+
 sub print_tables {
 
     my($yp) = @_;
@@ -708,6 +726,8 @@ sub get_player_scores {
 		$y{$cy}{total_strokes} += $shot;
 		$y{$cy}{total_scores}++;
 		$totals{total_scores}++;
+		$c{$course}{total_strokes} += $shot;
+		$c{$course}{total_scores}++;
 
 		$p{$pn}{total_rounds}++;
 		$p{$pn}{total_strokes} += $shot;
