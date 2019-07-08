@@ -101,7 +101,7 @@ if ($vhc) {
 opendir($dh, "./golfers") || die "Can't open \"golfers\" directory.";
 
 while (readdir $dh) {
-    if ($_ =~ /(1\d{3}$)/) {
+    if ($_ =~ /(^1\d{3}$)/) {
 	push @global_golfer_list, $_;
     }
 }
