@@ -33,6 +33,7 @@ $others = 0;
 $hires = 0;
 $hardest = 0;
 $course_stats = 0;
+$most_improved = 0;
 
 if ($#ARGV < 0) {
     exit;
@@ -59,6 +60,7 @@ GetOptions (
 	"c" => \$course_stats,
 	"s" =>  \$stats,
 	"p" =>  \$player_stats,
+	"m" =>  \$most_improved,
 	"t" =>  \$tables,
 	"g" =>  \$top_gun,
 	"o" => \$others,
@@ -90,7 +92,7 @@ undef(%p);
 #
 # Load the players handcaip trend in case they are needed.
 #
-if ($vhc) {
+if ($vhc || $most_improved) {
     get_player_trend();
 }
 
@@ -657,12 +659,32 @@ sub get_player_trend {
 
     while (<TD>) {
 	@ary = split(/:/, $_);
+
+	if (!defined($p{$ary[0]}{A}) && $ary[1] =~ /2019/) {
+	    $p{$ary[0]}{A} = ($ary[2] + 6);
+	}
+
+	if (!defined($p{$ary[0]}{B}) && $ary[1] =~ /current/) {
+	    $p{$ary[0]}{B} = ($ary[2] + 6);
+	}
 	if ($ary[1] eq "current") {
 	    next;
 	}
 	$p{$ary[0]}{$ary[1]}{hc} = $ary[3];
     }
     close(TD);
+
+    if ($most_improved) {
+    	foreach $pn (keys %p) {
+	    if (defined($p{$pn}{A}) && defined($p{$pn}{B})) {
+		$m{$pn}{mi} = ($p{$pn}{A} / $p{$pn}{B});
+		$m{$pn}{mi} = round_thousands($m{$pn}{mi});
+	    }
+	}
+	foreach $pn (reverse sort { $m{$a}{mi} <=> $m{$b}{mi} } (keys(%m))) {
+	    printf("%-17s %.3f\n", $pn, $m{$pn}{mi});
+	}
+    }
 }
 
 sub get_player_scores {

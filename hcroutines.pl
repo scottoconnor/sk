@@ -24,6 +24,18 @@ sub nscores {
 }
 
 #
+# Rounds to the nearest thousands position.
+#
+sub round_thousands {
+    my ($r) = @_;
+
+    $r *= 1000;
+    $r = int($r + 0.5);
+    $r /= 1000;
+    return ($r);
+}
+
+#
 # Rounds to the nearest hundredth position.
 #
 sub round_hundredth {
