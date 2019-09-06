@@ -660,7 +660,7 @@ sub get_player_trend {
     while (<TD>) {
 	@ary = split(/:/, $_);
 
-	if (!defined($p{$ary[0]}{A}) && $ary[1] =~ /2019/) {
+	if (!defined($p{$ary[0]}{A}) && $ary[1] =~ /${start_year}/) {
 	    $p{$ary[0]}{A} = ($ary[2] + 6);
 	}
 
