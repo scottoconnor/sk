@@ -73,6 +73,10 @@ sub gen_hc_trend {
 	($first, $last, $team, $active) = split(/:/, $scores[0]);
 	$pn = $first . " " . $last;
 
+	if ($team ne "Sub") {
+	    $team = "TNFB";
+	}
+
 	shift @scores;
 
 	$num = @scores;
@@ -138,7 +142,7 @@ sub gen_hc_trend {
 
 		$sf = int(($hi * $c{SF}->{slope} / 113) + 0.5);
 
-		printf ("%s:%s:%.1f:%d\n", $pn, $date, $hi, $sf), if $output;
+		printf ("%s:%s:%s:%.1f:%d\n", $pn, $team, $date, $hi, $sf), if $output;
 
 		$p{$pn}{$date}{hc} = $sf, if ($output == 0);
 

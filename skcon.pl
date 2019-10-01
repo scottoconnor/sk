@@ -184,7 +184,11 @@ sub convert_player {
 	    ($a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8]) = $line =~
 		/^(\d)(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})\056(\d{2})(\d)\054/;
 
-	    die, if ($a[8] != 1);
+	    if ($a[8] != 1) {
+		close(FD);
+		close(NFD); 
+		die "Last hole should be 1 (which is a 10): line: $line\n";
+	    }
 
 	    $a[8] = 10;  # in this format
 

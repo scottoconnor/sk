@@ -159,7 +159,7 @@ if ($vhc) {
     }
 
     foreach $pn (sort { $p{$a}{avediff} <=> $p{$b}{avediff} } (keys(%p))) {
-	if ($p{$pn}{total_strokes} == 0 ||
+	if ($p{$pn}{total_rounds} == 0 ||
 	    (($p{$pn}{team} eq "Sub") && ($include_subs == 0))) {
 		next;
 	}
@@ -242,7 +242,7 @@ if ($top_gun) {
 		    printf("    <td>%s</td>\n", $pn), if $html;
 		    printf("    <td style=\"text-align:center\">%d</td>\n", $p{$pn}{$yp}{$w}), if $html;
 		    print "  </tr>\n", if $html;
-		    printf("%-17s: shot %d (week %d)\n", $pn, $p{$pn}{$yp}{$w}, $w), if !$html;
+		    printf("%-17s: shot %d (week %d, year %d)\n", $pn, $p{$pn}{$yp}{$w}, $w, $yp), if !$html;
 		    $has_rounds = 1;
 		}
 	    }
@@ -660,17 +660,18 @@ sub get_player_trend {
     while (<TD>) {
 	@ary = split(/:/, $_);
 
-	if (!defined($p{$ary[0]}{A}) && $ary[1] =~ /2019/) {
-	    $p{$ary[0]}{A} = ($ary[2] + 6);
+	if (!defined($p{$ary[0]}{A}) && $ary[2] =~ /$start_year/) {
+	    $p{$ary[0]}{A} = ($ary[3] + 6);
+	    $p{$ary[0]}{team} = $ary[1];
 	}
 
-	if (!defined($p{$ary[0]}{B}) && $ary[1] =~ /current/) {
-	    $p{$ary[0]}{B} = ($ary[2] + 6);
+	if (!defined($p{$ary[0]}{B}) && defined($p{$ary[0]}{A}) && $ary[2] =~ /current/) {
+	    $p{$ary[0]}{B} = ($ary[3] + 6);
 	}
 	if ($ary[1] eq "current") {
 	    next;
 	}
-	$p{$ary[0]}{$ary[1]}{hc} = $ary[3];
+	$p{$ary[0]}{$ary[2]}{hc} = $ary[4];
     }
     close(TD);
 
@@ -679,9 +680,13 @@ sub get_player_trend {
 	    if (defined($p{$pn}{A}) && defined($p{$pn}{B})) {
 		$m{$pn}{mi} = ($p{$pn}{A} / $p{$pn}{B});
 		$m{$pn}{mi} = round_thousands($m{$pn}{mi});
+		$m{$pn}{team} = $p{$pn}{team};
 	    }
 	}
 	foreach $pn (reverse sort { $m{$a}{mi} <=> $m{$b}{mi} } (keys(%m))) {
+	    if ($m{$pn}{team} eq "Sub") {
+		next;
+	    }
 	    printf("%-17s %.3f\n", $pn, $m{$pn}{mi});
 	}
     }

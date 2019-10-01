@@ -37,7 +37,7 @@ if ($convert) {
 opendir($dh, "./golfers") || die "Can't open \"golfers\" directory.";
 
 while (readdir $dh) {
-    if ($_ =~ /(1\d{3}$)/) {
+    if ($_ =~ /(^1\d{3}$)/) {
 	push @golfer_list, $_;
     }
 }
