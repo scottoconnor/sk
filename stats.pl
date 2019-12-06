@@ -5,15 +5,22 @@
 
 use Getopt::Long;
 
-$cur_year = (1900 + (localtime)[5]);
+$year = (1900 + (localtime)[5]);
 $start_year = 2003;
 $html = 0;
+
+
+if ($#ARGV < 0) {
+    print "Usage:\n";
+    print "stats.pl: -c for cumlative and/or -w for weekly\n";
+    exit;
+}
 
 GetOptions (
 	"w" => \$weekly_stats,
 	"c" => \$cumulative_stats,
 	"h" => \$html,
-	"y=i" => \$start_year,
+	"y=i" => \$year,
 	"a" => \$all_time)
 or die("Error in command line arguments\n");
 
@@ -24,54 +31,51 @@ $num_weeks = 0;
 #
 # First, find how many weeks have been played in the current year.
 #
-for ($year = $cur_year; $year <= $cur_year; $year++) {
-    for ($week = 1; $week <= 15; $week++) {
-	$ret = `./skperf.pl -s -y $year -w $week | grep "Total holes played"`;
-	($ret) = $ret =~ /Total holes played: (\d+)/;
-	if ($ret > 0) {
-	    $num_weeks++;
-	}
+for ($week = 1; $week <= 15; $week++) {
+    $ret = `./skperf.pl -s -y $year -w $week | grep "Total holes played"`;
+    ($ret) = $ret =~ /Total holes played: (\d+)/;
+    if ($ret > 0) {
+	$num_weeks++;
     }
 }
 
 $week = $num_weeks;
 
-for ($year = $start_year; $year <= $cur_year; $year++) {
-
+for ($y = $start_year; $y <= $year; $y++) {
 
     if ($all_time) {
-    	@return = `./skperf.pl -s -y $year`;
+    	@return = `./skperf.pl -s -y $y`;
 	while ($line = shift @return) {
 	    chomp ($line);
 	    if (($ft) = $line =~ /50\053 = (\d+)/) {
-		$y{$year}{ft} = $ft;
+		$y{$y}{ft} = $ft;
 	    }
 	    if (($thirty) = $line =~ /30\047s = (\d+)/) {
-		defined($y{$year}{thirty} = $thirty);
+		defined($y{$y}{thirty} = $thirty);
 	    }
 	    if (($to) = $line =~ /Total Others = (\d+)/) {
-		$y{$year}{to} = $to;
+		$y{$y}{to} = $to;
 	    }
 	    if (($tbo) = $line =~ /Total Bogies = (\d+)/) {
-		$y{$year}{tbo} = $tbo;
+		$y{$y}{tbo} = $tbo;
 	    }
 	    if (($tp) = $line =~ /Total Pars = (\d+)/) {
-		$y{$year}{tp} = $tp;
+		$y{$y}{tp} = $tp;
 	    }
 	    if (($tb) = $line =~ /Total Birdies = (\d+)/) {
-		$y{$year}{tb} = $tb;
+		$y{$y}{tb} = $tb;
 	    }
 	    if (($te) = $line =~ /Total Eagles = (\d+)/) {
-		$y{$year}{te} = $te;
+		$y{$y}{te} = $te;
 	    }
 	    if (($lsa) = $line =~ /League Stroke Average = (\d+\056\d+)/) {
-		$y{$year}{lsa} = $lsa;
+		$y{$y}{lsa} = $lsa;
 	    }
 	    if (($th) = $line =~ /Total holes played: (\d+)/) {
-		$y{$year}{th} = $th;
+		$y{$y}{th} = $th;
 	    }
 	    if (($tposted) = $line =~ /Total Posted scores: (\d+)/) {
-		$y{$year}{tposted} = $tposted;
+		$y{$y}{tposted} = $tposted;
 	    }
 	}
     }
@@ -81,75 +85,75 @@ for ($year = $start_year; $year <= $cur_year; $year++) {
 	# Weekly stats now
 	#
 
-        @return = `./skperf.pl -s -y $year -w $week`;
+        @return = `./skperf.pl -s -y $y -w $week`;
 	while ($line = shift @return) {
 	    chomp ($line);
 	    if (($wft) = $line =~ /50\053 = (\d+)/) {
-		$y{$year}{wft} = $wft;
+		$y{$y}{wft} = $wft;
 	    }
 	    if (($thirty) = $line =~ /Total 30\047s = (\d+)/) {
-		defined($y{$year}{wthirty} = $thirty);
+		defined($y{$y}{wthirty} = $thirty);
 	    }
 	    if (($wlsa) = $line =~ /League Stroke Average = (\d+\056\d+)/) {
-		$y{$year}{wlsa} = $wlsa;
+		$y{$y}{wlsa} = $wlsa;
 	    }
 	    if (($two) = $line =~ /Total Others = (\d+)/) {
-		$y{$year}{two} = $two;
+		$y{$y}{two} = $two;
 	    }
 	    if (($twbo) = $line =~ /Total Bogies = (\d+)/) {
-		$y{$year}{twbo} = $twbo;
+		$y{$y}{twbo} = $twbo;
 	    }
 	    if (($twp) = $line =~ /Total Pars = (\d+)/) {
-		$y{$year}{twp} = $twp;
+		$y{$y}{twp} = $twp;
 	    }
 	    if (($twb) = $line =~ /Total Birdies = (\d+)/) {
-		$y{$year}{twb} = $twb;
+		$y{$y}{twb} = $twb;
 	    }
 	    if (($twe) = $line =~ /Total Eagles = (\d+)/) {
-		$y{$year}{twe} = $twe;
+		$y{$y}{twe} = $twe;
 	    }
 	    if (($twh) = $line =~ /Total holes played: (\d+)/) {
-		$y{$year}{twh} = $twh;
+		$y{$y}{twh} = $twh;
 	    }
 	    if (($twposted) = $line =~ /Total Posted scores: (\d+)/) {
-		$y{$year}{twposted} = $twposted;
+		$y{$y}{twposted} = $twposted;
 	    }
 	}
     }
 
     if ($cumulative_stats) {
-        @return = `./skperf.pl -s -y $year -sw 1 -ew $week`;
+        @return = `./skperf.pl -s -y $y -sw 1 -ew $week`;
 	while ($line = shift @return) {
 	    chomp ($line);
 	    if (($cft) = $line =~ /50\053 = (\d+)/) {
-		$y{$year}{cft} = $cft;
+		$y{$y}{cft} = $cft;
 	    }
 	    if (($thirty) = $line =~ /Total 30\047s = (\d+)/) {
-		defined($y{$year}{cthirty} = $thirty);
+		defined($y{$y}{cthirty} = $thirty);
 	    }
 	    if (($clsa) = $line =~ /League Stroke Average = (\d+\056\d+)/) {
-		$y{$year}{clsa} = $clsa;
+		$y{$y}{clsa} = $clsa;
 	    }
 	    if (($cto) = $line =~ /Total Others = (\d+)/) {
-		$y{$year}{cto} = $cto;
+		$y{$y}{cto} = $cto;
 	    }
 	    if (($ctbo) = $line =~ /Total Bogies = (\d+)/) {
-		$y{$year}{ctbo} = $ctbo;
+		$y{$y}{ctbo} = $ctbo;
 	    }
 	    if (($ctp) = $line =~ /Total Pars = (\d+)/) {
-		$y{$year}{ctp} = $ctp;
+		$y{$y}{ctp} = $ctp;
 	    }
 	    if (($ctb) = $line =~ /Total Birdies = (\d+)/) {
-		$y{$year}{ctb} = $ctb;
+		$y{$y}{ctb} = $ctb;
 	    }
 	    if (($cte) = $line =~ /Total Eagles = (\d+)/) {
-		$y{$year}{cte} = $cte;
+		$y{$y}{cte} = $cte;
 	    }
 	    if (($cth) = $line =~ /Total holes played: (\d+)/) {
-		$y{$year}{cth} = $cth;
+		$y{$y}{cth} = $cth;
 	    }
 	    if (($tcuposted) = $line =~ /Total Posted scores: (\d+)/) {
-		$y{$year}{tcuposted} = $tcuposted;
+		$y{$y}{tcuposted} = $tcuposted;
 	    }
 	}
     }
@@ -189,7 +193,7 @@ if ($weekly_stats) {
     print "\nLeague Stroke Average on week $week.\n", if !$html;
     $cnt = 1;
     foreach $xx (sort { $y{$a}{wlsa} <=> $y{$b}{wlsa} } (keys(%y))) {
-        if ($xx == 2019) {
+        if ($xx == $year) {
 	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
 	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
 	    printf("      <td><b><font color=\"green\">%.2f</font></b></td>\n    </tr>\n", $y{$xx}{wlsa}), if $html;
@@ -241,7 +245,7 @@ if ($weekly_stats) {
     print "\nScores in the 30's on week $week.\n", if !$html;
     $cnt = 1;
     foreach $xx (reverse sort { $y{$a}{wthirty} <=> $y{$b}{wthirty} } (keys(%y))) {
-        if ($xx == 2019) {
+        if ($xx == $year) {
 	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
 	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{wthirty}), if $html;
@@ -296,7 +300,7 @@ if ($weekly_stats) {
     print "\n50+ on week $week.\n", if !$html;
     $cnt = 1;
     foreach $xx (sort { $y{$a}{wft} <=> $y{$b}{wft} } (keys(%y))) {
-        if ($xx == 2019) {
+        if ($xx == $year) {
 	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
 	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{wft}), if $html;
@@ -350,7 +354,7 @@ if ($weekly_stats) {
     print "\nOthers on week $week.\n", if !$html;
     $cnt = 1;
     foreach $xx (sort { $y{$a}{two} <=> $y{$b}{two} } (keys(%y))) {
-        if ($xx == 2019) {
+        if ($xx == $year) {
 	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
 	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{two}), if $html;
@@ -404,7 +408,7 @@ if ($weekly_stats) {
     print "\nBogies on week $week.\n", if !$html;
     $cnt = 1;
     foreach $xx (sort { $y{$a}{twbo} <=> $y{$b}{twbo} } (keys(%y))) {
-        if ($xx == 2019) {
+        if ($xx == $year) {
 	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
 	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{twbo}), if $html;
@@ -458,7 +462,7 @@ if ($weekly_stats) {
     print "\nPars on week $week.\n", if !$html;
     $cnt = 1;
     foreach $xx (reverse sort { $y{$a}{twp} <=> $y{$b}{twp} } (keys(%y))) {
-        if ($xx == 2019) {
+        if ($xx == $year) {
 	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
 	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{twp}), if $html;
@@ -512,7 +516,7 @@ if ($weekly_stats) {
     print "\nBirdies on week $week.\n", if !$html;
     $cnt = 1;
     foreach $xx (reverse sort { $y{$a}{twb} <=> $y{$b}{twb} } (keys(%y))) {
-        if ($xx == 2019) {
+        if ($xx == $year) {
 	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
 	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{twb}), if $html;
@@ -566,7 +570,7 @@ if ($weekly_stats) {
     print "\nEagles on week $week.\n", if !$html;
     $cnt = 1;
     foreach $xx (reverse sort { $y{$a}{twe} <=> $y{$b}{twe} } (keys(%y))) {
-        if ($xx == 2019) {
+        if ($xx == $year) {
 	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
 	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{twe}), if $html;
@@ -623,7 +627,7 @@ if ($cumulative_stats) {
     print "\nLeague Stroke Average. Week 1 through $week\n", if !$html;
     $cnt = 1;
     foreach $xx (sort { $y{$a}{clsa} <=> $y{$b}{clsa} } (keys(%y))) {
-        if ($xx == 2019) {
+        if ($xx == $year) {
 	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
 	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
 	    printf("      <td><b><font color=\"green\">%.2f</font></b></td>\n    </tr>\n", $y{$xx}{clsa}), if $html;
@@ -675,7 +679,7 @@ if ($cumulative_stats) {
     print "\nScores in 30's. Week 1 through $week.\n", if !$html;
     $cnt = 1;
     foreach $xx (reverse sort { $y{$a}{cthirty} <=> $y{$b}{cthirty} } (keys(%y))) {
-        if ($xx == 2019) {
+        if ($xx == $year) {
 	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
 	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{cthirty}), if $html;
@@ -729,7 +733,7 @@ if ($cumulative_stats) {
     print "\nScores of 50+. Week 1 through $week\n", if !$html;
     $cnt = 1;
     foreach $xx (sort { $y{$a}{cft} <=> $y{$b}{cft} } (keys(%y))) {
-        if ($xx == 2019) {
+        if ($xx == $year) {
 	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
 	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{cft}), if $html;
@@ -783,7 +787,7 @@ if ($cumulative_stats) {
     print "\nOthers. Week 1 through $week\n", if !$html;
     $cnt = 1;
     foreach $xx (sort { $y{$a}{cto} <=> $y{$b}{cto} } (keys(%y))) {
-        if ($xx == 2019) {
+        if ($xx == $year) {
 	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
 	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{cto}), if $html;
@@ -837,7 +841,7 @@ if ($cumulative_stats) {
     print "\nBogies. Week 1 through $week\n", if !$html;
     $cnt = 1;
     foreach $xx (sort { $y{$a}{ctbo} <=> $y{$b}{ctbo} } (keys(%y))) {
-        if ($xx == 2019) {
+        if ($xx == $year) {
 	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
 	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{ctbo}), if $html;
@@ -891,7 +895,7 @@ if ($cumulative_stats) {
     print "\nPars. Week 1 throught $week\n", if !$html;
     $cnt = 1;
     foreach $xx (reverse sort { $y{$a}{ctp} <=> $y{$b}{ctp} } (keys(%y))) {
-        if ($xx == 2019) {
+        if ($xx == $year) {
 	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
 	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{ctp}), if $html;
@@ -945,7 +949,7 @@ if ($cumulative_stats) {
     print "\nBirdies. Week 1 through $week\n", if !$html;
     $cnt = 1;
     foreach $xx (reverse sort { $y{$a}{ctb} <=> $y{$b}{ctb} } (keys(%y))) {
-        if ($xx == 2019) {
+        if ($xx == $year) {
 	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
 	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{ctb}), if $html;
@@ -999,7 +1003,7 @@ if ($cumulative_stats) {
     print "\nEagles. Week 1 through $week\n", if !$html;
     $cnt = 1;
     foreach $xx (reverse sort { $y{$a}{cte} <=> $y{$b}{cte} } (keys(%y))) {
-        if ($xx == 2019) {
+        if ($xx == $year) {
 	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
 	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{cte}), if $html;
@@ -1026,7 +1030,7 @@ if ($all_time) {
 
   if ($html) {
     print "<!DOCTYPE html>
-    <H2>League Stats<br>Years: 2003-2019</H2>
+    <H2>League Stats<br>Years: 2003-$year</H2>
     <html>
     <head>
     <style>
@@ -1056,7 +1060,7 @@ if ($all_time) {
     print "\nLeague Stroke Average.\n", if !$html;
     $cnt = 1;
     foreach $xx (sort { $y{$a}{lsa} <=> $y{$b}{lsa} } (keys(%y))) {
-        if ($xx == 2019) {
+        if ($xx == $year) {
 	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
 	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
 	    printf("      <td><b><font color=\"green\">%.2f</font></b></td>\n    </tr>\n", $y{$xx}{lsa}), if $html;
@@ -1108,7 +1112,7 @@ if ($all_time) {
     print "\nScores in 30's.\n", if !$html;
     $cnt = 1;
     foreach $xx (reverse sort { $y{$a}{thirty} <=> $y{$b}{thirty} } (keys(%y))) {
-        if ($xx == 2019) {
+        if ($xx == $year) {
 	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
 	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{thirty}), if $html;
@@ -1162,7 +1166,7 @@ if ($all_time) {
     print "\nScores in the 50+.\n", if !$html;
     $cnt = 1;
     foreach $xx (reverse sort { $y{$a}{ft} <=> $y{$b}{ft} } (keys(%y))) {
-        if ($xx == 2019) {
+        if ($xx == $year) {
 	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
 	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{ft}), if $html;
@@ -1216,7 +1220,7 @@ if ($all_time) {
     print "\nOthers\n", if !$html;
     $cnt = 1;
     foreach $xx (reverse sort { $y{$a}{to} <=> $y{$b}{to} } (keys(%y))) {
-        if ($xx == 2019) {
+        if ($xx == $year) {
 	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
 	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{to}), if $html;
@@ -1270,7 +1274,7 @@ if ($all_time) {
     print "\nBogies\n", if !$html;
     $cnt = 1;
     foreach $xx (reverse sort { $y{$a}{tbo} <=> $y{$b}{tbo} } (keys(%y))) {
-        if ($xx == 2019) {
+        if ($xx == $year) {
 	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
 	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{tbo}), if $html;
@@ -1324,7 +1328,7 @@ if ($all_time) {
     print "\nPars\n", if !$html;
     $cnt = 1;
     foreach $xx (reverse sort { $y{$a}{tp} <=> $y{$b}{tp} } (keys(%y))) {
-        if ($xx == 2019) {
+        if ($xx == $year) {
 	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
 	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{tp}), if $html;
@@ -1378,7 +1382,7 @@ if ($all_time) {
     print "\nBirdies\n", if !$html;
     $cnt = 1;
     foreach $xx (reverse sort { $y{$a}{tb} <=> $y{$b}{tb} } (keys(%y))) {
-        if ($xx == 2019) {
+        if ($xx == $year) {
 	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
 	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{tb}), if $html;
@@ -1432,7 +1436,7 @@ if ($all_time) {
     print "\nEagles\n", if !$html;
     $cnt = 1;
     foreach $xx (reverse sort { $y{$a}{te} <=> $y{$b}{te} } (keys(%y))) {
-        if ($xx == 2019) {
+        if ($xx == $year) {
 	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
 	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
 	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{te}), if $html;
