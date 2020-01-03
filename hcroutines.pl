@@ -1,26 +1,44 @@
 #! /usr/bin/perl
 #
-# Copyright (c) 2018 Scott O'Connor
+# Copyright (c) 2018, 2020 Scott O'Connor
 #
 
 #
-# Using the Handicap formula, determine how many scores to use.
+# Determine how many scores to use.
+#
+# Starting in 2020, the World Handicap System was implemented.  The number
+# of scores used is different than the previous USGA handicap formula.
+# Need to keep the USGA method for when a players trend is calculated.
 #
 sub nscores {
-    my ($x) = @_;
+    my ($x, $year) = @_;
 
-    if ($x < 5) { return 0; }
+    if ($year >= 2020) {
+	if ($x < 3) { return 0; }
 
-    if ($x >= 5 && $x <= 6) { return 1; }
-    if ($x >= 7 && $x <= 8) { return 2; }
-    if ($x >= 9 && $x <= 10) { return 3; }
-    if ($x >= 11 && $x <= 12) { return 4; }
-    if ($x >= 13 && $x <= 14) { return 5; }
-    if ($x >= 15 && $x <= 16) { return 6; }
-    if ($x == 17) { return 7; }
-    if ($x == 18) { return 8; }
-    if ($x == 19) { return 9; }
-    return(10);
+	if ($x >= 3 && $x <= 5) { return 1; }
+	if ($x == 6) { return 2; }
+	if ($x >= 7 && $x <= 8) { return 2; }
+	if ($x >= 9 && $x <= 11) { return 3; }
+	if ($x >= 12 && $x <= 14) { return 4; }
+	if ($x >= 15 && $x <= 16) { return 5; }
+	if ($x >= 17 && $x <= 18) { return 6; }
+	if ($x == 19) { return 7; }
+	if ($x >= 20) { return 8; }
+    } else {
+	if ($x < 5) { return 0; }
+
+	if ($x >= 5 && $x <= 6) { return 1; }
+	if ($x >= 7 && $x <= 8) { return 2; }
+	if ($x >= 9 && $x <= 10) { return 3; }
+	if ($x >= 11 && $x <= 12) { return 4; }
+	if ($x >= 13 && $x <= 14) { return 5; }
+	if ($x >= 15 && $x <= 16) { return 6; }
+	if ($x == 17) { return 7; }
+	if ($x == 18) { return 8; }
+	if ($x == 19) { return 9; }
+	if ($x >= 20) { return 10; }
+    }
 }
 
 #
@@ -61,7 +79,7 @@ sub round_tenth {
 
 sub gen_hc_trend {
 	my ($fn, $output) = @_;
-	my (@scores, $x, $y, $hi, $use, @n);
+	my (@scores, $x, $y, $hi, $use, @n, $num_scores, $hc_year);
 
 	undef @n;
 
@@ -82,19 +100,17 @@ sub gen_hc_trend {
 	$num = @scores;
 
 	#
-	# If player has less than 5 scores, do not generate a handicap trend.
+	# Set handicap year to 1996.  Logic will change it below.
 	#
-	if ($num < 5) {
-		print "$pn: Only $num scores, not enough to generate a trend.\n", if $debug;
-		return;
+	$hc_year = 1996;
+
+	if (($use = nscores($num, $hc_year)) == 0) {
+	    print "$pn: Only $num scores, not enough to generate a trend.\n", if $debug;
+	    return;
 	}
 
 	$first_score = 0; $last_score = 5;
-
-	#
-	# Find out how many scores to use.
-	#
-	$use = nscores($num);
+	$num_scores = ($last_score - $first_score);
 
 	while ($last_score <= $num) {
 		$y = 0; undef @n;
@@ -105,15 +121,22 @@ sub gen_hc_trend {
 			($course, $par, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $ni) =
 				split(/:/, $s);
 
+			#
+			# If a single score in the mix is from 2020 or later, we need to
+			# make sure the WHS formula is used. $hc_year does that for us.
+			#
 			($year, $month, $day) = split(/-/, $date);
-			$n[$y] = ((($post - $par) * 113) / $slope);
+			$hc_year = ($year > $hc_year) ? $year : $hc_year;
+
+			$n[$y] = ((113 / $slope) * ($post - $par));
+
 			if ($shot > 75) {
 			    $n[$y] /= 2;
 			}
 			$n[$y] = sprintf("%0.1f", $n[$y]);
 
 			printf("date=%s: post=%d: differential: %.1f\n", $date, $post, $n[$y]), if $debug;
-			print "first score = $first_score, last score = $last_score\n", if $debug;
+
 			$first_score++;
 			$y++;
 		}
@@ -131,16 +154,36 @@ sub gen_hc_trend {
 
 		$hi = 0;
 
+		#
+		# Find out how many scores to use.
+		#
+		$use = nscores($num_scores, $hc_year);
+
 		for ($x = 0; $x < $use; $x++) {
 			printf("%d: %.1f\n", $x, $n[$x]), if $debug;
 			$hi += $n[$x];
 		}
 
 		$hi /= $use;
-		$hi *= 0.90;  # 90% is used for match play
-		$hi = (int($hi * 10) / 10);
 
-		$sf = int(($hi * $c{SF}->{slope} / 113) + 0.5);
+		if ($year < 2020) {
+		    $hi *= 0.90;  # 90% is used for match play
+		    $hi = (int($hi * 10) / 10);
+		    $sf = int(($hi * $c{SF}->{slope} / 113) + 0.5);
+		    $sb = int(($hi * $c{SB}->{slope} / 113) + 0.5);
+		    $nf = int(($hi * $c{NF}->{slope} / 113) + 0.5);
+		    $nb = int(($hi * $c{NB}->{slope} / 113) + 0.5);
+		} elsif ($year >= 2020) {
+		    $hi = round_tenth($hi);
+		    $sf = (($hi * ($c{SF}->{slope} / 113)) + ($c{SF}->{par} - 36));
+		    $sf = sprintf("%.0f", ($sf * 0.90));
+		    $sb = (($hi * ($c{SB}->{slope} / 113)) + ($c{SB}->{par} - 36));
+		    $sb = sprintf("%.0f", ($sb * 0.90));
+		    $nf = (($hi * ($c{NF}->{slope} / 113)) + ($c{NF}->{par} - 36));
+		    $nf = sprintf("%.0f", ($nf * 0.90));
+		    $nb = (($hi * ($c{NB}->{slope} / 113)) + ($c{NB}->{par} - 36));
+		    $nb = sprintf("%.0f", ($nb * 0.90));
+		}
 
 		printf ("%s:%s:%s:%.1f:%d\n", $pn, $team, $date, $hi, $sf), if $output;
 
@@ -153,6 +196,7 @@ sub gen_hc_trend {
 			$last_score++;
 			$first_score = ($last_score - 20);
 		}
+		$num_scores = ($last_score - $first_score);
 	}
 }
 1;

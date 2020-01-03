@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 #
-# Copyright (c) 2018, 2019 Scott O'Connor
+# Copyright (c) 2018, 2020 Scott O'Connor
 #
 
 require './courses.pl';
@@ -17,13 +17,14 @@ $output = 1;
 GetOptions (
     "t" =>  \$trend,
     "c" =>  \$convert,
+    "y" =>  \$year,
     "d" => \$debug)
 or die("Error in command line arguments\n");
 
 $month = (localtime)[4];
 $month++;
 $day = (localtime)[3];
-$year = (1900 + (localtime)[5]);
+$year = ((1900 + (localtime)[5]) - $year);
 
 if ($convert) {
     print "$month-$day-$year";
@@ -97,8 +98,8 @@ sub gen_hc {
     ($first, $last, $team, $active) = split(/:/, $scores[0]);
     $pn = $last . ", " . $first;
 
-    if ($pn eq "Elkort, Mike") {
-	#$debug = 1;
+    if ($pn eq "Kittredge, Red") {
+	$debug = 1;
     } else {
 	$debug = 0;
     }
@@ -114,25 +115,21 @@ sub gen_hc {
     $num = @scores;
 
     #
-    # If player has less than 5 scores, a handicap can not be generated.
-    #
-    if ($num < 5) {
-	print "$pn: Only $num scores, can not generate handicap\n", if $debug;
-	return;
-    }
-
-    #
     # If the golfer has more than 20 scores, only grab the last 20.
     #
     if ($num > 20) {
 	@scores = splice(@scores, ($num - 20), 20);
+        $num = @scores;
     }
 
     #
-    # Using the USGA formula, determine how many scores will be used
-    # to generate this player handicap.
+    # If the player does not have the required number of scores,
+    # a handicap can not be generted for them.
     #
-    $use = &nscores($num);
+    if (($use = &nscores($num, $year)) == 0) {
+	print "$pn: Only $num scores, can not generate handicap\n", if $debug;
+	return;
+    }
 
     $y = 0;
     foreach my $s (@scores) {
@@ -143,16 +140,16 @@ sub gen_hc {
 
 	print "$course, $par, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $ni\n", if $debug;
 
-	$n[$y] = ((($post - $par) * 113) / $slope);
+	$n[$y] = ((113 / $slope) * ($post - $par));
 
 	if ($shot > 75) {
 	    $n[$y] /= 2;
 	}
 
 	#
-	# First round to the nearest hundredth, then to the tenth.
+	# Round to the nearest tenth.
 	#
-	$n[$y] = sprintf("%0.1f",$n[$y]);
+	$n[$y] = sprintf("%0.1f", $n[$y]);
 	printf("date=%s: post=%d: differential: %.1f\n", $date, $post, $n[$y]), if $debug;
 
 	$y++;
@@ -168,20 +165,29 @@ sub gen_hc {
     }
 
     $hi /= $use;
-    $hi *= 0.90;  # 90% is used for match play
-    $hi = (int($hi * 10) / 10);
 
-    #if ($pn eq "O'Connor, Scott") {
-	#$hi = 1.9;
-    #}
-
-    $sf = int(($hi * $c{SF}->{slope} / 113) + 0.5);
-    $sb = int(($hi * $c{SB}->{slope} / 113) + 0.5);
-    $nf = int(($hi * $c{NF}->{slope} / 113) + 0.5);
-    $nb = int(($hi * $c{NB}->{slope} / 113) + 0.5);
+    if ($year < 2020) {
+	$hi *= 0.90;  # 90% is used for match play
+	$hi = (int($hi * 10) / 10);
+	$sf = int(($hi * $c{SF}->{slope} / 113) + 0.5);
+	$sb = int(($hi * $c{SB}->{slope} / 113) + 0.5);
+	$nf = int(($hi * $c{NF}->{slope} / 113) + 0.5);
+	$nb = int(($hi * $c{NB}->{slope} / 113) + 0.5);
+    } elsif ($year >= 2020) {
+	$hi = round_tenth($hi);
+	$sf = (($hi * ($c{SF}->{slope} / 113)) + ($c{SF}->{par} - 36));
+	$sf = sprintf("%.0f", ($sf * 0.90));
+	$sb = (($hi * ($c{SB}->{slope} / 113)) + ($c{SB}->{par} - 36));
+	$sb = sprintf("%.0f", ($sb * 0.90));
+	$nf = (($hi * ($c{NF}->{slope} / 113)) + ($c{NF}->{par} - 36));
+	$nf = sprintf("%.0f", ($nf * 0.90));
+	$nb = (($hi * ($c{NB}->{slope} / 113)) + ($c{NB}->{par} - 36));
+	$nb = sprintf("%.0f", ($nb * 0.90));
+    }
 
     $hc{$pn}{hi} = $hi;
     $hc{$pn}{hc} = $sf;
+
     printf ("%-17s - %5.1fN  SF=%-3d SB=%-3d NF=%-3d NB=%-3d\n", $pn, $hi, $sf, $sb, $nf, $nb), if $debug;
 }
 
