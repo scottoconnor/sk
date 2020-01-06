@@ -11,21 +11,9 @@
 # Need to keep the USGA method for when a players trend is calculated.
 #
 sub nscores {
-    my ($x, $year) = @_;
+    my ($x, $usga) = @_;
 
-    if ($year >= 2020) {
-	if ($x < 3) { return 0; }
-
-	if ($x >= 3 && $x <= 5) { return 1; }
-	if ($x == 6) { return 2; }
-	if ($x >= 7 && $x <= 8) { return 2; }
-	if ($x >= 9 && $x <= 11) { return 3; }
-	if ($x >= 12 && $x <= 14) { return 4; }
-	if ($x >= 15 && $x <= 16) { return 5; }
-	if ($x >= 17 && $x <= 18) { return 6; }
-	if ($x == 19) { return 7; }
-	if ($x >= 20) { return 8; }
-    } else {
+    if ($usga) {
 	if ($x < 5) { return 0; }
 
 	if ($x >= 5 && $x <= 6) { return 1; }
@@ -38,6 +26,18 @@ sub nscores {
 	if ($x == 18) { return 8; }
 	if ($x == 19) { return 9; }
 	if ($x >= 20) { return 10; }
+    } else {
+	if ($x < 3) { return 0; }
+
+	if ($x >= 3 && $x <= 5) { return 1; }
+	if ($x == 6) { return 2; }
+	if ($x >= 7 && $x <= 8) { return 2; }
+	if ($x >= 9 && $x <= 11) { return 3; }
+	if ($x >= 12 && $x <= 14) { return 4; }
+	if ($x >= 15 && $x <= 16) { return 5; }
+	if ($x >= 17 && $x <= 18) { return 6; }
+	if ($x == 19) { return 7; }
+	if ($x >= 20) { return 8; }
     }
 }
 
@@ -78,7 +78,7 @@ sub round_tenth {
 }
 
 sub gen_hc_trend {
-	my ($fn, $output) = @_;
+	my ($fn) = @_;
 	my (@scores, $x, $y, $hi, $use, @n, $num_scores, $usga);
 
 	undef @n;
@@ -167,14 +167,14 @@ sub gen_hc_trend {
 
 		$hi /= $use;
 
-		if ($year < 2020) {
+		if ($usga) {
 		    $hi *= 0.90;  # 90% is used for match play
 		    $hi = (int($hi * 10) / 10);
 		    $sf = int(($hi * $c{SF}->{slope} / 113) + 0.5);
 		    $sb = int(($hi * $c{SB}->{slope} / 113) + 0.5);
 		    $nf = int(($hi * $c{NF}->{slope} / 113) + 0.5);
 		    $nb = int(($hi * $c{NB}->{slope} / 113) + 0.5);
-		} elsif ($year >= 2020) {
+		} else {
 		    $hi = round_tenth($hi);
 		    $sf = (($hi * ($c{SF}->{slope} / 113)) + ($c{SF}{course_rating} - $c{SF}{par}));
 		    $sf = sprintf("%.0f", ($sf * 0.90));
@@ -186,9 +186,7 @@ sub gen_hc_trend {
 		    $nb = sprintf("%.0f", ($nb * 0.90));
 		}
 
-		printf ("%s:%s:%s:%.1f:%d\n", $pn, $team, $date, $hi, $sf), if $output;
-
-		$p{$pn}{$date}{hc} = $sf, if ($output == 0);
+		printf ("%s:%s:%s:%.1f:%d\n", $pn, $team, $date, $hi, $sf);
 
 		if ($last_score < 20) {
 			$last_score++;

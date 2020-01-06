@@ -12,7 +12,6 @@ use Getopt::Long;
 $debug = 0;
 $trend = 0;
 $convert = 0;
-$output = 1;
 
 GetOptions (
     "t" =>  \$trend,
@@ -52,7 +51,7 @@ if (@golfer_list == 0) {
 
 while ($fna = shift @golfer_list) {
     if ($trend) {
-	gen_hc_trend("golfers/$fna", $output);
+	gen_hc_trend("golfers/$fna");
     } else {
 	gen_hc("golfers/$fna");
     }
