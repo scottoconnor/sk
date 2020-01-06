@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 #
-# Copyright (c) 2018, 2019 Scott O'Connor
+# Copyright (c) 2018, 2020 Scott O'Connor
 #
 
 require './tnfb.pl';
@@ -93,23 +93,23 @@ sub convert_player {
 	}
 
 	chomp($line = <FD>);
-	($par, $slope, $course) = split(/,/, $line);
+	($course_rating, $slope, $course) = split(/,/, $line);
 
 	if ($course =~ /Stow\/South Front/) {
 	    $course = 'SF';
-	    $par = $c{$course}{par};
+	    $course_rating = $c{$course}{course_rating};
 	    $slope = $c{$course}{slope};
 	} elsif ($course =~ /Stow\/South Back/) {
 	    $course = 'SB';
-	    $par = $c{$course}{par};
+	    $course_rating = $c{$course}{course_rating};
 	    $slope = $c{$course}{slope};
 	} elsif ($course =~ /Stow\/North Front/) {
 	    $course = 'NF';
-	    $par = $c{$course}{par};
+	    $course_rating = $c{$course}{course_rating};
 	    $slope = $c{$course}{slope};
 	} elsif ($course =~ /Stow\/North Back/) {
 	    $course = 'NB';
-	    $par = $c{$course}{par};
+	    $course_rating = $c{$course}{course_rating};
 	    $slope = $c{$course}{slope};
 	} else {
 	    # non-league or away course.
@@ -127,7 +127,7 @@ sub convert_player {
 	    # A 9,0 format is score where each hole has a single digit score.
 	    #
 
-	    print NFD "$course:$par:$slope:$year-$month-$day:$shot:$post";
+	    print NFD "$course:$course_rating:$slope:$year-$month-$day:$shot:$post";
 
             ($a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8]) = $line =~
 		/^(\d)(\d)(\d)(\d)(\d)(\d)(\d)(\d)(\d)/;
@@ -152,7 +152,7 @@ sub convert_player {
 	    # A 8,0 format is a score with a 10 on the first hole.
 	    #
 
-	    print NFD "$course:$par:$slope:$year-$month-$day:$shot:$post";
+	    print NFD "$course:$course_rating:$slope:$year-$month-$day:$shot:$post";
 
 	    ($a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8]) = $line =~
 		/^(\d)(\d)(\d)(\d)(\d)(\d)(\d)(\d)/;
@@ -179,7 +179,7 @@ sub convert_player {
 	    # A 13,3 format is a score with a 10 on the last hole.
 	    #
 
-	    print NFD "$course:$par:$slope:$year-$month-$day:$shot:$post";
+	    print NFD "$course:$course_rating:$slope:$year-$month-$day:$shot:$post";
 
 	    ($a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8]) = $line =~
 		/^(\d)(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})\056(\d{2})(\d)\054/;
@@ -204,7 +204,7 @@ sub convert_player {
 	    }
 	} elsif ($line =~ /^\d{13}\056\d{4}\054/) {
 
-	    print NFD "$course:$par:$slope:$year-$month-$day:$shot:$post";
+	    print NFD "$course:$course_rating:$slope:$year-$month-$day:$shot:$post";
 
 	    ($a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8]) = $line =~
 		/^(\d)(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})\056(\d{2})(\d{2})\054/;
@@ -225,7 +225,7 @@ sub convert_player {
 	    # A 14,3 format is a score with big number on hole #1 and a 10 on the last hole.
 	    #
 
-	    print NFD "$course:$par:$slope:$year-$month-$day:$shot:$post";
+	    print NFD "$course:$course_rating:$slope:$year-$month-$day:$shot:$post";
 
 	    ($a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8]) = $line =~
 		/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})\056(\d{2})(\d)\054/;
@@ -249,7 +249,7 @@ sub convert_player {
 	    # a 10 or higher.
 	    #
 
-	    print NFD "$course:$par:$slope:$year-$month-$day:$shot:$post";
+	    print NFD "$course:$course_rating:$slope:$year-$month-$day:$shot:$post";
 
 	    ($a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8]) = $line =~
 		/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})\056(\d{2})(\d{2})\054/;
@@ -268,7 +268,7 @@ sub convert_player {
 	    #
 	    # This is a non hole-by-hole score. "0,0" in ScoreKeeper file
 	    #
-	    print NFD "$course:$par:$slope:$year-$month-$day:$shot:$post\n";
+	    print NFD "$course:$course_rating:$slope:$year-$month-$day:$shot:$post\n";
 	} else {
 	    print "Unexpected line: $fn: $line -- $course\n"
 	}

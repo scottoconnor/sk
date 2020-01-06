@@ -135,12 +135,12 @@ sub gen_hc {
     foreach my $s (@scores) {
 
 	chomp($s);
-	($course, $par, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $ni) =
+	($course, $course_rating, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $ni) =
 	    split(/:/, $s);
 
-	print "$course, $par, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $ni\n", if $debug;
+	print "$course, $course_rating, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $ni\n", if $debug;
 
-	$n[$y] = ((113 / $slope) * ($post - $par));
+	$n[$y] = ((113 / $slope) * ($post - $course_rating));
 
 	if ($shot > 75) {
 	    $n[$y] /= 2;
@@ -169,19 +169,23 @@ sub gen_hc {
     if ($year < 2020) {
 	$hi *= 0.90;  # 90% is used for match play
 	$hi = (int($hi * 10) / 10);
-	$sf = int(($hi * $c{SF}->{slope} / 113) + 0.5);
-	$sb = int(($hi * $c{SB}->{slope} / 113) + 0.5);
-	$nf = int(($hi * $c{NF}->{slope} / 113) + 0.5);
-	$nb = int(($hi * $c{NB}->{slope} / 113) + 0.5);
+	$sf = ($hi * $c{SF}->{slope} / 113);
+	$sf = sprintf("%.0f", $sf);
+	$sb = ($hi * $c{SB}->{slope} / 113);
+	$sb = sprintf("%.0f", $sb);
+	$nf = ($hi * $c{NF}->{slope} / 113);
+	$nf = sprintf("%.0f", $nf);
+	$nb = ($hi * $c{NB}->{slope} / 113);
+	$nb = sprintf("%.0f", $nb);
     } elsif ($year >= 2020) {
 	$hi = round_tenth($hi);
-	$sf = (($hi * ($c{SF}->{slope} / 113)) + ($c{SF}->{par} - 36));
+	$sf = (($hi * ($c{SF}->{slope} / 113)) + ($c{SF}{course_rating} - $c{SF}{par}));
 	$sf = sprintf("%.0f", ($sf * 0.90));
-	$sb = (($hi * ($c{SB}->{slope} / 113)) + ($c{SB}->{par} - 36));
+	$sb = (($hi * ($c{SB}->{slope} / 113)) + ($c{SB}{course_rating} - $c{SB}{par}));
 	$sb = sprintf("%.0f", ($sb * 0.90));
-	$nf = (($hi * ($c{NF}->{slope} / 113)) + ($c{NF}->{par} - 36));
+	$nf = (($hi * ($c{NF}->{slope} / 113)) + ($c{NF}{course_rating} - $c{NF}{par}));
 	$nf = sprintf("%.0f", ($nf * 0.90));
-	$nb = (($hi * ($c{NB}->{slope} / 113)) + ($c{NB}->{par} - 36));
+	$nb = (($hi * ($c{NB}->{slope} / 113)) + ($c{NB}{course_rating} - $c{NB}{par}));
 	$nb = sprintf("%.0f", ($nb * 0.90));
     }
 

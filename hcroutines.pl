@@ -118,7 +118,7 @@ sub gen_hc_trend {
 
 			$s = $scores[$first_score];
 			chomp($s);
-			($course, $par, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $ni) =
+			($course, $course_rating, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $ni) =
 				split(/:/, $s);
 
 			#
@@ -128,7 +128,7 @@ sub gen_hc_trend {
 			($year, $month, $day) = split(/-/, $date);
 			$hc_year = ($year > $hc_year) ? $year : $hc_year;
 
-			$n[$y] = ((113 / $slope) * ($post - $par));
+			$n[$y] = ((113 / $slope) * ($post - $course_rating));
 
 			if ($shot > 75) {
 			    $n[$y] /= 2;
@@ -144,7 +144,7 @@ sub gen_hc_trend {
 		if ($last_score < $num) {
 		    $s = $scores[$last_score];
 		    chomp($s);
-		    ($course, $par, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $ni) =
+		    ($course, $course_rating, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $ni) =
 			split(/:/, $s);
 		} elsif ($last_score == $num) {
 			$date = "current";
@@ -175,13 +175,13 @@ sub gen_hc_trend {
 		    $nb = int(($hi * $c{NB}->{slope} / 113) + 0.5);
 		} elsif ($year >= 2020) {
 		    $hi = round_tenth($hi);
-		    $sf = (($hi * ($c{SF}->{slope} / 113)) + ($c{SF}->{par} - 36));
+		    $sf = (($hi * ($c{SF}->{slope} / 113)) + ($c{SF}{course_rating} - $c{SF}{par}));
 		    $sf = sprintf("%.0f", ($sf * 0.90));
-		    $sb = (($hi * ($c{SB}->{slope} / 113)) + ($c{SB}->{par} - 36));
+		    $sb = (($hi * ($c{SB}->{slope} / 113)) + ($c{SB}{course_rating} - $c{SB}{par}));
 		    $sb = sprintf("%.0f", ($sb * 0.90));
-		    $nf = (($hi * ($c{NF}->{slope} / 113)) + ($c{NF}->{par} - 36));
+		    $nf = (($hi * ($c{NF}->{slope} / 113)) + ($c{NF}{course_rating} - $c{NF}{par}));
 		    $nf = sprintf("%.0f", ($nf * 0.90));
-		    $nb = (($hi * ($c{NB}->{slope} / 113)) + ($c{NB}->{par} - 36));
+		    $nb = (($hi * ($c{NB}->{slope} / 113)) + ($c{NB}{course_rating} - $c{NB}{par}));
 		    $nb = sprintf("%.0f", ($nb * 0.90));
 		}
 
