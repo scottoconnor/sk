@@ -17,14 +17,14 @@ $output = 1;
 GetOptions (
     "t" =>  \$trend,
     "c" =>  \$convert,
-    "y" =>  \$year,
+    "u" =>  \$usga,
     "d" => \$debug)
 or die("Error in command line arguments\n");
 
 $month = (localtime)[4];
 $month++;
 $day = (localtime)[3];
-$year = ((1900 + (localtime)[5]) - $year);
+$year = (1900 + (localtime)[5]);
 
 if ($convert) {
     print "$month-$day-$year";
@@ -126,7 +126,7 @@ sub gen_hc {
     # If the player does not have the required number of scores,
     # a handicap can not be generted for them.
     #
-    if (($use = &nscores($num, $year)) == 0) {
+    if (($use = &nscores($num, $usga)) == 0) {
 	print "$pn: Only $num scores, can not generate handicap\n", if $debug;
 	return;
     }
@@ -166,7 +166,7 @@ sub gen_hc {
 
     $hi /= $use;
 
-    if ($year < 2020) {
+    if ($usga) {
 	$hi *= 0.90;  # 90% is used for match play
 	$hi = (int($hi * 10) / 10);
 	$sf = ($hi * $c{SF}->{slope} / 113);
@@ -177,7 +177,7 @@ sub gen_hc {
 	$nf = sprintf("%.0f", $nf);
 	$nb = ($hi * $c{NB}->{slope} / 113);
 	$nb = sprintf("%.0f", $nb);
-    } elsif ($year >= 2020) {
+    } else {
 	$hi = round_tenth($hi);
 	$sf = (($hi * ($c{SF}->{slope} / 113)) + ($c{SF}{course_rating} - $c{SF}{par}));
 	$sf = sprintf("%.0f", ($sf * 0.90));

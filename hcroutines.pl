@@ -79,7 +79,7 @@ sub round_tenth {
 
 sub gen_hc_trend {
 	my ($fn, $output) = @_;
-	my (@scores, $x, $y, $hi, $use, @n, $num_scores, $hc_year);
+	my (@scores, $x, $y, $hi, $use, @n, $num_scores, $usga);
 
 	undef @n;
 
@@ -100,11 +100,11 @@ sub gen_hc_trend {
 	$num = @scores;
 
 	#
-	# Set handicap year to 1996.  Logic will change it below.
+	# Set default handicap to USGA formula.  Logic will change it below if needed.
 	#
-	$hc_year = 1996;
+	$usga = 1;
 
-	if (($use = nscores($num, $hc_year)) == 0) {
+	if (($use = nscores($num, $usga)) == 0) {
 	    print "$pn: Only $num scores, not enough to generate a trend.\n", if $debug;
 	    return;
 	}
@@ -123,10 +123,11 @@ sub gen_hc_trend {
 
 			#
 			# If a single score in the mix is from 2020 or later, we need to
-			# make sure the WHS formula is used. $hc_year does that for us.
+			# make sure the WHS formula is used.  If all scores are previous
+			# to the year 2020, use the USGA formula.
 			#
 			($year, $month, $day) = split(/-/, $date);
-			$hc_year = ($year > $hc_year) ? $year : $hc_year;
+			$usga = ($year < 2020) ? 1 : 0;
 
 			$n[$y] = ((113 / $slope) * ($post - $course_rating));
 
@@ -157,7 +158,7 @@ sub gen_hc_trend {
 		#
 		# Find out how many scores to use.
 		#
-		$use = nscores($num_scores, $hc_year);
+		$use = nscores($num_scores, $usga);
 
 		for ($x = 0; $x < $use; $x++) {
 			printf("%d: %.1f\n", $x, $n[$x]), if $debug;
