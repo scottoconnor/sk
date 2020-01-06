@@ -43,7 +43,7 @@ if ($#ARGV < 0) {
 # If the league hasn't started this year, give stats from the previous year.
 #
 $year_day = ((localtime)[7] + 1);
-if ($year_day < 128) {
+if ($year_day < 119) {
     $start_year = $end_year = ((1900 + (localtime)[5]) - 1);
 }
 
