@@ -59,7 +59,7 @@ while ($fna = shift @golfer_list) {
 
 if ($trend == 0) {
 
-    print "$month-$day-$year (sf, sb, nf, nb)\n";
+    print "$month-$day-$year                  (sf sb nf nb)\n";
 
     foreach $team (sort keys(%t)) {
 	if ($team eq "Sub") {
