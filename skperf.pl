@@ -142,7 +142,7 @@ if ($vhc) {
 	}
 
 	foreach $yp (sort keys %y) {
-	    foreach $w (1..$end_week) {
+	    foreach $w ($start_week..$end_week) {
 		if ($p{$pn}{$yp}{$w} && defined($p{$pn}{$dates{$yp}{$w}}{hc})) {
 		    $p{$pn}{diff} += (($p{$pn}{$yp}{$w} - $p{$pn}{$dates{$yp}{$w}}{hc}) - 36);
 		    printf("%-17s: year %-4d week %-2s shot %d, hc %2d, net %d, diff %d\n", $pn, $yp, $w, $p{$pn}{$yp}{$w},
