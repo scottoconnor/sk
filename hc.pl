@@ -59,15 +59,17 @@ while ($fna = shift @golfer_list) {
 
 if ($trend == 0) {
 
-    print "$month-$day-$year\n";
+    print "$month-$day-$year (sf, sb, nf, nb)\n";
 
     foreach $team (sort keys(%t)) {
 	if ($team eq "Sub") {
 	    next;
 	}
 	printf("%s\n", $team);
-	printf("%-17s %4.1fN / %d\n", $t{$team}{1}, $hc{$t{$team}{1}}{hi}, $hc{$t{$team}{1}}{hc});
-	printf("%-17s %4.1fN / %d\n", $t{$team}{2}, $hc{$t{$team}{2}}{hi}, $hc{$t{$team}{2}}{hc});
+	printf("%-17s %4.1fN / %2d %2d %2d %2d\n", $t{$team}{1}, $hc{$t{$team}{1}}{hi}, $hc{$t{$team}{1}}{sfhc},
+	    $hc{$t{$team}{1}}{sbhc}, $hc{$t{$team}{1}}{nfhc}, $hc{$t{$team}{1}}{nbhc});
+	printf("%-17s %4.1fN / %2d %2d %2d %2d\n", $t{$team}{2}, $hc{$t{$team}{2}}{hi}, $hc{$t{$team}{2}}{sfhc},
+	    $hc{$t{$team}{2}}{sbhc}, $hc{$t{$team}{2}}{nfhc}, $hc{$t{$team}{2}}{nbhc});
 	print "\n";
     }
 
@@ -77,8 +79,9 @@ if ($trend == 0) {
 	if ($hc{$p}{team} ne "Sub") {
 	    next;
 	}
-	if (defined($hc{$p}{hc})) {
-	    printf("%-17s %4.1fN / %d\n", $p, $hc{$p}{hi}, $hc{$p}{hc});
+	if (defined($hc{$p}{hi})) {
+	    printf("%-17s %4.1fN / %2d %2d %2d %2d\n", $p, $hc{$p}{hi}, $hc{$p}{sfhc},
+		$hc{$p}{sbhc}, $hc{$p}{nfhc}, $hc{$p}{nbhc});
 	}
     }
 }
@@ -189,7 +192,10 @@ sub gen_hc {
     }
 
     $hc{$pn}{hi} = $hi;
-    $hc{$pn}{hc} = $sf;
+    $hc{$pn}{sfhc} = $sf;
+    $hc{$pn}{sbhc} = $sb;
+    $hc{$pn}{nfhc} = $nf;
+    $hc{$pn}{nbhc} = $nb;
 
     printf ("%-17s - %5.1fN  SF=%-3d SB=%-3d NF=%-3d NB=%-3d\n", $pn, $hi, $sf, $sb, $nf, $nb), if $debug;
 }

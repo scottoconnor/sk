@@ -147,7 +147,23 @@ sub gen_hc_trend {
 		    chomp($s);
 		    ($course, $course_rating, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $ni) =
 			split(/:/, $s);
+		    ($year, $month, $day) = split(/-/, $date);
+
+		    #
+		    # If this is the last score that is posted for 2019, force the next
+		    # score to use the World Handicap System.  This will generate the
+		    # first handicap for the 2020 season.  We know that this is the last
+		    # score for the 2019 season if the next score posted is from 2020.
+		    #
+		    if ($year == 2020 && ($usga == 1)) {
+			$usga = 0;
+		    }
 		} elsif ($last_score == $num) {
+			#
+			# For many golfers, the current score needs to reflex the WHS.
+			# This gets their handicap ready for the 2020 season.
+			#
+			$usga = 0;
 			$date = "current";
 		}
 
