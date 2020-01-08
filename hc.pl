@@ -180,14 +180,26 @@ sub gen_hc {
 	$nb = ($hi * $c{NB}->{slope} / 113);
 	$nb = sprintf("%.0f", $nb);
     } else {
-	$hi = round_tenth($hi);
-	$sf = (($hi * ($c{SF}->{slope} / 113)) + ($c{SF}{course_rating} - $c{SF}{par}));
+	$hi = round($hi, 10);
+
+	$sfd = ($c{SF}{course_rating} - $c{SF}{par});
+	$sfd = round($sfd, 10);
+	$sf = (($hi * ($c{SF}->{slope} / 113)) + $sfd);
 	$sf = sprintf("%.0f", ($sf * 0.90));
-	$sb = (($hi * ($c{SB}->{slope} / 113)) + ($c{SB}{course_rating} - $c{SB}{par}));
+
+	$sbd = ($c{SB}{course_rating} - $c{SB}{par});
+	$sbd = round($sbd, 10);
+	$sb = (($hi * ($c{SB}->{slope} / 113)) + $sbd);
 	$sb = sprintf("%.0f", ($sb * 0.90));
-	$nf = (($hi * ($c{NF}->{slope} / 113)) + ($c{NF}{course_rating} - $c{NF}{par}));
+
+	$nfd = ($c{NF}{course_rating} - $c{NF}{par});
+	$nfd = round($nfd, 10);
+	$nf = (($hi * ($c{NF}->{slope} / 113)) + $nfd);
 	$nf = sprintf("%.0f", ($nf * 0.90));
-	$nb = (($hi * ($c{NB}->{slope} / 113)) + ($c{NB}{course_rating} - $c{NB}{par}));
+
+	$nbd = ($c{NB}{course_rating} - $c{NB}{par});
+	$nbd = round($nbd, 10);
+	$nb = (($hi * ($c{NB}->{slope} / 113)) + $nbd);
 	$nb = sprintf("%.0f", ($nb * 0.90));
     }
 
