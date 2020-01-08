@@ -50,7 +50,7 @@ sub nscores {
 #
 sub round {
     my ($a, $factor) = @_;
-    my ($e, $debug);
+    my ($e, $r);
 
     $r = ($a * $factor);
     if ($r =~ /\d*\056(\d{1})/) {
@@ -75,43 +75,6 @@ sub round {
 	}
     }
     $r /= $factor;
-    $debug = 0;
-    return ($r);
-}
-
-#
-# Rounds to the nearest thousands position.
-#
-sub round_thousands {
-    my ($r) = @_;
-
-    $r *= 1000;
-    $r = int($r + 0.5);
-    $r /= 1000;
-    return ($r);
-}
-
-#
-# Rounds to the nearest hundredth position.
-#
-sub round_hundredth {
-    my ($r) = @_;
-
-    $r *= 100;
-    $r = int($r + 0.5);
-    $r /= 100;
-    return ($r);
-}
-
-#
-# Rounds to the nearest tenth position.
-#
-sub round_tenth {
-    my ($r) = @_;
-
-    $r *= 10;
-    $r = int($r + 0.5);
-    $r /= 10;
     return ($r);
 }
 

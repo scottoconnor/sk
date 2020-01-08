@@ -679,7 +679,7 @@ sub get_player_trend {
     	foreach $pn (keys %p) {
 	    if (defined($p{$pn}{A}) && defined($p{$pn}{B})) {
 		$m{$pn}{mi} = ($p{$pn}{A} / $p{$pn}{B});
-		$m{$pn}{mi} = round_thousands($m{$pn}{mi});
+		$m{$pn}{mi} = round($m{$pn}{mi}, 1000);
 		$m{$pn}{team} = $p{$pn}{team};
 	    }
 	}
