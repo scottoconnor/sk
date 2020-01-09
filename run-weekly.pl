@@ -42,8 +42,6 @@ for (my $week = 1; $week < 16; $week++) {
     }
 }
 
-$num_weeks = 5;
-
 if ($num_weeks == 15) {
     open ($log, ">", "/tmp/$start_year-$cur_year.html");
 } else {
