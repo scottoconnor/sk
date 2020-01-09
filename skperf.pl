@@ -661,17 +661,17 @@ sub get_player_trend {
 	@ary = split(/:/, $_);
 
 	if (!defined($p{$ary[0]}{A}) && $ary[2] =~ /$start_year/) {
-	    $p{$ary[0]}{A} = ($ary[3] + 6);
+	    $p{$ary[0]}{A} = ($ary[5] + 6);
 	    $p{$ary[0]}{team} = $ary[1];
 	}
 
 	if (!defined($p{$ary[0]}{B}) && defined($p{$ary[0]}{A}) && $ary[2] =~ /current/) {
 	    $p{$ary[0]}{B} = ($ary[3] + 6);
 	}
-	if ($ary[1] eq "current") {
+	if ($ary[2] eq "current") {
 	    next;
 	}
-	$p{$ary[0]}{$ary[2]}{hc} = $ary[4];
+	$p{$ary[0]}{$ary[2]}{hc} = $ary[6];
     }
     close(TD);
 

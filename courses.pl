@@ -80,4 +80,9 @@
 	# USGA
 	course_rating => 35.1, slope => 130, par => 36,
     },
+    # To Be Determined
+    TBD => {
+	name => "TBD",
+	course_rating => 36, slope => 113, par => 36,
+    },
 );
