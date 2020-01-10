@@ -59,7 +59,7 @@ while ($fna = shift @golfer_list) {
 
 if ($trend == 0) {
 
-    print "$month-$day-$year                  (sf sb nf nb)\n";
+    print "$month-$day-$year                 (sf sb nf nb)\n";
 
     foreach $team (sort keys(%t)) {
 	if ($team eq "Sub") {
@@ -151,7 +151,7 @@ sub gen_hc {
 	#
 	# Round to the nearest tenth.
 	#
-	$n[$y] = sprintf("%0.1f", $n[$y]);
+	$n[$y] = round($n[$y], 10);
 	printf("date=%s: post=%d: differential: %.1f\n", $date, $post, $n[$y]), if $debug;
 
 	$y++;
