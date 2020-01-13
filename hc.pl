@@ -12,6 +12,7 @@ use Getopt::Long;
 $debug = 0;
 $trend = 0;
 $convert = 0;
+$usga = 0;
 
 GetOptions (
     "t" =>  \$trend,
