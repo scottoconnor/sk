@@ -7,14 +7,14 @@ use Getopt::Long;
 
 $year = (1900 + (localtime)[5]);
 
+$year_day = ((localtime)[7] + 1);
+if ($year_day < 110) {
+    $year = ((1900 + (localtime)[5]) - 1);
+}
+
 GetOptions (
 	"y=s" => \$year)
 or die("Error in command line arguments\n");
-
-$year_day = ((localtime)[7] + 1);
-if ($year_day < 119) {
-    $year = ((1900 + (localtime)[5]) - 1);
-}
 
 $cur_year = $year;
 $start_year = 2003;
