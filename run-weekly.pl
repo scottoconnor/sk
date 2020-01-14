@@ -5,12 +5,16 @@
 
 use Getopt::Long;
 
-$year = 2019;
+$year = (1900 + (localtime)[5]);
 
 GetOptions (
-	"y=s" => \$year,
-	"o" =>  \$out)
+	"y=s" => \$year)
 or die("Error in command line arguments\n");
+
+$year_day = ((localtime)[7] + 1);
+if ($year_day < 119) {
+    $year = ((1900 + (localtime)[5]) - 1);
+}
 
 $cur_year = $year;
 $start_year = 2003;
