@@ -79,7 +79,7 @@ sub round {
 }
 
 sub gen_hc_trend {
-    my ($fn) = @_;
+    my ($fn, $allowance) = @_;
     my (@scores, $x, $y, $hi, $use, @n, $num_scores, $usga);
 
     undef @n;
@@ -185,7 +185,7 @@ sub gen_hc_trend {
 	$hi /= $use;
 
 	if ($usga) {
-	    $hi *= 0.90;  # 90% is used for match play
+	    $hi *= $allowance;
 	    $hi = (int($hi * 10) / 10);
 	    $ph = int(($hi * $c{SF}->{slope} / 113) + 0.5);
 	} else {
@@ -193,7 +193,7 @@ sub gen_hc_trend {
 	    $cd = ($c{$course}{course_rating} - $c{$course}{par});
 	    $cd = round($cd, 10);
 	    $ch = (($hi * ($c{$course}->{slope} / 113)) + $cd);
-	    $ph = sprintf("%.0f", ($ch * 0.90));
+	    $ph = sprintf("%.0f", ($ch * $allowance));
 	}
 
 	#
