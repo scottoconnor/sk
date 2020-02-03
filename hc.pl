@@ -13,8 +13,10 @@ $debug = 0;
 $trend = 0;
 $convert = 0;
 $usga = 0;
+$allowance = 0.9;
 
 GetOptions (
+    "a=f" => \$allowance,
     "t" =>  \$trend,
     "c" =>  \$convert,
     "u" =>  \$usga,
@@ -170,7 +172,7 @@ sub gen_hc {
     $hi /= $use;
 
     if ($usga) {
-	$hi *= 0.90;  # 90% is used for match play
+	$hi *= $allowance;
 	$hi = (int($hi * 10) / 10);
 	$sf = ($hi * $c{SF}->{slope} / 113);
 	$sf = sprintf("%.0f", $sf);
@@ -186,22 +188,22 @@ sub gen_hc {
 	$sfd = ($c{SF}{course_rating} - $c{SF}{par});
 	$sfd = round($sfd, 10);
 	$sf = (($hi * ($c{SF}->{slope} / 113)) + $sfd);
-	$sf = sprintf("%.0f", ($sf * 0.90));
+	$sf = sprintf("%.0f", ($sf * $allowance));
 
 	$sbd = ($c{SB}{course_rating} - $c{SB}{par});
 	$sbd = round($sbd, 10);
 	$sb = (($hi * ($c{SB}->{slope} / 113)) + $sbd);
-	$sb = sprintf("%.0f", ($sb * 0.90));
+	$sb = sprintf("%.0f", ($sb * $allowance));
 
 	$nfd = ($c{NF}{course_rating} - $c{NF}{par});
 	$nfd = round($nfd, 10);
 	$nf = (($hi * ($c{NF}->{slope} / 113)) + $nfd);
-	$nf = sprintf("%.0f", ($nf * 0.90));
+	$nf = sprintf("%.0f", ($nf * $allowance));
 
 	$nbd = ($c{NB}{course_rating} - $c{NB}{par});
 	$nbd = round($nbd, 10);
 	$nb = (($hi * ($c{NB}->{slope} / 113)) + $nbd);
-	$nb = sprintf("%.0f", ($nb * 0.90));
+	$nb = sprintf("%.0f", ($nb * $allowance));
     }
 
     $hc{$pn}{hi} = $hi;
