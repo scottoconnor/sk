@@ -12,14 +12,12 @@ use Getopt::Long;
 $debug = 0;
 $trend = 0;
 $convert = 0;
-$usga = 0;
 $allowance = 0.9;
 
 GetOptions (
     "a=f" => \$allowance,
     "t" =>  \$trend,
     "c" =>  \$convert,
-    "u" =>  \$usga,
     "d" => \$debug)
 or die("Error in command line arguments\n");
 
@@ -27,6 +25,16 @@ $month = (localtime)[4];
 $month++;
 $day = (localtime)[3];
 $year = (1900 + (localtime)[5]);
+
+#
+# Years prior to 2020, we use the USGA method of handicapping.
+# 2020 and beyond, we use the World Handicapping System.
+#
+if ($year > 2019) {
+    $usga = 0;
+} else {
+    $usga = 1;
+}
 
 if ($convert) {
     print "$month-$day-$year";
@@ -127,15 +135,6 @@ sub gen_hc {
         $num = @scores;
     }
 
-    #
-    # If the player does not have the required number of scores,
-    # a handicap can not be generted for them.
-    #
-    if (($use = &nscores($num, $usga)) == 0) {
-	print "$pn: Only $num scores, can not generate handicap\n", if $debug;
-	return;
-    }
-
     $y = 0;
     foreach my $s (@scores) {
 
@@ -158,6 +157,15 @@ sub gen_hc {
 	printf("date=%s: post=%d: differential: %.1f\n", $date, $post, $n[$y]), if $debug;
 
 	$y++;
+    }
+
+    #
+    # If the player does not have the required number of scores,
+    # a handicap can not be generted for them.
+    #
+    if (($use = &nscores($num, $usga)) == 0) {
+	print "$pn: Only $num scores, can not generate handicap\n", if $debug;
+	return;
     }
 
     @n = sort {$a <=> $b} @n;
