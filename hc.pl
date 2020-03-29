@@ -64,22 +64,22 @@ while ($fna = shift @golfer_list) {
     if ($trend) {
 	gen_hc_trend("golfers/$fna", $allowance);
     } else {
-	gen_hc("golfers/$fna");
+	gen_hc("golfers/$fna", $allowance);
     }
 }
 
 if ($trend == 0) {
 
-    print "$month-$day-$year                 (sf sb nf nb)\n";
+    print "$month-$day-$year              (sf sb nf nb)\n";
 
     foreach $team (sort keys(%t)) {
 	if ($team eq "Sub") {
 	    next;
 	}
 	printf("%s\n", $team);
-	printf("%-17s %4.1fN / %2d %2d %2d %2d\n", $t{$team}{1}, $hc{$t{$team}{1}}{hi}, $hc{$t{$team}{1}}{sfhc},
+	printf("%-17s %4.1fN /%2d %2d %2d %2d\n", $t{$team}{1}, $hc{$t{$team}{1}}{hi}, $hc{$t{$team}{1}}{sfhc},
 	    $hc{$t{$team}{1}}{sbhc}, $hc{$t{$team}{1}}{nfhc}, $hc{$t{$team}{1}}{nbhc});
-	printf("%-17s %4.1fN / %2d %2d %2d %2d\n", $t{$team}{2}, $hc{$t{$team}{2}}{hi}, $hc{$t{$team}{2}}{sfhc},
+	printf("%-17s %4.1fN /%2d %2d %2d %2d\n", $t{$team}{2}, $hc{$t{$team}{2}}{hi}, $hc{$t{$team}{2}}{sfhc},
 	    $hc{$t{$team}{2}}{sbhc}, $hc{$t{$team}{2}}{nfhc}, $hc{$t{$team}{2}}{nbhc});
 	print "\n";
     }
@@ -91,14 +91,14 @@ if ($trend == 0) {
 	    next;
 	}
 	if (defined($hc{$p}{hi})) {
-	    printf("%-17s %4.1fN / %2d %2d %2d %2d\n", $p, $hc{$p}{hi}, $hc{$p}{sfhc},
+	    printf("%-17s %4.1fN /%2d %2d %2d %2d\n", $p, $hc{$p}{hi}, $hc{$p}{sfhc},
 		$hc{$p}{sbhc}, $hc{$p}{nfhc}, $hc{$p}{nbhc});
 	}
     }
 }
 
 sub gen_hc {
-    my ($fn) = @_;
+    my ($fn, $allowance) = @_;
     my (@scores, $y, $hi, $use, @n, $pn);
 
     undef @n;
