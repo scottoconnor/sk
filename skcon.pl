@@ -5,6 +5,21 @@
 
 require './tnfb.pl';
 require './courses.pl';
+require './hcroutines.pl';
+
+open(TD, "trend"), or die "Can't open file trend.\n";
+my (@ary);
+
+while (<TD>) {
+    @ary = split(/:/, $_);
+
+    if ($ary[2] ne "current") {
+	next;
+    }
+    chop($ary[3]);
+    $cindex{$ary[0]} = $ary[3];
+}
+close(TD);
 
 opendir($dh, "./golfers") || die "Can't open \"golfers\" directory.";
 
@@ -41,6 +56,7 @@ sub convert_player {
     ($last, $first) = split(/,/, $line);
     $last =~ s/^\s+|\s+$//g;
     $first =~ s/^\s+|\s+$//g;
+    $pn = $first . " " . $last;
 
     if (defined($golfers{$fn})) {
 	print NFD "$first:$last:$golfers{$fn}->{team}:$golfers{$fn}->{active}\n";
@@ -136,7 +152,7 @@ sub convert_player {
 	    while (defined($v = shift(@a))) {
 		$v = abs($v);
 		if ($v == 0) { $v = 10 };
-		if ($v == 1 && $c{$course}->{$count} > 3) { $v = 11 };
+		if ($v == 1 && $c{$course}->{$count}[0] > 3) { $v = 11 };
 		print NFD ":$v";
 		$check_shot += $v;
 		$count++;
@@ -152,18 +168,22 @@ sub convert_player {
 	    # A 8,0 format is a score with a 10 on the first hole.
 	    #
 
-	    print NFD "$course:$course_rating:$slope:$year-$month-$day:$shot:$post";
-
 	    ($a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8]) = $line =~
 		/^(\d)(\d)(\d)(\d)(\d)(\d)(\d)(\d)/;
 
 	    $a[0] = 10;
 
+	    if ($year >= 2020) {
+		$post = net_double_bogey($pn, $course, @a);
+	    }
+
+	    print NFD "$course:$course_rating:$slope:$year-$month-$day:$shot:$post";
+
 	    $count = 1;
 	    while (defined($v = shift(@a))) {
 		$v = abs($v);
 		if ($v == 0) { $v = 10 };
-		if ($v == 1 && $c{$course}->{$count} > 3) { $v = 11 };
+		if ($v == 1 && $c{$course}->{$count}[0] > 3) { $v = 11 };
 		print NFD ":$v";
 		$check_shot += $v;
 		$count++;
@@ -179,18 +199,22 @@ sub convert_player {
 	    # A 13,3 format is a score with a 10 on the last hole.
 	    #
 
-	    print NFD "$course:$course_rating:$slope:$year-$month-$day:$shot:$post";
-
 	    ($a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8]) = $line =~
 		/^(\d)(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})\056(\d{2})(\d)\054/;
 
-	    if ($a[8] != 1) {
+	    if ($a[8] != 1 && $a[8] != 2) {
 		close(FD);
 		close(NFD); 
-		die "Last hole should be 1 (which is a 10): line: $line\n";
+		die "Last hole should be 1 or 2 (which is a 10 or 20): line: $line\n";
 	    }
 
-	    $a[8] = 10;  # in this format
+	    $a[8] *= 10;     # 10 or 20 in his format
+
+	    if ($year >= 2020) {
+		$post = net_double_bogey($pn, $course, @a);
+	    }
+
+	    print NFD "$course:$course_rating:$slope:$year-$month-$day:$shot:$post";
 
 	    while (defined($v = shift(@a))) {
 		$v = abs($v);
@@ -204,10 +228,18 @@ sub convert_player {
 	    }
 	} elsif ($line =~ /^\d{13}\056\d{4}\054/) {
 
-	    print NFD "$course:$course_rating:$slope:$year-$month-$day:$shot:$post";
+	    #
+	    # A 13,4 format is a score with big number on hole #9.
+	    #
 
 	    ($a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8]) = $line =~
 		/^(\d)(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})\056(\d{2})(\d{2})\054/;
+
+	    if ($year >= 2020) {
+		$post = net_double_bogey($pn, $course, @a);
+	    }
+
+	    print NFD "$course:$course_rating:$slope:$year-$month-$day:$shot:$post";
 
 	    while (defined($v = shift(@a))) {
 		$v = abs($v);
@@ -225,12 +257,16 @@ sub convert_player {
 	    # A 14,3 format is a score with big number on hole #1 and a 10 on the last hole.
 	    #
 
-	    print NFD "$course:$course_rating:$slope:$year-$month-$day:$shot:$post";
-
 	    ($a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8]) = $line =~
 		/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})\056(\d{2})(\d)\054/;
 
 	    $a[8] = 10;  # in this format
+
+	    if ($year >= 2020) {
+		$post = net_double_bogey($pn, $course, @a);
+	    }
+
+	    print NFD "$course:$course_rating:$slope:$year-$month-$day:$shot:$post";
 
 	    while (defined($v = shift(@a))) {
 		$v = abs($v);
@@ -245,14 +281,17 @@ sub convert_player {
 	} elsif ($line =~ /^\d{14}\056\d{4}\054/) {
 
 	    #
-	    # Lines with score in the format 14.4 have scores that hole number 1 is
-	    # a 10 or higher.
+	    # 14,4 format have scores that hole number 1 is a 10 or higher.
 	    #
-
-	    print NFD "$course:$course_rating:$slope:$year-$month-$day:$shot:$post";
 
 	    ($a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8]) = $line =~
 		/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})\056(\d{2})(\d{2})\054/;
+
+	    if ($year >= 2020) {
+		$post = net_double_bogey($pn, $course, @a);
+	    }
+
+	    print NFD "$course:$course_rating:$slope:$year-$month-$day:$shot:$post";
 
 	    while (defined($v = shift(@a))) {
 		$v = abs($v);
@@ -278,4 +317,36 @@ sub convert_player {
     }
     close(FD);
     close (NFD);
+}
+
+#
+# Take the players round, calculate current course handicap and figure
+# out their net double bogey for each hole.
+#
+sub net_double_bogey($pn, $course, @a) {
+    my ($pn, $course, @s) = @_;
+    my ($v, $hole, $post);
+
+    if (!defined($cindex{$pn})) {
+	print "$pn does not have a valid index. Need to fix.\n";
+	return (100);
+    }
+
+    $cd  = ($c{$course}{course_rating} - $c{$course}{par});
+    $cd  = round($cd, 10);
+    $chc = (($cindex{$pn} * ($c{$course}->{slope} / 113)) + $cd);
+    $chc = sprintf("%.0f", $chc);
+
+    $hole = 1; $post = 0;
+    while (defined($v = shift(@s))) {
+	$v = abs($v);
+
+	$max_score = 0;
+	if ($c{$course}{$hole}[1] <= $chc) { $max_score++ };
+	$max_score += ($c{$course}{$hole}[0] + 2);
+
+	$post += ($v > $max_score) ? $max_score : $v;
+	$hole++;
+    }
+    return ($post);
 }
