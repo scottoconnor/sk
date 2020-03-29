@@ -257,8 +257,6 @@ if ($top_gun) {
 
 if ($others) {
 
-    my @courses = ("SF", "SB", "NF", "NB");
-
     for ($par = 3; $par < 6; $par++) {
 	print "On par $par\'s:\n";
 	for ($xx = 6; $xx < 15; $xx++) {
@@ -585,17 +583,17 @@ sub print_player_stats {
 
 	    for ($h = 1; $h < 10; $h++) {
 
-		printf("Hole %d (par %d): Total shots: %3d  ", ($h + $offset), $c{$sc}->{$h}, $p{$x}{$sc}{$h}{shots});
+		printf("Hole %d (par %d): Total shots: %3d  ", ($h + $offset), $c{$sc}{$h}[0], $p{$x}{$sc}{$h}[0]{shots});
 
-		if ($c{$sc}->{$h} > 3) {
-		    printf("ave=%.2f\n  Eagles=%d, ", ($p{$x}{$sc}{$h}{shots} / $p{$x}{$sc}{xplayed}),
-			$p{$x}{$sc}{$h}{e} ? $p{$x}{$sc}{$h}{e} : 0);
-		} elsif ($c{$sc}->{$h} == 3) {
-		    printf("ave=%.2f\n  Hole-in-Ones=%d, ", ($p{$x}{$sc}{$h}{shots} / $p{$x}{$sc}{xplayed}),
-			$p{$x}{$sc}{$h}{e} ? $p{$x}{$sc}{$h}{e} : 0);
+		if ($c{$sc}{$h}[0] > 3) {
+		    printf("ave=%.2f\n  Eagles=%d, ", ($p{$x}{$sc}{$h}[0]{shots} / $p{$x}{$sc}{xplayed}),
+			$p{$x}{$sc}{$h}[0]{e} ? $p{$x}{$sc}{$h}[0]{e} : 0);
+		} elsif ($c{$sc}{$h}[0] == 3) {
+		    printf("ave=%.2f\n  Hole-in-Ones=%d, ", ($p{$x}{$sc}{$h}[0]{shots} / $p{$x}{$sc}{xplayed}),
+			$p{$x}{$sc}{$h}[0]{e} ? $p{$x}{$sc}{$h}[0]{e} : 0);
 		}
-		printf("Birdies=%d, Pars=%d, Bogies=%d, Double Bogies=%d, Others=%d\n\n", $p{$x}{$sc}{$h}{b},
-		    $p{$x}{$sc}{$h}{p}, $p{$x}{$sc}{$h}{bo}, $p{$x}{$sc}{$h}{db}, $p{$x}{$sc}{$h}{o});
+		printf("Birdies=%d, Pars=%d, Bogies=%d, Double Bogies=%d, Others=%d\n\n", $p{$x}{$sc}{$h}[0]{b},
+		    $p{$x}{$sc}{$h}[0]{p}, $p{$x}{$sc}{$h}[0]{bo}, $p{$x}{$sc}{$h}[0]{db}, $p{$x}{$sc}{$h}[0]{o});
 	    }
 	    print "\n";
 	}
@@ -775,36 +773,36 @@ sub get_player_scores {
 		    $difficult{$md}{score} += $hole, if $hardest;
 		    $difficult{$md}{xplayed}++, if $hardest;
 
-		    $p{$pn}{$course}{$h}{shots} += $hole;
-		    if (($c{$course}->{$h} - $hole) < -2) {
+		    $p{$pn}{$course}{$h}[0]{shots} += $hole;
+		    if (($c{$course}{$h}[0] - $hole) < -2) {
 			$p{$pn}{to}++;
-			$p{$pn}{$course}{$h}{o}++;
+			$p{$pn}{$course}{$h}[0]{o}++;
 			$y{$cy}{total_other}++;
-			$to{$c{$course}->{$h}}{$hole}++;
+			$to{$c{$course}{$h}[0]}{$hole}++;
 		    };
-		    if (($c{$course}->{$h} - $hole) == -2) {
+		    if (($c{$course}{$h}[0] - $hole) == -2) {
 			$p{$pn}{tdb}++;
-			$p{$pn}{$course}{$h}{db}++;
+			$p{$pn}{$course}{$h}[0]{db}++;
 			$y{$cy}{total_db}++;
 		    }
-		    if (($c{$course}->{$h} - $hole) == -1) {
+		    if (($c{$course}{$h}[0] - $hole) == -1) {
 			$p{$pn}{bo}++;
-			$p{$pn}{$course}{$h}{bo}++;
+			$p{$pn}{$course}{$h}[0]{bo}++;
 			$y{$cy}{total_bogies}++;
 		    }
-		    if (($c{$course}->{$h} - $hole) == 0) {
+		    if (($c{$course}{$h}[0] - $hole) == 0) {
 			$p{$pn}{tp}++;
-			$p{$pn}{$course}{$h}{p}++;
+			$p{$pn}{$course}{$h}[0]{p}++;
 			$y{$cy}{total_pars}++;
 		    }
-		    if (($c{$course}->{$h} - $hole) == 1) {
-			$p{$pn}{$course}{$h}{b}++;
+		    if (($c{$course}{$h}[0] - $hole) == 1) {
+			$p{$pn}{$course}{$h}[0]{b}++;
 			$p{$pn}{tb}++;
 			$y{$cy}{total_birdies}++;
 			$bt{$cy}{$pn} += 1;
 		    }
-		    if (($c{$course}->{$h} - $hole) == 2) {
-			$p{$pn}{$course}{$h}{e}++;
+		    if (($c{$course}{$h}[0] - $hole) == 2) {
+			$p{$pn}{$course}{$h}[0]{e}++;
 			$p{$pn}{te}++;
 			$y{$cy}{total_eagles}++;
 			$et{$cy}{$pn} += 1;
