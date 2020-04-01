@@ -327,23 +327,35 @@ sub net_double_bogey($pn, $course, @a) {
     my ($pn, $course, @s) = @_;
     my ($v, $hole, $post);
 
+    # 
+    # If the player does not have a valid index due to lack of scores,
+    # report the error and a post score of 100. This will flag that
+    # it needs to be done manually.
+    #
     if (!defined($cindex{$pn})) {
 	print "$pn does not have a valid index. Need to fix.\n";
 	return (100);
     }
 
+    #
+    # Figure out the players current course handicap (cch)
+    #
     $cd  = ($c{$course}{course_rating} - $c{$course}{par});
     $cd  = round($cd, 10);
-    $chc = (($cindex{$pn} * ($c{$course}->{slope} / 113)) + $cd);
-    $chc = sprintf("%.0f", $chc);
+    $cch = (($cindex{$pn} * ($c{$course}->{slope} / 113)) + $cd);
+    $cch = sprintf("%.0f", $cch);
 
     $hole = 1; $post = 0;
     while (defined($v = shift(@s))) {
 	$v = abs($v);
 
-	$max_score = 0;
-	if ($c{$course}{$hole}[1] <= $chc) { $max_score++ };
-	$max_score += ($c{$course}{$hole}[0] + 2);
+        #
+        # Each player is allowed double bogey on each hole.  If the
+        # hole is one of the player's handicap hole, they are allowed
+        # one more stroke.
+        #
+	$max_score = ($c{$course}{$hole}[0] + 2);
+	if ($c{$course}{$hole}[1] <= $cch) { $max_score++ };
 
 	$post += ($v > $max_score) ? $max_score : $v;
 	$hole++;
