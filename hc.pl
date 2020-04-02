@@ -142,6 +142,10 @@ sub gen_hc {
 	($course, $course_rating, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $ni) =
 	    split(/:/, $s);
 
+	if ($post == 100) {
+	    print "Bogus posted score of -> $post, need to fix.\n";
+	}
+
 	print "$course, $course_rating, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $ni\n", if $debug;
 
 	$n[$y] = ((113 / $slope) * ($post - $course_rating));
