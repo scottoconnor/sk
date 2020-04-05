@@ -8,7 +8,7 @@
     SF => {
 	name => "South Front",
 	#
-	# Pars for each hole on each course.
+	# Par and handicap hole or each hole.
 	#
 	1 => [ 4, 7 ],
 	2 => [ 4, 1 ],
@@ -27,7 +27,7 @@
     SB => {
 	name => "South Back",
 	#
-	# Pars for each hole on each course.
+	# Par and handicap hole or each hole.
 	#
 	1 => [ 5, 2 ],
 	2 => [ 3, 9 ],
@@ -46,7 +46,7 @@
     NF => {
 	name => "North Front",
 	#
-	# Pars for each hole on each course.
+	# Par and handicap hole or each hole.
 	#
 	1 => [ 5, 3 ],
 	2 => [ 4, 6 ],
@@ -65,7 +65,7 @@
     NB => {
 	name => "North Back",
 	#
-	# Pars for each hole on each course.
+	# Par and handicap hole or each hole.
 	#
 	1 => [ 4, 2 ],
 	2 => [ 4, 3 ],
