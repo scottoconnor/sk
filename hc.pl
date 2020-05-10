@@ -197,6 +197,10 @@ sub gen_hc {
     } else {
 	$hi = round($hi, 10);
 
+        if ($pn eq "O'Connor, S") {
+            $hi = 8.8;
+        }
+
 	$sfd = ($c{SF}{course_rating} - $c{SF}{par});
 	$sfd = round($sfd, 10);
 	$sf = (($hi * ($c{SF}->{slope} / 113)) + $sfd);
