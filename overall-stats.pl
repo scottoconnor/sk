@@ -5,7 +5,7 @@
 
 use Getopt::Long;
 
-$year = 2019;
+$year = (1900 + (localtime)[5]);
 
 GetOptions (
 	"y=s" => \$year,
