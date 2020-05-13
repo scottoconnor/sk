@@ -14,10 +14,11 @@ while (<TD>) {
     @ary = split(/:/, $_);
 
     if ($ary[2] ne "current") {
-	next;
+        $index{$ary[0]}{$ary[2]} = $ary[5];
+    } else {
+	chop($ary[3]);
+        $index{$ary[0]}{$ary[2]} = $ary[3];
     }
-    chop($ary[3]);
-    $cindex{$ary[0]} = $ary[3];
 }
 close(TD);
 
@@ -174,7 +175,7 @@ sub convert_player {
 	    $a[0] = 10;
 
 	    if ($year >= 2020) {
-		$post = net_double_bogey($pn, $course, @a);
+		$post = net_double_bogey($pn, "$year-$month-$day", $course, @a);
 	    }
 
 	    print NFD "$course:$course_rating:$slope:$year-$month-$day:$shot:$post";
@@ -211,7 +212,7 @@ sub convert_player {
 	    $a[8] *= 10;     # 10 or 20 in his format
 
 	    if ($year >= 2020) {
-		$post = net_double_bogey($pn, $course, @a);
+		$post = net_double_bogey($pn, "$year-$month-$day", $course, @a);
 	    }
 
 	    print NFD "$course:$course_rating:$slope:$year-$month-$day:$shot:$post";
@@ -236,7 +237,7 @@ sub convert_player {
 		/^(\d)(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})\056(\d{2})(\d{2})\054/;
 
 	    if ($year >= 2020) {
-		$post = net_double_bogey($pn, $course, @a);
+		$post = net_double_bogey($pn, "$year-$month-$day", $course, @a);
 	    }
 
 	    print NFD "$course:$course_rating:$slope:$year-$month-$day:$shot:$post";
@@ -263,7 +264,7 @@ sub convert_player {
 	    $a[8] = 10;  # in this format
 
 	    if ($year >= 2020) {
-		$post = net_double_bogey($pn, $course, @a);
+		$post = net_double_bogey($pn, "$year-$month-$day", $course, @a);
 	    }
 
 	    print NFD "$course:$course_rating:$slope:$year-$month-$day:$shot:$post";
@@ -288,7 +289,7 @@ sub convert_player {
 		/^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})\056(\d{2})(\d{2})\054/;
 
 	    if ($year >= 2020) {
-		$post = net_double_bogey($pn, $course, @a);
+		$post = net_double_bogey($pn, "$year-$month-$day", $course, @a);
 	    }
 
 	    print NFD "$course:$course_rating:$slope:$year-$month-$day:$shot:$post";
@@ -323,18 +324,22 @@ sub convert_player {
 # Take the players round, calculate current course handicap and figure
 # out their net double bogey for each hole.
 #
-sub net_double_bogey($pn, $course, @a) {
-    my ($pn, $course, @s) = @_;
-    my ($v, $hole, $post);
+sub net_double_bogey {
+    my ($pn, $date, $course, @s) = @_;
+    my ($v, $hole, $post, $hi);
 
     # 
     # If the player does not have a valid index due to lack of scores,
     # report the error and a post score of 100. This will flag that
     # it needs to be done manually.
     #
-    if (!defined($cindex{$pn})) {
-	print "$pn does not have a valid index. Need to fix.\n";
-	return (100);
+    if (!defined($index{$pn}{$date}) && defined($index{$pn}{"current"})) {
+        $hi = $index{$pn}{"current"};
+    } else {
+	#
+        # If a player doesn't have a current index, allow a stroke per hole.
+        #
+	$hi = 20.5;
     }
 
     #
@@ -342,7 +347,7 @@ sub net_double_bogey($pn, $course, @a) {
     #
     $cd  = ($c{$course}{course_rating} - $c{$course}{par});
     $cd  = round($cd, 10);
-    $cch = (($cindex{$pn} * ($c{$course}->{slope} / 113)) + $cd);
+    $cch = (($hi * ($c{$course}->{slope} / 113)) + $cd);
     $cch = sprintf("%.0f", $cch);
 
     $hole = 1; $post = 0;
