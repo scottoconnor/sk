@@ -183,6 +183,10 @@ sub gen_hc {
 
     $hi /= $use;
 
+    if ($pn eq "O'Connor, S") {
+        $hi = 9.8;
+    }
+
     if ($usga) {
 	$hi *= $allowance;
 	$hi = (int($hi * 10) / 10);
@@ -196,10 +200,6 @@ sub gen_hc {
 	$nb = sprintf("%.0f", $nb);
     } else {
 	$hi = round($hi, 10);
-
-        if ($pn eq "O'Connor, S") {
-            $hi = 8.8;
-        }
 
 	$sfd = ($c{SF}{course_rating} - $c{SF}{par});
 	$sfd = round($sfd, 10);

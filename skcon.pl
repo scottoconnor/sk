@@ -64,7 +64,7 @@ sub convert_player {
     } else {
 	close(FD);
 	close(NFD); 
-	die "Unknown golfer: might need to run build-golfers.pl\n";
+	die "$first $last: Unknown golfer: might need to run build-golfers.pl\n";
     }
 
     $line = <FD>;
@@ -330,16 +330,18 @@ sub net_double_bogey {
 
     # 
     # If the player does not have a valid index due to lack of scores,
-    # report the error and a post score of 100. This will flag that
-    # it needs to be done manually.
+    # set their handicap intex to 20.5 and flag it (and probably ignore it).
     #
-    if (!defined($index{$pn}{$date}) && defined($index{$pn}{"current"})) {
+    if (defined($index{$pn}{$date})) {
+        $hi = $index{$pn}{$date};
+    } elsif (!defined($index{$pn}{$date}) && defined($index{$pn}{"current"})) {
         $hi = $index{$pn}{"current"};
     } else {
 	#
         # If a player doesn't have a current index, allow a stroke per hole.
         #
 	$hi = 20.5;
+        print "$pn: using handicap index of -> 20.5\n"
     }
 
     #
@@ -357,10 +359,18 @@ sub net_double_bogey {
         #
         # Each player is allowed double bogey on each hole.  If the
         # hole is one of the player's handicap hole, they are allowed
-        # one more stroke.
+        # one or more strokes.
         #
 	$max_score = ($c{$course}{$hole}[0] + 2);
-	if ($c{$course}{$hole}[1] <= $cch) { $max_score++ };
+
+	$add_stroke = ($cch - $c{$course}{$hole}[1]);
+	if ($add_stroke >= 0 && $add_stroke < 9) {
+	    $max_score++;
+	}
+	if ($add_stroke >= 9) {
+	    $max_score += 2;
+	}
+	#if ($c{$course}{$hole}[1] <= $cch) { $max_score++ };
 
 	$post += ($v > $max_score) ? $max_score : $v;
 	$hole++;
