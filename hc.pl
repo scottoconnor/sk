@@ -11,13 +11,11 @@ use Getopt::Long;
 
 $debug = 0;
 $trend = 0;
-$convert = 0;
 $allowance = 0.9;
 
 GetOptions (
     "a=f" => \$allowance,
     "t" =>  \$trend,
-    "c" =>  \$convert,
     "d" => \$debug)
 or die("Error in command line arguments\n");
 
@@ -34,12 +32,6 @@ if ($year > 2019) {
     $usga = 0;
 } else {
     $usga = 1;
-}
-
-if ($convert) {
-    print "$month-$day-$year";
-    &con_skhist;
-    exit;
 }
 
 #
@@ -229,62 +221,4 @@ sub gen_hc {
     $hc{$pn}{nbhc} = $nb;
 
     printf ("%-17s - %5.1fN  SF=%-3d SB=%-3d NF=%-3d NB=%-3d\n", $pn, $hi, $sf, $sb, $nf, $nb), if $debug;
-}
-
-sub con_skhist {
-
-    open (FD, "skhist.txt") || die "skhist.txt does not exist.\n";
-
-    while (<FD>) {
-
-	if ($_ =~ /^All\s+Hand/) {
-	    ($date) = $_ =~ /\: (\d+\055\d+\055\d+)/;
-	    #print "$date\n";
-	}
-
-	if ($_ =~ /^\s+/) {
-	    next;
-	}
-
-	if ($_ =~ /^TNFB/) {
-	    $team = "TNFB"; 
-	    $_ =~ s/^\s+|\s+$//g;
-	    print "\n$_\n";
-	}
-
-	if ($team eq "TNFB") {
-	    if (($last, $first, $index, $hc) = $_ =~ /^(\S+)\054\s*(\S+)\s+(\d+\056\d+)N\s+\/\s+(\d+)/) {
-		$pn = $last . ", " . $first;
-		printf("%-17s %4.1fN / %d\n", $pn, $index, $hc);
-	    }
-	}
-    }
-
-    seek(FD, 0, SEEK_SET);
-
-    while (<FD>) {
-
-	if ($_ =~ /^\s+/) {
-	    next;
-	}
-
-	if ($_ =~ /Sub/) {
-	    $team = "Sub";
-	    print "\n\014\n";
-	    $_ =~ s/^\s+|\s+$//g;
-	    print "$_\n";
-	}
-
-	if ($_ =~ /^TNFB/) {
-	    $team = "TNFB";
-	}
-
-	if ($team eq "Sub") {
-	    if (($last, $first, $index, $hc) = $_ =~ /^(\S+)\054\s*(\S+)\s+(\d+\056\d+)N\s+\/\s+(\d+)/) {
-		$pn = $last . ", " . $first;
-		printf("%-17s %4.1fN / %d\n", $pn, $index, $hc);
-	    }
-	}
-    }
-    close(FD);
 }
