@@ -622,7 +622,7 @@ if ($hardest) {
 	    $index = ($hp - 27);
 	}
 	$ph = ($hp - $offset);
-	$difficult{$hp}{ave} -= $c{$course}->{$index};
+	$difficult{$hp}{ave} -= $c{$course}->{$index}[0];
     }
 
     foreach $hp (reverse sort { $difficult{$a}{ave} <=> $difficult{$b}{ave} } (keys(%difficult))) {
@@ -644,7 +644,7 @@ if ($hardest) {
 	}
 	$ph = ($hp - $offset);
 	printf("%-11s hole %2d (par %d) average over par = %.2f (played %d times)\n", $c{$course}->{name}, $ph,
-	    $c{$course}->{$index}, $difficult{$hp}{ave}, $difficult{$hp}{xplayed});
+	    $c{$course}->{$index}[0], $difficult{$hp}{ave}, $difficult{$hp}{xplayed});
     }
 }
 
