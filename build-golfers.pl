@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 #
-# Copyright (c) 2018, 2019 Scott O'Connor
+# Copyright (c) 2018, 2020 Scott O'Connor
 #
 
 $fn = "Golfers.SK";
@@ -15,7 +15,7 @@ print NFD "%t = (
     \"TNFB/East/Huskies\"        => { 1 => \"Rogers, Mike\", 2 => \"Maley, John\" },
     \"TNFB/East/Minutemen\"      => { 1 => \"Curley, Tom\", 2 => \"Graceffa, Joe\" },
     \"TNFB/East/River Hawks\"    => { 1 => \"Czapkowski, Chet\", 2 => \"Marotta, Jim\" },
-    \"TNFB/East/Terriers\"       => { 1 => \"O'Connor, Scott\", 2 => \"Treen, Phil\" },
+    \"TNFB/East/Terriers\"       => { 1 => \"O'Connor, Scott\", 2 => \"Percuoco, Paul\" },
     \"TNFB/East/Warriors\"       => { 1 => \"Donahue, Pat\", 2 => \"Sullivan, Joe\" },
     \"TNFB/East/Wildcats\"       => { 1 => \"Carter, Randy\", 2 => \"O'Keefe, Jim\" },
     \"TNFB/West/Badgers\"        => { 1 => \"Kilgus, Bob\", 2 => \"Jodoin, Derek\" },
