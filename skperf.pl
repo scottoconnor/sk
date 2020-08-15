@@ -399,7 +399,8 @@ if ($all_time) {
     print "</table></br>", if $html;
 }
 
-sub print_stats {
+sub
+print_stats {
 
     my($yp) = @_;
 
@@ -461,7 +462,8 @@ if ($course_stats) {
     }
 }
 
-sub print_tables {
+sub
+print_tables {
 
     my($yp) = @_;
 
@@ -529,7 +531,8 @@ sub print_tables {
     }
 }
 
-sub print_player_stats {
+sub
+print_player_stats {
 
     foreach $x (sort keys %p) {
 
@@ -650,7 +653,8 @@ if ($hardest) {
 
 printf("Total time = %.2f seconds - processed %d scores\n", $total_time, $totals{total_scores}), if $hires;
 
-sub get_player_trend {
+sub
+get_player_trend {
 
     open(TD, "trend"), or die "Can't open file trend.\n";
     my (@ary);
@@ -690,7 +694,8 @@ sub get_player_trend {
     }
 }
 
-sub get_player_scores {
+sub
+get_player_scores {
 
     my($fn, $cy) = @_;
     my($cw);
@@ -774,6 +779,7 @@ sub get_player_scores {
 		    $difficult{$md}{xplayed}++, if $hardest;
 
 		    $p{$pn}{$course}{$h}[0]{shots} += $hole;
+
 		    if (($c{$course}{$h}[0] - $hole) < -2) {
 			$p{$pn}{to}++;
 			$p{$pn}{$course}{$h}[0]{o}++;
