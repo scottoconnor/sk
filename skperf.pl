@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 #
-# Copyright (c) 2018, 2019, Scott O'Connor
+# Copyright (c) 2018, 2020, Scott O'Connor
 #
 
 require './tnfb_years.pl';
@@ -34,6 +34,7 @@ $hires = 0;
 $hardest = 0;
 $course_stats = 0;
 $most_improved = 0;
+$birdies_per_hole = 0;
 
 if ($#ARGV < 0) {
     exit;
@@ -65,6 +66,7 @@ GetOptions (
 	"g" =>  \$top_gun,
 	"o" => \$others,
 	"ha" => \$hardest,
+	"b" => \$birdies_per_hole,
 	"r" => \$hires,
 	"h" =>  \$html,
 	"d" => \$debug)
@@ -74,8 +76,9 @@ if ($all_time || ($start_year < 1997)) {
     $start_year = 1997;
 }
 
-if ($all_time || $stats || $tables || $top_gun || $vhc || $others || $hardest || $course_stats) {
-    $include_subs = 1;
+if ($all_time || $stats || $tables || $top_gun || $vhc || $others || $hardest ||
+    $course_stats || $birdies_per_hole) {
+	$include_subs = 1;
 }
 
 if ($only_year) {
@@ -651,13 +654,42 @@ if ($hardest) {
     }
 }
 
+if ($birdies_per_hole) {
+
+    foreach $hp (reverse sort { $bph{$a}{b} <=> $bph{$b}{b} } (keys(%bph))) {
+
+	$offset = 0;
+
+	if ($hp > 0 && $hp < 10) {
+	    $course = 'South Front';
+	    #$index = $hp;
+	} elsif ($hp > 9 && $hp < 19) {
+	    $course = 'South Back';
+	    #$index = ($hp - 9);
+	} elsif ($hp > 18 && $hp < 28) {
+	    $course = 'North Front';
+	    $offset = 18;
+	    #$index = ($hp - 18);
+	} else {
+	    $course = 'North Back';
+	    $offset = 18;
+	    #$index = ($hp - 27);
+	}
+	$ph = ($hp - $offset);
+
+	print "$course, hole $ph - total birdies -> $bph{$hp}{b}\n";
+    }
+}
+
 printf("Total time = %.2f seconds - processed %d scores\n", $total_time, $totals{total_scores}), if $hires;
 
 sub
 get_player_trend {
 
     open(TD, "trend"), or die "Can't open file trend.\n";
-    my (@ary);
+    my (@ary, $next_year);
+
+    $next_year = ($start_year + 1);
 
     while (<TD>) {
 	@ary = split(/:/, $_);
@@ -669,6 +701,9 @@ get_player_trend {
 
 	if (!defined($p{$ary[0]}{B}) && defined($p{$ary[0]}{A}) && $ary[2] =~ /current/) {
 	    $p{$ary[0]}{B} = ($ary[3] + 6);
+	}
+	if (!defined($p{$ary[0]}{B}) && defined($p{$ary[0]}{A}) && $ary[2] =~ /$next_year/) {
+	    $p{$ary[0]}{B} = ($ary[5] + 6);
 	}
 	if ($ary[2] eq "current") {
 	    next;
@@ -774,7 +809,7 @@ get_player_scores {
 		    $hole = abs(shift @score);
 
 		    $md = ($h + (($course eq 'SF') ? 0 : ($course eq 'SB') ? 9 :
-			($course eq 'NF') ? 18 : ($course eq 'NB') ? 27 : 0)), if $hardest;
+			($course eq 'NF') ? 18 : ($course eq 'NB') ? 27 : 0)), if ($hardest || $birdies_per_hole);
 		    $difficult{$md}{score} += $hole, if $hardest;
 		    $difficult{$md}{xplayed}++, if $hardest;
 
@@ -806,6 +841,7 @@ get_player_scores {
 			$p{$pn}{tb}++;
 			$y{$cy}{total_birdies}++;
 			$bt{$cy}{$pn} += 1;
+			$bph{$md}{b}++;
 		    }
 		    if (($c{$course}{$h}[0] - $hole) == 2) {
 			$p{$pn}{$course}{$h}[0]{e}++;
