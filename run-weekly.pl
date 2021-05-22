@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 #
-# Copyright (c) 2018, 2019, Scott O'Connor
+# Copyright (c) 2018, 2021, Scott O'Connor
 #
 
 use Getopt::Long;
@@ -8,7 +8,7 @@ use Getopt::Long;
 $year = (1900 + (localtime)[5]);
 
 $year_day = ((localtime)[7] + 1);
-if ($year_day < 110) {
+if ($year_day < 117) {
     $year = ((1900 + (localtime)[5]) - 1);
 }
 
