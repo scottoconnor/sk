@@ -7,6 +7,11 @@ require './tnfb.pl';
 require './courses.pl';
 require './hcroutines.pl';
 
+#
+# Need to look up each player's trend to get their current
+# handicap index. This is needed for calculating net double bogie
+# for the World Handicap System.
+#
 open(TD, "trend"), or die "Can't open file trend.\n";
 my (@ary);
 
