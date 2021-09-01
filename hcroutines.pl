@@ -156,7 +156,7 @@ sub gen_hc_trend {
 	    # first handicap for the 2020 season.  We know that this is the last
 	    # score for the 2019 season if the next score posted is from 2020.
 	    #
-	    if ($year == 2020 && ($usga == 1)) {
+	    if ($year >= 2020 && ($usga == 1)) {
 		$usga = 0;
 	    }
 	} elsif ($last_score == $num) {
