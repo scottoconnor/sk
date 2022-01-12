@@ -1,10 +1,11 @@
 #! /usr/bin/perl
 #
-# Copyright (c) 2018, 2020, Scott O'Connor
+# Copyright (c) 2018, 2022, Scott O'Connor
 #
 
 require './tnfb_years.pl';
 require './courses.pl';
+require './subs.pl';
 require './hcroutines.pl';
 
 use Time::HiRes qw(gettimeofday);
@@ -35,6 +36,7 @@ $hardest = 0;
 $course_stats = 0;
 $most_improved = 0;
 $birdies_per_hole = 0;
+$debug = 0;
 
 if ($#ARGV < 0) {
     exit;
@@ -138,15 +140,25 @@ for ($cy = $start_year; $cy <= $end_year; $cy++) {
 # basis and average for the years specified.
 #
 if ($vhc) {
-    foreach $pn (keys %p) {
-	if (($p{$pn}{total_strokes} == 0) || ($p{$pn}{total_rounds} == 0) ||
-	    (($p{$pn}{team} eq "Sub") && ($include_subs == 0))) {
+    foreach $pn (sort keys %p) {
+	if (($p{$pn}{total_strokes} == 0) || ($p{$pn}{total_rounds} == 0)) {
 	    next;
 	}
 
 	foreach $yp (sort keys %y) {
 	    foreach $w ($start_week..$end_week) {
 		if ($p{$pn}{$yp}{$w} && defined($p{$pn}{$dates{$yp}{$w}}{hc})) {
+
+                    #
+                    # Check Sub. If this player is a sub, change their team to
+                    # the team they are subbing for.
+                    #
+                    if ($p{$pn}{team} eq "Sub") {
+                        print "$pn is subbing for $subs{$yp}{$w}{$pn}\n", if $debug;
+                        $p{$pn}{team} = $p{$subs{$yp}{$w}{$pn}}{team};
+                        print "$pn: $p{$pn}{team}\n", if $debug;
+                    }
+
 		    $p{$pn}{diff} += (($p{$pn}{$yp}{$w} - $p{$pn}{$dates{$yp}{$w}}{hc}) - 36);
 		    printf("%-17s: year %-4d week %-2s shot %d, hc %2d, net %d, diff %d\n", $pn, $yp, $w, $p{$pn}{$yp}{$w},
 			$p{$pn}{$dates{$yp}{$w}}{hc}, ($p{$pn}{$yp}{$w} - $p{$pn}{$dates{$yp}{$w}}{hc}),
@@ -233,7 +245,7 @@ if ($top_gun) {
     print "    <th style=\"text-align:center\">Score</th>\n  </tr>\n", if $html;
 
     foreach $pn (keys %p) {
-	if (($p{$pn}{total_strokes} == 0) || ($p{$pn}{total_rounds} == 0) ||
+        if (($p{$pn}{total_strokes} == 0) || ($p{$pn}{total_rounds} == 0) ||
             (($p{$pn}{team} eq "Sub") && ($include_subs == 0))) {
             next;
         }
