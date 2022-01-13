@@ -154,6 +154,7 @@ if ($vhc) {
                     # the team they are subbing for.
                     #
                     if ($p{$pn}{team} eq "Sub") {
+			die "$pn is not a valid sub?\n", if !defined($subs{$yp}{$w}{$pn});
                         print "$pn is subbing for $subs{$yp}{$w}{$pn}\n", if $debug;
                         $p{$pn}{team} = $p{$subs{$yp}{$w}{$pn}}{team};
                         print "$pn: $p{$pn}{team}\n", if $debug;
@@ -163,8 +164,6 @@ if ($vhc) {
 		    printf("%-17s: year %-4d week %-2s shot %d, hc %2d, net %d, diff %d\n", $pn, $yp, $w, $p{$pn}{$yp}{$w},
 			$p{$pn}{$dates{$yp}{$w}}{hc}, ($p{$pn}{$yp}{$w} - $p{$pn}{$dates{$yp}{$w}}{hc}),
 			    (($p{$pn}{$yp}{$w} - $p{$pn}{$dates{$yp}{$w}}{hc}) - 36));
-		} elsif ($p{$pn}{$yp}{$w} && !defined($p{$pn}{$dates{$yp}{$w}}{hc})) {
-		    $p{$pn}{total_rounds}--;
 		}
 	    }
 	}
