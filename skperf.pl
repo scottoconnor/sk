@@ -140,6 +140,9 @@ for ($cy = $start_year; $cy <= $end_year; $cy++) {
 # basis and average for the years specified.
 #
 if ($vhc) {
+
+    $num_years = values(%y);
+
     foreach $pn (sort keys %p) {
 	if (($p{$pn}{total_strokes} == 0) || ($p{$pn}{total_rounds} == 0)) {
 	    next;
@@ -186,7 +189,7 @@ if ($vhc) {
 	if ($tt eq "Sub") {
 	    next;
 	}
-	printf("%-25s: %.2f\n", $tt, $te{$tt});
+	printf("%-25s: %.2f\n", $tt, ($te{$tt}/$num_years));
     }
 }
 
