@@ -13,7 +13,7 @@ print NFD "%t = (
     \"TNFB/East/Black Bears\"    => { 1 => \"Cunningham, Kevin\", 2 => \"Perisho, Mike\" },
     \"TNFB/East/Eagles\"         => { 1 => \"Correia, Paul\", 2 => \"Correia, Dan\" },
     \"TNFB/East/Huskies\"        => { 1 => \"Rogers, Mike\", 2 => \"Maley, John\" },
-    \"TNFB/East/Minutemen\"      => { 1 => \"Curley, Tom\", 2 => \"Graceffa, Joe\" },
+    \"TNFB/East/Minutemen\"      => { 1 => \"Curley, Tom\", 2 => \"Curley, Ray\" },
     \"TNFB/East/River Hawks\"    => { 1 => \"Czapkowski, Chet\", 2 => \"Marotta, Jim\" },
     \"TNFB/East/Terriers\"       => { 1 => \"O'Connor, Scott\", 2 => \"Percuoco, Paul\" },
     \"TNFB/East/Warriors\"       => { 1 => \"Donahue, Pat\", 2 => \"Sullivan, Joe\" },
