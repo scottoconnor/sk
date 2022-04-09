@@ -13,7 +13,7 @@ if ($year_day < 117) {
 }
 
 GetOptions (
-	"y=s" => \$year)
+        "y=s" => \$year)
 or die("Error in command line arguments\n");
 
 $cur_year = $year;
@@ -26,7 +26,7 @@ opendir($dh, "/tmp") || die "Can't open /tmp directory.";
 
 while (readdir $dh) {
     if ($_ =~ /[0-9a-zA-Z\055]\056html/) {
-	push @html_list, "/tmp/$_";
+        push @html_list, "/tmp/$_";
     }
 }
 closedir ($dh);
@@ -42,7 +42,7 @@ for (my $week = 1; $week < 16; $week++) {
     $s = `./skperf.pl -s -y $year -w $week | grep "Total holes played"`;
     ($s) = $s =~ /Total holes played: (\d+)/;
     if ($s > 0) {
-	$num_weeks++;
+        $num_weeks++;
     }
 }
 
@@ -86,7 +86,7 @@ $week = $num_weeks;
 while ($week > 0) {
     @line = `./skperf.pl -h -s -t -y $cur_year -w $week`;
     print @line;
-    @line = `./skperf.pl -h -g -y $cur_year -w $week`;	
+    @line = `./skperf.pl -h -g -y $cur_year -w $week`;
     print @line;
     print "<br><br>";
     $week--;
