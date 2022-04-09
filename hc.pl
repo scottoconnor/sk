@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 #
-# Copyright (c) 2018, 2020 Scott O'Connor
+# Copyright (c) 2018, 2022 Scott O'Connor
 #
 
 require './courses.pl';
@@ -41,7 +41,7 @@ opendir($dh, "./golfers") || die "Can't open \"golfers\" directory.";
 
 while (readdir $dh) {
     if ($_ =~ /(^1\d{3}$)/) {
-	push @golfer_list, $_;
+        push @golfer_list, $_;
     }
 }
 closedir ($dh);
@@ -54,9 +54,9 @@ if (@golfer_list == 0) {
 
 while ($fna = shift @golfer_list) {
     if ($trend) {
-	gen_hc_trend("golfers/$fna", $allowance);
+        gen_hc_trend("golfers/$fna", $allowance);
     } else {
-	gen_hc("golfers/$fna", $allowance);
+        gen_hc("golfers/$fna", $allowance);
     }
 }
 
@@ -65,27 +65,27 @@ if ($trend == 0) {
     print "$month-$day-$year              (sf sb nf nb)\n";
 
     foreach $team (sort keys(%t)) {
-	if ($team eq "Sub") {
-	    next;
-	}
-	printf("%s\n", $team);
-	printf("%-17s %4.1fN /%2d %2d %2d %2d\n", $t{$team}{1}, $hc{$t{$team}{1}}{hi}, $hc{$t{$team}{1}}{sfhc},
-	    $hc{$t{$team}{1}}{sbhc}, $hc{$t{$team}{1}}{nfhc}, $hc{$t{$team}{1}}{nbhc});
-	printf("%-17s %4.1fN /%2d %2d %2d %2d\n", $t{$team}{2}, $hc{$t{$team}{2}}{hi}, $hc{$t{$team}{2}}{sfhc},
-	    $hc{$t{$team}{2}}{sbhc}, $hc{$t{$team}{2}}{nfhc}, $hc{$t{$team}{2}}{nbhc});
-	print "\n";
+        if ($team eq "Sub") {
+            next;
+        }
+        printf("%s\n", $team);
+        printf("%-17s %4.1fN /%2d %2d %2d %2d\n", $t{$team}{1}, $hc{$t{$team}{1}}{hi}, $hc{$t{$team}{1}}{sfhc},
+            $hc{$t{$team}{1}}{sbhc}, $hc{$t{$team}{1}}{nfhc}, $hc{$t{$team}{1}}{nbhc});
+        printf("%-17s %4.1fN /%2d %2d %2d %2d\n", $t{$team}{2}, $hc{$t{$team}{2}}{hi}, $hc{$t{$team}{2}}{sfhc},
+            $hc{$t{$team}{2}}{sbhc}, $hc{$t{$team}{2}}{nfhc}, $hc{$t{$team}{2}}{nbhc});
+        print "\n";
     }
 
     print "\014\n";
     print "Sub\n";
     foreach $p (sort keys %hc) {
-	if ($hc{$p}{team} ne "Sub") {
-	    next;
-	}
-	if (defined($hc{$p}{hi})) {
-	    printf("%-17s %4.1fN /%2d %2d %2d %2d\n", $p, $hc{$p}{hi}, $hc{$p}{sfhc},
-		$hc{$p}{sbhc}, $hc{$p}{nfhc}, $hc{$p}{nbhc});
-	}
+        if ($hc{$p}{team} ne "Sub") {
+            next;
+        }
+        if (defined($hc{$p}{hi})) {
+            printf("%-17s %4.1fN /%2d %2d %2d %2d\n", $p, $hc{$p}{hi}, $hc{$p}{sfhc},
+                $hc{$p}{sbhc}, $hc{$p}{nfhc}, $hc{$p}{nbhc});
+        }
     }
 }
 
@@ -104,13 +104,13 @@ sub gen_hc {
     $pn = $last . ", " . $first;
 
     if ($pn eq "Kittredge, Red") {
-	$debug = 1;
+        $debug = 1;
     } else {
-	$debug = 0;
+        $debug = 0;
     }
 
     if ($active == 0) {
-	return;
+        return;
     }
 
     $hc{$pn}{team} = $team;
@@ -123,36 +123,36 @@ sub gen_hc {
     # If the golfer has more than 20 scores, only grab the last 20.
     #
     if ($num > 20) {
-	@scores = splice(@scores, ($num - 20), 20);
+        @scores = splice(@scores, ($num - 20), 20);
         $num = @scores;
     }
 
     $y = 0;
     foreach my $s (@scores) {
 
-	chomp($s);
-	($course, $course_rating, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $ni) =
-	    split(/:/, $s);
+        chomp($s);
+        ($course, $course_rating, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $ni) =
+            split(/:/, $s);
 
-	if ($post == 100) {
-	    print "Bogus posted score of -> $post, need to fix.\n";
-	}
+        if ($post == 100) {
+            print "Bogus posted score of -> $post, need to fix.\n";
+        }
 
-	print "$course, $course_rating, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $ni\n", if $debug;
+        print "$course, $course_rating, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $ni\n", if $debug;
 
-	$n[$y] = ((113 / $slope) * ($post - $course_rating));
+        $n[$y] = ((113 / $slope) * ($post - $course_rating));
 
-	if ($shot > 75) {
-	    $n[$y] /= 2;
-	}
+        if ($shot > 75) {
+            $n[$y] /= 2;
+        }
 
-	#
-	# Round to the nearest tenth.
-	#
-	$n[$y] = round($n[$y], 10);
-	printf("date=%s: post=%d: differential: %.1f\n", $date, $post, $n[$y]), if $debug;
+        #
+        # Round to the nearest tenth.
+        #
+        $n[$y] = round($n[$y], 10);
+        printf("date=%s: post=%d: differential: %.1f\n", $date, $post, $n[$y]), if $debug;
 
-	$y++;
+        $y++;
     }
 
     #
@@ -160,8 +160,8 @@ sub gen_hc {
     # a handicap can not be generted for them.
     #
     if (($use = &nscores($num, $usga)) == 0) {
-	print "$pn: Only $num scores, can not generate handicap\n", if $debug;
-	return;
+        print "$pn: Only $num scores, can not generate handicap\n", if $debug;
+        return;
     }
 
     @n = sort {$a <=> $b} @n;
@@ -169,8 +169,8 @@ sub gen_hc {
     $hi = 0;
 
     for ($y = 0; $y < $use; $y++) {
-	printf("%d: %.1f\n", $y, $n[$y]), if $debug;
-	$hi += $n[$y];
+        printf("%d: %.1f\n", $y, $n[$y]), if $debug;
+        $hi += $n[$y];
     }
 
     $hi /= $use;
@@ -180,38 +180,38 @@ sub gen_hc {
     }
 
     if ($usga) {
-	$hi *= $allowance;
-	$hi = (int($hi * 10) / 10);
-	$sf = ($hi * $c{SF}->{slope} / 113);
-	$sf = sprintf("%.0f", $sf);
-	$sb = ($hi * $c{SB}->{slope} / 113);
-	$sb = sprintf("%.0f", $sb);
-	$nf = ($hi * $c{NF}->{slope} / 113);
-	$nf = sprintf("%.0f", $nf);
-	$nb = ($hi * $c{NB}->{slope} / 113);
-	$nb = sprintf("%.0f", $nb);
+        $hi *= $allowance;
+        $hi = (int($hi * 10) / 10);
+        $sf = ($hi * $c{SF}->{slope} / 113);
+        $sf = sprintf("%.0f", $sf);
+        $sb = ($hi * $c{SB}->{slope} / 113);
+        $sb = sprintf("%.0f", $sb);
+        $nf = ($hi * $c{NF}->{slope} / 113);
+        $nf = sprintf("%.0f", $nf);
+        $nb = ($hi * $c{NB}->{slope} / 113);
+        $nb = sprintf("%.0f", $nb);
     } else {
-	$hi = round($hi, 10);
+        $hi = round($hi, 10);
 
-	$sfd = ($c{SF}{course_rating} - $c{SF}{par});
-	$sfd = round($sfd, 10);
-	$sf = (($hi * ($c{SF}->{slope} / 113)) + $sfd);
-	$sf = sprintf("%.0f", ($sf * $allowance));
+        $sfd = ($c{SF}{course_rating} - $c{SF}{par});
+        $sfd = round($sfd, 10);
+        $sf = (($hi * ($c{SF}->{slope} / 113)) + $sfd);
+        $sf = sprintf("%.0f", ($sf * $allowance));
 
-	$sbd = ($c{SB}{course_rating} - $c{SB}{par});
-	$sbd = round($sbd, 10);
-	$sb = (($hi * ($c{SB}->{slope} / 113)) + $sbd);
-	$sb = sprintf("%.0f", ($sb * $allowance));
+        $sbd = ($c{SB}{course_rating} - $c{SB}{par});
+        $sbd = round($sbd, 10);
+        $sb = (($hi * ($c{SB}->{slope} / 113)) + $sbd);
+        $sb = sprintf("%.0f", ($sb * $allowance));
 
-	$nfd = ($c{NF}{course_rating} - $c{NF}{par});
-	$nfd = round($nfd, 10);
-	$nf = (($hi * ($c{NF}->{slope} / 113)) + $nfd);
-	$nf = sprintf("%.0f", ($nf * $allowance));
+        $nfd = ($c{NF}{course_rating} - $c{NF}{par});
+        $nfd = round($nfd, 10);
+        $nf = (($hi * ($c{NF}->{slope} / 113)) + $nfd);
+        $nf = sprintf("%.0f", ($nf * $allowance));
 
-	$nbd = ($c{NB}{course_rating} - $c{NB}{par});
-	$nbd = round($nbd, 10);
-	$nb = (($hi * ($c{NB}->{slope} / 113)) + $nbd);
-	$nb = sprintf("%.0f", ($nb * $allowance));
+        $nbd = ($c{NB}{course_rating} - $c{NB}{par});
+        $nbd = round($nbd, 10);
+        $nb = (($hi * ($c{NB}->{slope} / 113)) + $nbd);
+        $nb = sprintf("%.0f", ($nb * $allowance));
     }
 
     $hc{$pn}{hi} = $hi;

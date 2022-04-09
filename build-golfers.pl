@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 #
-# Copyright (c) 2018, 2020 Scott O'Connor
+# Copyright (c) 2018, 2022 Scott O'Connor
 #
 
 $fn = "Golfers.SK";
@@ -34,17 +34,17 @@ print NFD "%golfers = (\n";
 while ($line = <FD>) {
 
     if ($line =~ /^0|-1,"\d+\056ID/) {
-	$line =~ s/["]//g;
+        $line =~ s/["]//g;
 
-	@new = split(/,/, $line);
-	$active = ($new[0] + 1);
-	$new[1] =~ s/^\s+|\s+$//g;
-	$new[2] =~ s/^\s+|\s+$//g;
-	$new[3] =~ s/^\s+|\s+$//g;
-	$new[4] =~ s/^\s+|\s+$//g;
-	if ($new[4] =~ /TNFB/) {
-	    print NFD "    \"golfers/$new[1]\" => { name => \"$new[3] $new[2]\", team => \"$new[4]\", active => $active },\n";
-	}
+        @new = split(/,/, $line);
+        $active = ($new[0] + 1);
+        $new[1] =~ s/^\s+|\s+$//g;
+        $new[2] =~ s/^\s+|\s+$//g;
+        $new[3] =~ s/^\s+|\s+$//g;
+        $new[4] =~ s/^\s+|\s+$//g;
+        if ($new[4] =~ /TNFB/) {
+            print NFD "    \"golfers/$new[1]\" => { name => \"$new[3] $new[2]\", team => \"$new[4]\", active => $active },\n";
+        }
     }
 }
 
@@ -53,17 +53,17 @@ seek(FD, 0, SEEK_SET);
 while ($line = <FD>) {
 
     if ($line =~ /^0|-1,"\d+\056ID/) {
-	$line =~ s/["]//g;
+        $line =~ s/["]//g;
 
-	@new = split(/,/, $line);
-	$active = ($new[0] + 1);
-	$new[1] =~ s/^\s+|\s+$//g;
-	$new[2] =~ s/^\s+|\s+$//g;
-	$new[3] =~ s/^\s+|\s+$//g;
-	$new[4] =~ s/^\s+|\s+$//g;
-	if ($new[4] =~ /Sub/) {
-	    print NFD "    \"golfers/$new[1]\" => { name => \"$new[3] $new[2]\", team => \"$new[4]\", active => $active },\n";
-	}
+        @new = split(/,/, $line);
+        $active = ($new[0] + 1);
+        $new[1] =~ s/^\s+|\s+$//g;
+        $new[2] =~ s/^\s+|\s+$//g;
+        $new[3] =~ s/^\s+|\s+$//g;
+        $new[4] =~ s/^\s+|\s+$//g;
+        if ($new[4] =~ /Sub/) {
+            print NFD "    \"golfers/$new[1]\" => { name => \"$new[3] $new[2]\", team => \"$new[4]\", active => $active },\n";
+        }
     }
 }
 

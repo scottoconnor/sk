@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 #
-# Copyright (c) 2019, Scott O'Connor
+# Copyright (c) 2019, 2022 Scott O'Connor
 #
 
 use Getopt::Long;
@@ -17,11 +17,11 @@ if ($#ARGV < 0) {
 }
 
 GetOptions (
-	"w" => \$weekly_stats,
-	"c" => \$cumulative_stats,
-	"h" => \$html,
-	"y=i" => \$year,
-	"a" => \$all_time)
+    "w" => \$weekly_stats,
+    "c" => \$cumulative_stats,
+    "h" => \$html,
+    "y=i" => \$year,
+    "a" => \$all_time)
 or die("Error in command line arguments\n");
 
 undef (%y);
@@ -35,7 +35,7 @@ for ($week = 1; $week <= 15; $week++) {
     $ret = `./skperf.pl -s -y $year -w $week | grep "Total holes played"`;
     ($ret) = $ret =~ /Total holes played: (\d+)/;
     if ($ret > 0) {
-	$num_weeks++;
+        $num_weeks++;
     }
 }
 
@@ -44,118 +44,118 @@ $week = $num_weeks;
 for ($y = $start_year; $y <= $year; $y++) {
 
     if ($all_time) {
-    	@return = `./skperf.pl -s -y $y`;
-	while ($line = shift @return) {
-	    chomp ($line);
-	    if (($ft) = $line =~ /50\053 = (\d+)/) {
-		$y{$y}{ft} = $ft;
-	    }
-	    if (($thirty) = $line =~ /30\047s = (\d+)/) {
-		defined($y{$y}{thirty} = $thirty);
-	    }
-	    if (($to) = $line =~ /Total Others = (\d+)/) {
-		$y{$y}{to} = $to;
-	    }
-	    if (($tbo) = $line =~ /Total Bogies = (\d+)/) {
-		$y{$y}{tbo} = $tbo;
-	    }
-	    if (($tp) = $line =~ /Total Pars = (\d+)/) {
-		$y{$y}{tp} = $tp;
-	    }
-	    if (($tb) = $line =~ /Total Birdies = (\d+)/) {
-		$y{$y}{tb} = $tb;
-	    }
-	    if (($te) = $line =~ /Total Eagles = (\d+)/) {
-		$y{$y}{te} = $te;
-	    }
-	    if (($lsa) = $line =~ /League Stroke Average = (\d+\056\d+)/) {
-		$y{$y}{lsa} = $lsa;
-	    }
-	    if (($th) = $line =~ /Total holes played: (\d+)/) {
-		$y{$y}{th} = $th;
-	    }
-	    if (($tposted) = $line =~ /Total Posted scores: (\d+)/) {
-		$y{$y}{tposted} = $tposted;
-	    }
-	}
+        @return = `./skperf.pl -s -y $y`;
+        while ($line = shift @return) {
+            chomp ($line);
+            if (($ft) = $line =~ /50\053 = (\d+)/) {
+                $y{$y}{ft} = $ft;
+            }
+            if (($thirty) = $line =~ /30\047s = (\d+)/) {
+                defined($y{$y}{thirty} = $thirty);
+            }
+            if (($to) = $line =~ /Total Others = (\d+)/) {
+                $y{$y}{to} = $to;
+            }
+            if (($tbo) = $line =~ /Total Bogies = (\d+)/) {
+                $y{$y}{tbo} = $tbo;
+            }
+            if (($tp) = $line =~ /Total Pars = (\d+)/) {
+                $y{$y}{tp} = $tp;
+            }
+            if (($tb) = $line =~ /Total Birdies = (\d+)/) {
+                $y{$y}{tb} = $tb;
+            }
+            if (($te) = $line =~ /Total Eagles = (\d+)/) {
+                $y{$y}{te} = $te;
+            }
+            if (($lsa) = $line =~ /League Stroke Average = (\d+\056\d+)/) {
+                $y{$y}{lsa} = $lsa;
+            }
+            if (($th) = $line =~ /Total holes played: (\d+)/) {
+                $y{$y}{th} = $th;
+            }
+            if (($tposted) = $line =~ /Total Posted scores: (\d+)/) {
+                $y{$y}{tposted} = $tposted;
+            }
+        }
     }
 
     if ($weekly_stats) {
-	#
-	# Weekly stats now
-	#
+        #
+        # Weekly stats now
+        #
 
         @return = `./skperf.pl -s -y $y -w $week`;
-	while ($line = shift @return) {
-	    chomp ($line);
-	    if (($wft) = $line =~ /50\053 = (\d+)/) {
-		$y{$y}{wft} = $wft;
-	    }
-	    if (($thirty) = $line =~ /Total 30\047s = (\d+)/) {
-		defined($y{$y}{wthirty} = $thirty);
-	    }
-	    if (($wlsa) = $line =~ /League Stroke Average = (\d+\056\d+)/) {
-		$y{$y}{wlsa} = $wlsa;
-	    }
-	    if (($two) = $line =~ /Total Others = (\d+)/) {
-		$y{$y}{two} = $two;
-	    }
-	    if (($twbo) = $line =~ /Total Bogies = (\d+)/) {
-		$y{$y}{twbo} = $twbo;
-	    }
-	    if (($twp) = $line =~ /Total Pars = (\d+)/) {
-		$y{$y}{twp} = $twp;
-	    }
-	    if (($twb) = $line =~ /Total Birdies = (\d+)/) {
-		$y{$y}{twb} = $twb;
-	    }
-	    if (($twe) = $line =~ /Total Eagles = (\d+)/) {
-		$y{$y}{twe} = $twe;
-	    }
-	    if (($twh) = $line =~ /Total holes played: (\d+)/) {
-		$y{$y}{twh} = $twh;
-	    }
-	    if (($twposted) = $line =~ /Total Posted scores: (\d+)/) {
-		$y{$y}{twposted} = $twposted;
-	    }
-	}
+        while ($line = shift @return) {
+            chomp ($line);
+            if (($wft) = $line =~ /50\053 = (\d+)/) {
+                $y{$y}{wft} = $wft;
+            }
+            if (($thirty) = $line =~ /Total 30\047s = (\d+)/) {
+                defined($y{$y}{wthirty} = $thirty);
+            }
+            if (($wlsa) = $line =~ /League Stroke Average = (\d+\056\d+)/) {
+                $y{$y}{wlsa} = $wlsa;
+            }
+            if (($two) = $line =~ /Total Others = (\d+)/) {
+                $y{$y}{two} = $two;
+            }
+            if (($twbo) = $line =~ /Total Bogies = (\d+)/) {
+                $y{$y}{twbo} = $twbo;
+            }
+            if (($twp) = $line =~ /Total Pars = (\d+)/) {
+                $y{$y}{twp} = $twp;
+            }
+            if (($twb) = $line =~ /Total Birdies = (\d+)/) {
+                $y{$y}{twb} = $twb;
+            }
+            if (($twe) = $line =~ /Total Eagles = (\d+)/) {
+                $y{$y}{twe} = $twe;
+            }
+            if (($twh) = $line =~ /Total holes played: (\d+)/) {
+                $y{$y}{twh} = $twh;
+            }
+            if (($twposted) = $line =~ /Total Posted scores: (\d+)/) {
+                $y{$y}{twposted} = $twposted;
+            }
+        }
     }
 
     if ($cumulative_stats) {
         @return = `./skperf.pl -s -y $y -sw 1 -ew $week`;
-	while ($line = shift @return) {
-	    chomp ($line);
-	    if (($cft) = $line =~ /50\053 = (\d+)/) {
-		$y{$y}{cft} = $cft;
-	    }
-	    if (($thirty) = $line =~ /Total 30\047s = (\d+)/) {
-		defined($y{$y}{cthirty} = $thirty);
-	    }
-	    if (($clsa) = $line =~ /League Stroke Average = (\d+\056\d+)/) {
-		$y{$y}{clsa} = $clsa;
-	    }
-	    if (($cto) = $line =~ /Total Others = (\d+)/) {
-		$y{$y}{cto} = $cto;
-	    }
-	    if (($ctbo) = $line =~ /Total Bogies = (\d+)/) {
-		$y{$y}{ctbo} = $ctbo;
-	    }
-	    if (($ctp) = $line =~ /Total Pars = (\d+)/) {
-		$y{$y}{ctp} = $ctp;
-	    }
-	    if (($ctb) = $line =~ /Total Birdies = (\d+)/) {
-		$y{$y}{ctb} = $ctb;
-	    }
-	    if (($cte) = $line =~ /Total Eagles = (\d+)/) {
-		$y{$y}{cte} = $cte;
-	    }
-	    if (($cth) = $line =~ /Total holes played: (\d+)/) {
-		$y{$y}{cth} = $cth;
-	    }
-	    if (($tcuposted) = $line =~ /Total Posted scores: (\d+)/) {
-		$y{$y}{tcuposted} = $tcuposted;
-	    }
-	}
+        while ($line = shift @return) {
+            chomp ($line);
+            if (($cft) = $line =~ /50\053 = (\d+)/) {
+                $y{$y}{cft} = $cft;
+            }
+            if (($thirty) = $line =~ /Total 30\047s = (\d+)/) {
+                defined($y{$y}{cthirty} = $thirty);
+            }
+            if (($clsa) = $line =~ /League Stroke Average = (\d+\056\d+)/) {
+                $y{$y}{clsa} = $clsa;
+            }
+            if (($cto) = $line =~ /Total Others = (\d+)/) {
+                $y{$y}{cto} = $cto;
+            }
+            if (($ctbo) = $line =~ /Total Bogies = (\d+)/) {
+                $y{$y}{ctbo} = $ctbo;
+            }
+            if (($ctp) = $line =~ /Total Pars = (\d+)/) {
+                $y{$y}{ctp} = $ctp;
+            }
+            if (($ctb) = $line =~ /Total Birdies = (\d+)/) {
+                $y{$y}{ctb} = $ctb;
+            }
+            if (($cte) = $line =~ /Total Eagles = (\d+)/) {
+                $y{$y}{cte} = $cte;
+            }
+            if (($cth) = $line =~ /Total holes played: (\d+)/) {
+                $y{$y}{cth} = $cth;
+            }
+            if (($tcuposted) = $line =~ /Total Posted scores: (\d+)/) {
+                $y{$y}{tcuposted} = $tcuposted;
+            }
+        }
     }
 }
 
@@ -194,15 +194,15 @@ if ($weekly_stats) {
     $cnt = 1;
     foreach $xx (sort { $y{$a}{wlsa} <=> $y{$b}{wlsa} } (keys(%y))) {
         if ($xx == $year) {
-	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
-	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
-	    printf("      <td><b><font color=\"green\">%.2f</font></b></td>\n    </tr>\n", $y{$xx}{wlsa}), if $html;
-	} else {
-	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-	    printf("      <td>%d</td>\n", $xx), if $html;
-	    printf("      <td>%.2f</td>\n    </tr>\n", $y{$xx}{wlsa}), if $html;
-	}
-	printf("%2d: %d -> %.2f\n", $cnt++, $xx, $y{$xx}{wlsa}), if !$html;
+            printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
+            printf("      <td><b><font color=\"green\">%.2f</font></b></td>\n    </tr>\n", $y{$xx}{wlsa}), if $html;
+        } else {
+            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
+            printf("      <td>%d</td>\n", $xx), if $html;
+            printf("      <td>%.2f</td>\n    </tr>\n", $y{$xx}{wlsa}), if $html;
+        }
+        printf("%2d: %d -> %.2f\n", $cnt++, $xx, $y{$xx}{wlsa}), if !$html;
     }
   if ($html) {
     print "
@@ -246,17 +246,17 @@ if ($weekly_stats) {
     $cnt = 1;
     foreach $xx (reverse sort { $y{$a}{wthirty} <=> $y{$b}{wthirty} } (keys(%y))) {
         if ($xx == $year) {
-	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
-	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{wthirty}), if $html;
-	    printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{wthirty} / $y{$xx}{twposted}) * 100)), if $html;
-	} else {
-	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-	    printf("      <td>%d</td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{wthirty}), if $html;
-	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{wthirty} / $y{$xx}{twposted}) * 100)), if $html;
-	}
-	printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{wthirty}, (($y{$xx}{wthirty} / $y{$xx}{twposted}) * 100)), if !$html;
+            printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{wthirty}), if $html;
+            printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{wthirty} / $y{$xx}{twposted}) * 100)), if $html;
+        } else {
+            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
+            printf("      <td>%d</td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{wthirty}), if $html;
+            printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{wthirty} / $y{$xx}{twposted}) * 100)), if $html;
+        }
+        printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{wthirty}, (($y{$xx}{wthirty} / $y{$xx}{twposted}) * 100)), if !$html;
 
     }
   if ($html) {
@@ -301,17 +301,17 @@ if ($weekly_stats) {
     $cnt = 1;
     foreach $xx (sort { $y{$a}{wft} <=> $y{$b}{wft} } (keys(%y))) {
         if ($xx == $year) {
-	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
-	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{wft}), if $html;
-	    printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{wft} / $y{$xx}{twposted}) * 100)), if $html;
-	} else {
-	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-	    printf("      <td>%d</td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{wft}), if $html;
-	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{wft} / $y{$xx}{twposted}) * 100)), if $html;
-	}
-	printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{wft}, (($y{$xx}{wft} / $y{$xx}{twposted}) * 100)), if !$html;
+            printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{wft}), if $html;
+            printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{wft} / $y{$xx}{twposted}) * 100)), if $html;
+        } else {
+            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
+            printf("      <td>%d</td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{wft}), if $html;
+            printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{wft} / $y{$xx}{twposted}) * 100)), if $html;
+        }
+        printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{wft}, (($y{$xx}{wft} / $y{$xx}{twposted}) * 100)), if !$html;
     }
   if ($html) {
     print "
@@ -355,17 +355,17 @@ if ($weekly_stats) {
     $cnt = 1;
     foreach $xx (sort { $y{$a}{two} <=> $y{$b}{two} } (keys(%y))) {
         if ($xx == $year) {
-	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
-	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{two}), if $html;
-	    printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{two} / $y{$xx}{twh}) * 100)), if $html;
-	} else {
-	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-	    printf("      <td>%d</td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{two}), if $html;
-	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{two} / $y{$xx}{twh}) * 100)), if $html;
-	}
-	printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{two}, (($y{$xx}{two} / $y{$xx}{twh}) * 100)), if !$html;
+            printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{two}), if $html;
+            printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{two} / $y{$xx}{twh}) * 100)), if $html;
+        } else {
+            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
+            printf("      <td>%d</td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{two}), if $html;
+            printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{two} / $y{$xx}{twh}) * 100)), if $html;
+        }
+        printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{two}, (($y{$xx}{two} / $y{$xx}{twh}) * 100)), if !$html;
     }
   if ($html) {
     print "
@@ -409,17 +409,17 @@ if ($weekly_stats) {
     $cnt = 1;
     foreach $xx (sort { $y{$a}{twbo} <=> $y{$b}{twbo} } (keys(%y))) {
         if ($xx == $year) {
-	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
-	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{twbo}), if $html;
-	    printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{twbo} / $y{$xx}{twh}) * 100)), if $html;
-	} else {
-	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-	    printf("      <td>%d</td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{twbo}), if $html;
-	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{twbo} / $y{$xx}{twh}) * 100)), if $html;
-	}
-	printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{twbo}, (($y{$xx}{twbo} / $y{$xx}{twh}) * 100)), if !$html;
+            printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{twbo}), if $html;
+            printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{twbo} / $y{$xx}{twh}) * 100)), if $html;
+        } else {
+            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
+            printf("      <td>%d</td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{twbo}), if $html;
+            printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{twbo} / $y{$xx}{twh}) * 100)), if $html;
+        }
+        printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{twbo}, (($y{$xx}{twbo} / $y{$xx}{twh}) * 100)), if !$html;
     }
   if ($html) {
     print "
@@ -463,17 +463,17 @@ if ($weekly_stats) {
     $cnt = 1;
     foreach $xx (reverse sort { $y{$a}{twp} <=> $y{$b}{twp} } (keys(%y))) {
         if ($xx == $year) {
-	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
-	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{twp}), if $html;
-	    printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{twp} / $y{$xx}{twh}) * 100)), if $html;
-	} else {
-	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-	    printf("      <td>%d</td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{twp}), if $html;
-	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{twp} / $y{$xx}{twh}) * 100)), if $html;
-	}
-	printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{twp}, (($y{$xx}{twp} / $y{$xx}{twh}) * 100)), if !$html;
+            printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{twp}), if $html;
+            printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{twp} / $y{$xx}{twh}) * 100)), if $html;
+        } else {
+            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
+            printf("      <td>%d</td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{twp}), if $html;
+            printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{twp} / $y{$xx}{twh}) * 100)), if $html;
+        }
+        printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{twp}, (($y{$xx}{twp} / $y{$xx}{twh}) * 100)), if !$html;
     }
   if ($html) {
     print "
@@ -517,17 +517,17 @@ if ($weekly_stats) {
     $cnt = 1;
     foreach $xx (reverse sort { $y{$a}{twb} <=> $y{$b}{twb} } (keys(%y))) {
         if ($xx == $year) {
-	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
-	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{twb}), if $html;
-	    printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{twb} / $y{$xx}{twh}) * 100)), if $html;
-	} else {
-	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-	    printf("      <td>%d</td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{twb}), if $html;
-	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{twb} / $y{$xx}{twh}) * 100)), if $html;
-	}
-	printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{twb}, (($y{$xx}{twb} / $y{$xx}{twh}) * 100)), if !$html;
+            printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{twb}), if $html;
+            printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{twb} / $y{$xx}{twh}) * 100)), if $html;
+        } else {
+            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
+            printf("      <td>%d</td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{twb}), if $html;
+            printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{twb} / $y{$xx}{twh}) * 100)), if $html;
+        }
+        printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{twb}, (($y{$xx}{twb} / $y{$xx}{twh}) * 100)), if !$html;
     }
   if ($html) {
     print "
@@ -571,17 +571,17 @@ if ($weekly_stats) {
     $cnt = 1;
     foreach $xx (reverse sort { $y{$a}{twe} <=> $y{$b}{twe} } (keys(%y))) {
         if ($xx == $year) {
-	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
-	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{twe}), if $html;
-	    printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{twe} / $y{$xx}{twh}) * 100)), if $html;
-	} else {
-	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-	    printf("      <td>%d</td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{twe}), if $html;
-	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{twe} / $y{$xx}{twh}) * 100)), if $html;
-	}
-	printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{twe}, (($y{$xx}{twe} / $y{$xx}{twh}) * 100)), if !$html;
+            printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{twe}), if $html;
+            printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{twe} / $y{$xx}{twh}) * 100)), if $html;
+        } else {
+            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
+            printf("      <td>%d</td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{twe}), if $html;
+            printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{twe} / $y{$xx}{twh}) * 100)), if $html;
+        }
+        printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{twe}, (($y{$xx}{twe} / $y{$xx}{twh}) * 100)), if !$html;
     }
   if ($html) {
     print "
@@ -628,15 +628,15 @@ if ($cumulative_stats) {
     $cnt = 1;
     foreach $xx (sort { $y{$a}{clsa} <=> $y{$b}{clsa} } (keys(%y))) {
         if ($xx == $year) {
-	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
-	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
-	    printf("      <td><b><font color=\"green\">%.2f</font></b></td>\n    </tr>\n", $y{$xx}{clsa}), if $html;
-	} else {
-	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-	    printf("      <td>%d</td>\n", $xx), if $html;
-	    printf("      <td>%.2f</td>\n    </tr>\n", $y{$xx}{clsa}), if $html;
-	}
-	printf("%2d: %d -> %.2f\n", $cnt++, $xx, $y{$xx}{clsa}), if !$html;
+            printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
+            printf("      <td><b><font color=\"green\">%.2f</font></b></td>\n    </tr>\n", $y{$xx}{clsa}), if $html;
+        } else {
+            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
+            printf("      <td>%d</td>\n", $xx), if $html;
+            printf("      <td>%.2f</td>\n    </tr>\n", $y{$xx}{clsa}), if $html;
+        }
+        printf("%2d: %d -> %.2f\n", $cnt++, $xx, $y{$xx}{clsa}), if !$html;
     }
   if ($html) {
     print "
@@ -680,17 +680,17 @@ if ($cumulative_stats) {
     $cnt = 1;
     foreach $xx (reverse sort { $y{$a}{cthirty} <=> $y{$b}{cthirty} } (keys(%y))) {
         if ($xx == $year) {
-	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
-	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{cthirty}), if $html;
-	    printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{cthirty} / $y{$xx}{tcuposted}) * 100)), if $html;
-	} else {
-	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-	    printf("      <td>%d</td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{cthirty}), if $html;
-	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{cthirty} / $y{$xx}{tcuposted}) * 100)), if $html;
-	}
-	printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{cthirty}, (($y{$xx}{cthirty} / $y{$xx}{tcuposted}) * 100)), if !$html;
+            printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{cthirty}), if $html;
+            printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{cthirty} / $y{$xx}{tcuposted}) * 100)), if $html;
+        } else {
+            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
+            printf("      <td>%d</td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{cthirty}), if $html;
+            printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{cthirty} / $y{$xx}{tcuposted}) * 100)), if $html;
+        }
+        printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{cthirty}, (($y{$xx}{cthirty} / $y{$xx}{tcuposted}) * 100)), if !$html;
     }
   if ($html) {
     print "
@@ -734,17 +734,17 @@ if ($cumulative_stats) {
     $cnt = 1;
     foreach $xx (sort { $y{$a}{cft} <=> $y{$b}{cft} } (keys(%y))) {
         if ($xx == $year) {
-	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
-	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{cft}), if $html;
-	    printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{cft} / $y{$xx}{tcuposted}) * 100)), if $html;
-	} else {
-	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-	    printf("      <td>%d</td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{cft}), if $html;
-	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{cft} / $y{$xx}{tcuposted}) * 100)), if $html;
-	}
-	printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{cft}, (($y{$xx}{cft} / $y{$xx}{tcuposted}) * 100)), if !$html;
+            printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{cft}), if $html;
+            printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{cft} / $y{$xx}{tcuposted}) * 100)), if $html;
+        } else {
+            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
+            printf("      <td>%d</td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{cft}), if $html;
+            printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{cft} / $y{$xx}{tcuposted}) * 100)), if $html;
+        }
+        printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{cft}, (($y{$xx}{cft} / $y{$xx}{tcuposted}) * 100)), if !$html;
     }
   if ($html) {
     print "
@@ -788,17 +788,17 @@ if ($cumulative_stats) {
     $cnt = 1;
     foreach $xx (sort { $y{$a}{cto} <=> $y{$b}{cto} } (keys(%y))) {
         if ($xx == $year) {
-	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
-	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{cto}), if $html;
-	    printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{cto} / $y{$xx}{cth}) * 100)), if $html;
-	} else {
-	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-	    printf("      <td>%d</td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{cto}), if $html;
-	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{cto} / $y{$xx}{cth}) * 100)), if $html;
-	}
-	printf("%2d: %d -> %d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{cto}, (($y{$xx}{cto} / $y{$xx}{cth}) * 100)), if !$html;
+            printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{cto}), if $html;
+            printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{cto} / $y{$xx}{cth}) * 100)), if $html;
+        } else {
+            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
+            printf("      <td>%d</td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{cto}), if $html;
+            printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{cto} / $y{$xx}{cth}) * 100)), if $html;
+        }
+        printf("%2d: %d -> %d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{cto}, (($y{$xx}{cto} / $y{$xx}{cth}) * 100)), if !$html;
     }
   if ($html) {
     print "
@@ -842,17 +842,17 @@ if ($cumulative_stats) {
     $cnt = 1;
     foreach $xx (sort { $y{$a}{ctbo} <=> $y{$b}{ctbo} } (keys(%y))) {
         if ($xx == $year) {
-	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
-	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{ctbo}), if $html;
-	    printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{ctbo} / $y{$xx}{cth}) * 100)), if $html;
-	} else {
-	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-	    printf("      <td>%d</td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{ctbo}), if $html;
-	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{ctbo} / $y{$xx}{cth}) * 100)), if $html;
-	}
-	printf("%2d: %d -> %d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{ctbo}, (($y{$xx}{ctbo} / $y{$xx}{cth}) * 100)), if !$html;
+            printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{ctbo}), if $html;
+            printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{ctbo} / $y{$xx}{cth}) * 100)), if $html;
+        } else {
+            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
+            printf("      <td>%d</td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{ctbo}), if $html;
+            printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{ctbo} / $y{$xx}{cth}) * 100)), if $html;
+        }
+        printf("%2d: %d -> %d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{ctbo}, (($y{$xx}{ctbo} / $y{$xx}{cth}) * 100)), if !$html;
     }
   if ($html) {
     print "
@@ -896,17 +896,17 @@ if ($cumulative_stats) {
     $cnt = 1;
     foreach $xx (reverse sort { $y{$a}{ctp} <=> $y{$b}{ctp} } (keys(%y))) {
         if ($xx == $year) {
-	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
-	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{ctp}), if $html;
-	    printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{ctp} / $y{$xx}{cth}) * 100)), if $html;
-	} else {
-	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-	    printf("      <td>%d</td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{ctp}), if $html;
-	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{ctp} / $y{$xx}{cth}) * 100)), if $html;
-	}
-	printf("%2d: %d -> %d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{ctp}, (($y{$xx}{ctp} / $y{$xx}{cth}) * 100)), if !$html;
+            printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{ctp}), if $html;
+            printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{ctp} / $y{$xx}{cth}) * 100)), if $html;
+        } else {
+            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
+            printf("      <td>%d</td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{ctp}), if $html;
+            printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{ctp} / $y{$xx}{cth}) * 100)), if $html;
+        }
+        printf("%2d: %d -> %d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{ctp}, (($y{$xx}{ctp} / $y{$xx}{cth}) * 100)), if !$html;
     }
   if ($html) {
     print "
@@ -950,17 +950,17 @@ if ($cumulative_stats) {
     $cnt = 1;
     foreach $xx (reverse sort { $y{$a}{ctb} <=> $y{$b}{ctb} } (keys(%y))) {
         if ($xx == $year) {
-	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
-	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{ctb}), if $html;
-	    printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{ctb} / $y{$xx}{cth}) * 100)), if $html;
-	} else {
-	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-	    printf("      <td>%d</td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{ctb}), if $html;
-	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{ctb} / $y{$xx}{cth}) * 100)), if $html;
-	}
-	printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{ctb}, (($y{$xx}{ctb} / $y{$xx}{cth}) * 100)), if !$html;
+            printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{ctb}), if $html;
+            printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{ctb} / $y{$xx}{cth}) * 100)), if $html;
+        } else {
+            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
+            printf("      <td>%d</td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{ctb}), if $html;
+            printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{ctb} / $y{$xx}{cth}) * 100)), if $html;
+        }
+        printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{ctb}, (($y{$xx}{ctb} / $y{$xx}{cth}) * 100)), if !$html;
     }
   if ($html) {
     print "
@@ -1004,17 +1004,17 @@ if ($cumulative_stats) {
     $cnt = 1;
     foreach $xx (reverse sort { $y{$a}{cte} <=> $y{$b}{cte} } (keys(%y))) {
         if ($xx == $year) {
-	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
-	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{cte}), if $html;
-	    printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{cte} / $y{$xx}{cth}) * 100)), if $html;
-	} else {
-	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-	    printf("      <td>%d</td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{cte}), if $html;
-	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{cte} / $y{$xx}{cth}) * 100)), if $html;
-	}
-	printf("%2d: %d -> %d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{cte}, (($y{$xx}{cte} / $y{$xx}{cth}) * 100)), if !$html;
+            printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{cte}), if $html;
+            printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{cte} / $y{$xx}{cth}) * 100)), if $html;
+        } else {
+            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
+            printf("      <td>%d</td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{cte}), if $html;
+            printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{cte} / $y{$xx}{cth}) * 100)), if $html;
+        }
+        printf("%2d: %d -> %d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{cte}, (($y{$xx}{cte} / $y{$xx}{cth}) * 100)), if !$html;
     }
   if ($html) {
     print "
@@ -1061,15 +1061,15 @@ if ($all_time) {
     $cnt = 1;
     foreach $xx (sort { $y{$a}{lsa} <=> $y{$b}{lsa} } (keys(%y))) {
         if ($xx == $year) {
-	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
-	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
-	    printf("      <td><b><font color=\"green\">%.2f</font></b></td>\n    </tr>\n", $y{$xx}{lsa}), if $html;
-	} else {
-	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-	    printf("      <td>%d</td>\n", $xx), if $html;
-	    printf("      <td>%.2f</td>\n    </tr>\n", $y{$xx}{lsa}), if $html;
-	}
-	printf("%2d: %d -> %.2f\n", $cnt++, $xx, $y{$xx}{lsa}), if !$html;
+            printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
+            printf("      <td><b><font color=\"green\">%.2f</font></b></td>\n    </tr>\n", $y{$xx}{lsa}), if $html;
+        } else {
+            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
+            printf("      <td>%d</td>\n", $xx), if $html;
+            printf("      <td>%.2f</td>\n    </tr>\n", $y{$xx}{lsa}), if $html;
+        }
+        printf("%2d: %d -> %.2f\n", $cnt++, $xx, $y{$xx}{lsa}), if !$html;
     }
   if ($html) {
     print "
@@ -1113,17 +1113,17 @@ if ($all_time) {
     $cnt = 1;
     foreach $xx (reverse sort { $y{$a}{thirty} <=> $y{$b}{thirty} } (keys(%y))) {
         if ($xx == $year) {
-	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
-	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{thirty}), if $html;
-	    printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{thirty} / $y{$xx}{tposted}) * 100)), if $html;
-	} else {
-	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-	    printf("      <td>%d</td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{thirty}), if $html;
-	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{thirty} / $y{$xx}{tposted}) * 100)), if $html;
-	}
-	printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{thirty}, (($y{$xx}{thirty} / $y{$xx}{tposted}) * 100)), if !$html;
+            printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{thirty}), if $html;
+            printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{thirty} / $y{$xx}{tposted}) * 100)), if $html;
+        } else {
+            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
+            printf("      <td>%d</td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{thirty}), if $html;
+            printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{thirty} / $y{$xx}{tposted}) * 100)), if $html;
+        }
+        printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{thirty}, (($y{$xx}{thirty} / $y{$xx}{tposted}) * 100)), if !$html;
     }
   if ($html) {
     print "
@@ -1167,17 +1167,17 @@ if ($all_time) {
     $cnt = 1;
     foreach $xx (reverse sort { $y{$a}{ft} <=> $y{$b}{ft} } (keys(%y))) {
         if ($xx == $year) {
-	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
-	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{ft}), if $html;
-	    printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{ft} / $y{$xx}{tposted}) * 100)), if $html;
-	} else {
-	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-	    printf("      <td>%d</td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{ft}), if $html;
-	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{ft} / $y{$xx}{tposted}) * 100)), if $html;
-	}
-	printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{ft}, (($y{$xx}{ft} / $y{$xx}{tposted}) * 100)), if !$html;
+            printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{ft}), if $html;
+            printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{ft} / $y{$xx}{tposted}) * 100)), if $html;
+        } else {
+            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
+            printf("      <td>%d</td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{ft}), if $html;
+            printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{ft} / $y{$xx}{tposted}) * 100)), if $html;
+        }
+        printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{ft}, (($y{$xx}{ft} / $y{$xx}{tposted}) * 100)), if !$html;
     }
   if ($html) {
     print "
@@ -1221,17 +1221,17 @@ if ($all_time) {
     $cnt = 1;
     foreach $xx (reverse sort { $y{$a}{to} <=> $y{$b}{to} } (keys(%y))) {
         if ($xx == $year) {
-	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
-	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{to}), if $html;
-	    printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{to} / $y{$xx}{tposted}) * 100)), if $html;
-	} else {
-	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-	    printf("      <td>%d</td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{to}), if $html;
-	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{to} / $y{$xx}{tposted}) * 100)), if $html;
-	}
-	printf("%2d: %d -> %d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{to}, (($y{$xx}{to} / $y{$xx}{th}) * 100)), if !$html;
+            printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{to}), if $html;
+            printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{to} / $y{$xx}{tposted}) * 100)), if $html;
+        } else {
+            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
+            printf("      <td>%d</td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{to}), if $html;
+            printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{to} / $y{$xx}{tposted}) * 100)), if $html;
+        }
+        printf("%2d: %d -> %d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{to}, (($y{$xx}{to} / $y{$xx}{th}) * 100)), if !$html;
     }
   if ($html) {
     print "
@@ -1275,17 +1275,17 @@ if ($all_time) {
     $cnt = 1;
     foreach $xx (reverse sort { $y{$a}{tbo} <=> $y{$b}{tbo} } (keys(%y))) {
         if ($xx == $year) {
-	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
-	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{tbo}), if $html;
-	    printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{tbo} / $y{$xx}{tposted}) * 100)), if $html;
-	} else {
-	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-	    printf("      <td>%d</td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{tbo}), if $html;
-	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{tbo} / $y{$xx}{tposted}) * 100)), if $html;
-	}
-	printf("%2d: %d -> %d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{tbo}, (($y{$xx}{tbo} / $y{$xx}{th}) * 100)), if !$html;
+            printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{tbo}), if $html;
+            printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{tbo} / $y{$xx}{tposted}) * 100)), if $html;
+        } else {
+            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
+            printf("      <td>%d</td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{tbo}), if $html;
+            printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{tbo} / $y{$xx}{tposted}) * 100)), if $html;
+        }
+        printf("%2d: %d -> %d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{tbo}, (($y{$xx}{tbo} / $y{$xx}{th}) * 100)), if !$html;
     }
   if ($html) {
     print "
@@ -1329,17 +1329,17 @@ if ($all_time) {
     $cnt = 1;
     foreach $xx (reverse sort { $y{$a}{tp} <=> $y{$b}{tp} } (keys(%y))) {
         if ($xx == $year) {
-	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
-	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{tp}), if $html;
-	    printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{tp} / $y{$xx}{tposted}) * 100)), if $html;
-	} else {
-	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-	    printf("      <td>%d</td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{tp}), if $html;
-	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{tp} / $y{$xx}{tposted}) * 100)), if $html;
-	}
-	printf("%2d: %d -> %d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{tp}, (($y{$xx}{tp} / $y{$xx}{th}) * 100)), if !$html;
+            printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{tp}), if $html;
+            printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{tp} / $y{$xx}{tposted}) * 100)), if $html;
+        } else {
+            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
+            printf("      <td>%d</td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{tp}), if $html;
+            printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{tp} / $y{$xx}{tposted}) * 100)), if $html;
+        }
+        printf("%2d: %d -> %d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{tp}, (($y{$xx}{tp} / $y{$xx}{th}) * 100)), if !$html;
     }
   if ($html) {
     print "
@@ -1383,17 +1383,17 @@ if ($all_time) {
     $cnt = 1;
     foreach $xx (reverse sort { $y{$a}{tb} <=> $y{$b}{tb} } (keys(%y))) {
         if ($xx == $year) {
-	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
-	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{tb}), if $html;
-	    printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{tb} / $y{$xx}{tposted}) * 100)), if $html;
-	} else {
-	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-	    printf("      <td>%d</td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{tb}), if $html;
-	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{tb} / $y{$xx}{tposted}) * 100)), if $html;
-	}
-	printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{tb}, (($y{$xx}{tb} / $y{$xx}{th}) * 100)), if !$html;
+            printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{tb}), if $html;
+            printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{tb} / $y{$xx}{tposted}) * 100)), if $html;
+        } else {
+            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
+            printf("      <td>%d</td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{tb}), if $html;
+            printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{tb} / $y{$xx}{tposted}) * 100)), if $html;
+        }
+        printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{tb}, (($y{$xx}{tb} / $y{$xx}{th}) * 100)), if !$html;
     }
   if ($html) {
     print "
@@ -1437,17 +1437,17 @@ if ($all_time) {
     $cnt = 1;
     foreach $xx (reverse sort { $y{$a}{te} <=> $y{$b}{te} } (keys(%y))) {
         if ($xx == $year) {
-	    printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
-	    printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{te}), if $html;
-	    printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{te} / $y{$xx}{tposted}) * 100)), if $html;
-	} else {
-	    printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-	    printf("      <td>%d</td>\n", $xx), if $html;
-	    printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{te}), if $html;
-	    printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{te} / $y{$xx}{tposted}) * 100)), if $html;
-	}
-	printf("%2d: %d -> %d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{te}, (($y{$xx}{te} / $y{$xx}{th}) * 100)), if !$html;
+            printf("    <tr>\n      <td><b><font color=\"green\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("      <td><b><font color=\"green\">%d</font></b></td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\"><b><font color=\"green\">%d</font></b></td>\n", $y{$xx}{te}), if $html;
+            printf("      <td><b><font color=\"green\">%.2f\%</font></b></td>\n    </tr>\n", (($y{$xx}{te} / $y{$xx}{tposted}) * 100)), if $html;
+        } else {
+            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
+            printf("      <td>%d</td>\n", $xx), if $html;
+            printf("      <td style=\"text-align:center\">%d</td>\n", $y{$xx}{te}), if $html;
+            printf("      <td>%.2f\%</td>\n    </tr>\n", (($y{$xx}{te} / $y{$xx}{tposted}) * 100)), if $html;
+        }
+        printf("%2d: %d -> %d  (%.2f\%)\n", $cnt++, $xx, $y{$xx}{te}, (($y{$xx}{te} / $y{$xx}{th}) * 100)), if !$html;
     }
   if ($html) {
     print "

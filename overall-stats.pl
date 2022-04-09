@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 #
-# Copyright (c) 2018, 2019, Scott O'Connor
+# Copyright (c) 2018, 2022 Scott O'Connor
 #
 
 use Getopt::Long;
@@ -8,8 +8,8 @@ use Getopt::Long;
 $year = (1900 + (localtime)[5]);
 
 GetOptions (
-	"y=s" => \$year,
-	"o" =>  \$out)
+    "y=s" => \$year,
+    "o" =>  \$out)
 or die("Error in command line arguments\n");
 
 print "Year is $year\n";
@@ -119,9 +119,9 @@ print "---------------------------------\n";
 for ($low_net = 25; $low_net <= $high_net; $low_net++) {
     $num = grep(/net $low_net/, @line);
     if ($num > 0) {
-	print "Number of net $low_net scores: $num\n";
-	@nline = grep(/net $low_net/, @line);
-	print @nline, "\n";
+        print "Number of net $low_net scores: $num\n";
+        @nline = grep(/net $low_net/, @line);
+        print @nline, "\n";
     }
 }
 
@@ -135,12 +135,12 @@ for ($y = 2003; $y <= $year; $y++) {
     @line = `./skperf.pl -vhc -y $y | grep TNFB | grep "Ave = "`;
     $cnt = 0;
     while (($temp_line = shift @line) && ($cnt < 5)) {
-	chomp($temp_line);
-	($num_rounds) = $temp_line =~ /total rounds (\d+)/;
-	if ($num_rounds >= 10) {
-    	    print "$temp_line\n";
-	    $cnt++;
-	}
+        chomp($temp_line);
+        ($num_rounds) = $temp_line =~ /total rounds (\d+)/;
+        if ($num_rounds >= 10) {
+            print "$temp_line\n";
+            $cnt++;
+        }
     }
     print "\n";
 }
