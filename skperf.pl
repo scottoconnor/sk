@@ -51,27 +51,27 @@ if ($year_day < 116) {
 }
 
 GetOptions (
-        "sy=i" => \$start_year,
-        "ey=i" => \$end_year,
-        "y=i" => \$only_year,
-        "sw=i" => \$start_week,
-        "ew=i" => \$end_week,
-        "w=i" => \$only_week,
-        "is" => \$include_subs,
-        "vhc" => \$vhc,
-        "at" => \$all_time,
-        "c" => \$course_stats,
-        "s" =>  \$stats,
-        "p" =>  \$player_stats,
-        "m" =>  \$most_improved,
-        "t" =>  \$tables,
-        "g" =>  \$top_gun,
-        "o" => \$others,
-        "ha" => \$hardest,
-        "b" => \$birdies_per_hole,
-        "r" => \$hires,
-        "h" =>  \$html,
-        "d" => \$debug)
+    "sy=i" => \$start_year,
+    "ey=i" => \$end_year,
+    "y=i" => \$only_year,
+    "sw=i" => \$start_week,
+    "ew=i" => \$end_week,
+    "w=i" => \$only_week,
+    "is" => \$include_subs,
+    "vhc" => \$vhc,
+    "at" => \$all_time,
+    "c" => \$course_stats,
+    "s" =>  \$stats,
+    "p" =>  \$player_stats,
+    "m" =>  \$most_improved,
+    "t" =>  \$tables,
+    "g" =>  \$top_gun,
+    "o" => \$others,
+    "ha" => \$hardest,
+    "b" => \$birdies_per_hole,
+    "r" => \$hires,
+    "h" =>  \$html,
+    "d" => \$debug)
 or die("Error in command line arguments\n");
 
 if ($all_time || ($start_year < 1997)) {
