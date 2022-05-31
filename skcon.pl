@@ -166,7 +166,7 @@ sub convert_player {
             print NFD "\n";
 
             if ($check_shot != $shot) {
-                print "9,0: $fn: $shot: $check_shot, Incorrect! -- $line\n";
+                print STDOUT "$pn, $month-$day-$year: 9,0: shot -> $shot, check_shot -> $check_shot.\n";
             }
         } elsif ($line =~ /^\d{8}\054/) {
 
@@ -197,7 +197,7 @@ sub convert_player {
             print NFD "\n";
 
             if ($check_shot != $shot) {
-                print "8,0: $fn: $shot: $check_shot, Incorrect! -- $line\n";
+                print STDOUT "$pn, $month-$day-$year: 8,0: shot -> $shot, check_shot -> $check_shot.\n";
             }
         } elsif ($line =~ /^\d{13}\056\d{3}\054/) {
 
@@ -230,7 +230,7 @@ sub convert_player {
             print NFD "\n";
 
             if ($check_shot != $shot) {
-                print "13,3: $shot: $check_shot, Incorrect!\n";
+                print STDOUT "$pn, $month-$day-$year: 13,3: shot -> $shot, check_shot -> $check_shot.\n";
             }
         } elsif ($line =~ /^\d{13}\056\d{4}\054/) {
 
@@ -255,7 +255,7 @@ sub convert_player {
             print NFD "\n";
 
             if ($check_shot != $shot) {
-                print "13,4: $fn $line $shot: $check_shot. (Issue)\n";
+                print STDOUT "$pn, $month-$day-$year: 13,4: shot -> $shot, check_shot -> $check_shot.\n";
             }
         } elsif ($line =~ /^\d{14}\056\d{3}\054/) {
 
@@ -282,7 +282,7 @@ sub convert_player {
             print NFD "\n";
 
             if ($check_shot != $shot) {
-                print "13,3: $shot: $check_shot, Incorrect!\n";
+                print STDOUT "$pn, $month-$day-$year: 14,3: shot -> $shot, check_shot -> $check_shot.\n";
             }
         } elsif ($line =~ /^\d{14}\056\d{4}\054/) {
 
@@ -307,7 +307,7 @@ sub convert_player {
             print NFD "\n";
 
             if ($check_shot != $shot) {
-                print "14,4: $fn, $shot: $check_shot, $line Issue!\n";
+                print STDOUT "$pn, $month-$day-$year: 14,4: shot -> $shot, check_shot -> $check_shot.\n";
             }
         } elsif ($line =~ /^0\0540/) {
             #
