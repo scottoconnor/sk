@@ -162,7 +162,7 @@ for ($y = $start_year; $y <= $year; $y++) {
 if ($weekly_stats) {
 
   if ($html) {
-    print "<!DOCTYPE html>
+    print "<!DOCTYPE html><font color=\"red\">
     <H2>Comparison of week $week\'s</H2>
     <html>
     <head>
@@ -596,7 +596,7 @@ if ($weekly_stats) {
 if ($cumulative_stats) {
 
   if ($html) {
-    print "<!DOCTYPE html>
+    print "<!DOCTYPE html><font color=\"red\">
     <H2>Comparison of weeks 1 through $week</H2>
     <html>
     <head>
