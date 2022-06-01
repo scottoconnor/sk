@@ -118,5 +118,8 @@
                "Todd Chapin" => "Derek Jodoin" ,
                "Joe Graceffa" => "Jeff Miller" ,
                "Jeff LaPlante" => "Bob Tuttle" },
+        5 => { "Jeff Aucoin" => "Bob Tuttle" },
+        6 => { "Carl Humphreys" => "Charlie Weeks",
+               "Jeff Aucoin" => "Bob Tuttle" },
     },
 );
