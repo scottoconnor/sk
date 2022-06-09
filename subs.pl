@@ -121,5 +121,7 @@
         5 => { "Jeff Aucoin" => "Bob Tuttle" },
         6 => { "Carl Humphreys" => "Charlie Weeks",
                "Jeff Aucoin" => "Bob Tuttle" },
+        7 => { "Leo Palatino" => "Jim O'Keefe",
+               "Joe Graceffa" => "Ray Curley" },
     },
 );
