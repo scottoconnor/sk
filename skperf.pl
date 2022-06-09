@@ -14,6 +14,8 @@ use Getopt::Long;
 #
 # Default to running stats on current year.
 #
+$all_time = 0;
+$birdies_per_hole = 0;
 $cur_month = (localtime)[4];
 $cur_day = (localtime)[3];
 $start_year = $end_year = (1900 + (localtime)[5]);
@@ -21,7 +23,6 @@ $only_year = 0;
 $start_week = 1;
 $end_week = 15;
 $only_week = 0;
-$all_time = 0;
 $vhc = 0;
 $top_gun = 0;
 $stats = 0;
@@ -35,7 +36,7 @@ $hires = 0;
 $hardest = 0;
 $course_stats = 0;
 $most_improved = 0;
-$birdies_per_hole = 0;
+$league = "golfers";
 $debug = 0;
 
 if ($#ARGV < 0) {
@@ -66,6 +67,7 @@ GetOptions (
     "m" =>  \$most_improved,
     "t" =>  \$tables,
     "g" =>  \$top_gun,
+    "l=s" => \$league,
     "o" => \$others,
     "ha" => \$hardest,
     "b" => \$birdies_per_hole,
@@ -102,10 +104,10 @@ if ($vhc || $most_improved) {
 }
 
 #
-# Open the golfers directory and only read the files that
+# Open the league directory and only read the files that
 # have been processed via skcon.pl (ScoreKeeper convert).
 #
-opendir($dh, "./golfers") || die "Can't open \"golfers\" directory.";
+opendir($dh, "./$league") || die "Can't open \"$league\" directory.";
 
 while (readdir $dh) {
     if ($_ =~ /(^1\d{3}$)/) {
@@ -128,7 +130,7 @@ for ($cy = $start_year; $cy <= $end_year; $cy++) {
     @golfer_list = @global_golfer_list;
     $t0 = gettimeofday(), if $hires;
     while ($fna = shift @golfer_list) {
-        get_player_scores("golfers/$fna", $cy);
+        get_player_scores("$league/$fna", $cy);
     }
     $t1 = gettimeofday(), if $hires;
     $total_time += ($t1 - $t0), if $hires;
@@ -700,7 +702,7 @@ printf("Total time = %.2f seconds - processed %d scores\n", $total_time, $totals
 sub
 get_player_trend {
 
-    open(TD, "trend"), or die "Can't open file trend.\n";
+    open(TD, "$league/trend.master"), or die "Can't open file trend.\n";
     my (@ary, $next_year);
 
     $next_year = ($start_year + 1);
@@ -758,11 +760,6 @@ get_player_scores {
 
     ($first, $last, $team, $active) = split(/:/, $name);
     $pn = $first . " " . $last;
-
-    if ($team eq "Sub" && ($include_subs == 0)) {
-        close (FD);
-        return;
-    }
 
     $p{$pn}{team} = $team;
     $p{$pn}{active} = $active;
