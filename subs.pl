@@ -123,5 +123,8 @@
                "Jeff Aucoin" => "Bob Tuttle" },
         7 => { "Leo Palatino" => "Jim O'Keefe",
                "Joe Graceffa" => "Ray Curley" },
+        8 => { "Carl Humphreys" => "Charlie Weeks" },
+        9 => { "Phil Treen" => "John Breslouf",
+               "Alex Williams" => "Tony Albertini" },
     },
 );
