@@ -126,5 +126,7 @@
         8 => { "Carl Humphreys" => "Charlie Weeks" },
         9 => { "Phil Treen" => "John Breslouf",
                "Alex Williams" => "Tony Albertini" },
+        10 => { "Derek Palatino" => "Mike Schmidt",
+                "Rick Wood" => "Jim O'Keefe" },
     },
 );
