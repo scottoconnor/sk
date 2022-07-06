@@ -345,8 +345,10 @@ sub net_double_bogey {
         #
         # If a player doesn't have a current index, allow a stroke per hole.
         #
-        $hi = 20.5;
-        print "$pn: using handicap index of -> 20.5\n"
+	print "Enter 9 hole index for $pn: ";
+        $hi = <STDIN>;
+        chomp $hi;
+        print "$pn: using handicap index of -> $hi\n"
     }
 
     #
