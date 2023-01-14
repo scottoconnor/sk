@@ -217,24 +217,18 @@ if ($top_gun) {
     # First check to see if anyone shot in the 30's, if not just exit.
     #
     foreach $pn (keys %p) {
-        if (($p{$pn}{total_strokes} == 0) || ($p{$pn}{total_rounds} == 0) ||
-            (($p{$pn}{team} eq "Sub") && ($include_subs == 0))) {
-            next;
-        }
         foreach $yp (sort keys %y) {
             foreach $w ($start_week..$end_week) {
                 if ($p{$pn}{$yp}{$w} != 0 && $p{$pn}{$yp}{$w} < 40) {
-                    $thirty++;
+                    $thirty{$yp}{$w}{$pn} = $p{$pn}{$yp}{$w};
                 }
             }
         }
     }
 
-    if ($thirty == 0) {
+    if (keys %thirty == 0) {
         exit;
     }
-
-    my $has_rounds = 0;
 
     print "30's Club:\n", if !$html;
     print "<b>30's Club:</b>", if $html;
@@ -248,26 +242,17 @@ if ($top_gun) {
     print "  <tr>\n    <th style=\"text-align:left\">Name</th>\n", if $html;
     print "    <th style=\"text-align:center\">Score</th>\n  </tr>\n", if $html;
 
-    foreach $pn (keys %p) {
-        if (($p{$pn}{total_strokes} == 0) || ($p{$pn}{total_rounds} == 0) ||
-            (($p{$pn}{team} eq "Sub") && ($include_subs == 0))) {
-            next;
-        }
-
-        foreach $yp (sort keys %y) {
-            foreach $w ($start_week..$end_week) {
-                if ($p{$pn}{$yp}{$w} != 0 && $p{$pn}{$yp}{$w} < 40) {
-                    print "  <tr>\n", if $html;
-                    printf("    <td>%s</td>\n", $pn), if $html;
-                    printf("    <td style=\"text-align:center\">%d</td>\n", $p{$pn}{$yp}{$w}), if $html;
-                    print "  </tr>\n", if $html;
-                    printf("%-17s: shot %d (week %d, year %d)\n", $pn, $p{$pn}{$yp}{$w}, $w, $yp), if !$html;
-                    $has_rounds = 1;
-                }
+    foreach $yp (sort keys %y) {
+        foreach $w ($start_week..$end_week) {
+            %ty = %{$thirty{$yp}{$w}};
+            foreach my $pn (sort { $ty{$a} <=> $ty{$b} } keys %ty) {
+                print "  <tr>\n", if $html;
+                printf("    <td>%s</td>\n", $pn), if $html;
+                printf("    <td style=\"text-align:center\">%d</td>\n", $ty{$pn}), if $html;
+                print "  </tr>\n", if $html;
+                printf("%-17s: shot %d (week %d, year %d)\n", $pn, $ty{$pn}, $w, $yp), if !$html;
+                $has_rounds = 1;
             }
-        }
-        if ($has_rounds) {
-            $has_rounds = 0;
             print "\n", if (!$html && ($start_week != $end_week));
         }
     }
