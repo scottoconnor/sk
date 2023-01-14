@@ -263,11 +263,14 @@ if ($others) {
 
     for ($par = 3; $par < 6; $par++) {
         print "On par $par\'s:\n";
-        for ($xx = 6; $xx < 15; $xx++) {
-            if ($to{$par}{$xx} == 1) {
-                print "    The score of $xx was shot $to{$par}{$xx} time.\n", if defined($to{$par}{$xx});
+        for ($score = 6; $score < 15; $score++) {
+            if (!defined($to{$par}{$score})) {
+                next;
+            }
+            if ($to{$par}{$score} == 1) {
+                print "    The score of $score was shot $to{$par}{$score} time.\n";
             } else {
-                print "    The score of $xx was shot $to{$par}{$xx} times.\n", if defined($to{$par}{$xx});
+                print "    The score of $score was shot $to{$par}{$score} times.\n";
             }
         }
         print "\n";
