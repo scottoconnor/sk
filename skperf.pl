@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 #
-# Copyright (c) 2018, 2022, Scott O'Connor
+# Copyright (c) 2018, 2023, Scott O'Connor
 #
 
 require './tnfb_years.pl';
@@ -9,6 +9,7 @@ require './subs.pl';
 require './hcroutines.pl';
 
 use Time::HiRes qw(gettimeofday);
+use GDBM_File;
 use Getopt::Long;
 
 #
@@ -110,7 +111,7 @@ if ($vhc || $most_improved) {
 opendir($dh, "./$league") || die "Can't open \"$league\" directory.";
 
 while (readdir $dh) {
-    if ($_ =~ /(^1\d{3}$)/) {
+    if ($_ =~ /(^1\d{3}$\.gdbm)/) {
         push @global_golfer_list, $_;
     }
 }
@@ -738,120 +739,107 @@ sub
 get_player_scores {
 
     my($fn, $cy) = @_;
-    my($cw);
+    my($cw, $date, $d);
     my ($year, $month, $day);
 
-    open(FD, $fn);
+    tie %tnfb_db, 'GDBM_File', $fn, GDBM_READER, 0640
+        or die "$GDBM_File::gdbm_errno";
 
-    # Get the players name/team.
-    $name = <FD>;
-    chop($name);
-
-    ($first, $last, $team, $active) = split(/:/, $name);
+    ($first, $last, $team, $active) = split(/:/, $tnfb_db{'Player'});
     $pn = $first . " " . $last;
 
     $p{$pn}{team} = $team;
     $p{$pn}{active} = $active;
 
-    while (<FD>) {
+    for ($cw = $start_week; $cw <= $end_week; $cw++) {
 
-        chop;
+        $d = $dates{$cy}{$cw};
 
-        $num = ($course, $par, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $n) = split(/:/, $_);
+        #
+        # If no score on this week, push on.
+        #
+        if (!defined($tnfb_db{$d})) {
+            next;
+        }
+
+        $num = ($course, $par, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $n) = split(/:/, $tnfb_db{$d});
 
         #
         # Only provide stats with hole-by-hole data.
         #
-        if ($num < 15) {
-                next;
-        }
-
-        #
-        # Get the year, month and day of the current score.
-        #
-        ($year, $month, $day) = split(/-/, $date);
-
-        if ($cy != $year) {
+        if ($num < 14) {
             next;
         }
 
-        for ($cw = $start_week; $cw <= $end_week; $cw++) {
+        @score = ($o, $t, $th, $f, $fv, $s, $sv, $e, $n);
 
-            if ($dates{$cy}{$cw} eq $date) {
+        if (defined($p{$pn}{$cy}{$cw})) {
+            print "Possible double score: $pn: Week=$cw, Date=$d\n";
+            next;
+        }
 
-                @score = ($o, $t, $th, $f, $fv, $s, $sv, $e, $n);
+        $y{$cy}{total_strokes} += $shot;
+        $y{$cy}{total_scores}++;
+        $totals{total_scores}++;
+        $c{$course}{total_strokes} += $shot;
+        $c{$course}{total_scores}++;
 
-                print "$_\n", if $debug;
+        $p{$pn}{total_rounds}++;
+        $p{$pn}{total_strokes} += $shot;
+        $p{$pn}{$course}{xplayed}++;
+        $p{$pn}{$cy}{$cw} = $shot;
+        if ($shot >= 50) {
+            $y{$cy}{fifty_plus}++;
+        }
+        if ($shot < 40) {
+            $y{$cy}{thirties}++;
+        }
 
-                if (defined($p{$pn}{$cy}{$cw})) {
-                    print "Possible double score: $pn: Week=$cw, Date=$date\n";
-                    next;
-                }
+        for ($h = 1; $h < 10; $h++) {
+            $hole = abs(shift @score);
 
-                $y{$cy}{total_strokes} += $shot;
-                $y{$cy}{total_scores}++;
-                $totals{total_scores}++;
-                $c{$course}{total_strokes} += $shot;
-                $c{$course}{total_scores}++;
+            $md = ($h + (($course eq 'SF') ? 0 : ($course eq 'SB') ? 9 :
+                ($course eq 'NF') ? 18 : ($course eq 'NB') ? 27 : 0)), if ($hardest || $birdies_per_hole);
+            $difficult{$md}{score} += $hole, if $hardest;
+            $difficult{$md}{xplayed}++, if $hardest;
 
-                $p{$pn}{total_rounds}++;
-                $p{$pn}{total_strokes} += $shot;
-                $p{$pn}{$course}{xplayed}++;
-                $p{$pn}{$cy}{$cw} = $shot;
-                if ($shot >= 50) {
-                    $y{$cy}{fifty_plus}++;
-                }
-                if ($shot < 40) {
-                    $y{$cy}{thirties}++;
-                }
+            $p{$pn}{$course}{$h}[0]{shots} += $hole;
 
-                for ($h = 1; $h < 10; $h++) {
-                    $hole = abs(shift @score);
-
-                    $md = ($h + (($course eq 'SF') ? 0 : ($course eq 'SB') ? 9 :
-                        ($course eq 'NF') ? 18 : ($course eq 'NB') ? 27 : 0)), if ($hardest || $birdies_per_hole);
-                    $difficult{$md}{score} += $hole, if $hardest;
-                    $difficult{$md}{xplayed}++, if $hardest;
-
-                    $p{$pn}{$course}{$h}[0]{shots} += $hole;
-
-                    if (($c{$course}{$h}[0] - $hole) < -2) {
-                        $p{$pn}{to}++;
-                        $p{$pn}{$course}{$h}[0]{o}++;
-                        $y{$cy}{total_other}++;
-                        $to{$c{$course}{$h}[0]}{$hole}++;
-                    };
-                    if (($c{$course}{$h}[0] - $hole) == -2) {
-                        $p{$pn}{tdb}++;
-                        $p{$pn}{$course}{$h}[0]{db}++;
-                        $y{$cy}{total_db}++;
-                    }
-                    if (($c{$course}{$h}[0] - $hole) == -1) {
-                        $p{$pn}{bo}++;
-                        $p{$pn}{$course}{$h}[0]{bo}++;
-                        $y{$cy}{total_bogies}++;
-                    }
-                    if (($c{$course}{$h}[0] - $hole) == 0) {
-                        $p{$pn}{tp}++;
-                        $p{$pn}{$course}{$h}[0]{p}++;
-                        $y{$cy}{total_pars}++;
-                    }
-                    if (($c{$course}{$h}[0] - $hole) == 1) {
-                        $p{$pn}{$course}{$h}[0]{b}++;
-                        $p{$pn}{tb}++;
-                        $y{$cy}{total_birdies}++;
-                        $bt{$cy}{$pn} += 1;
-                        $bph{$md}{b}++;
-                    }
-                    if (($c{$course}{$h}[0] - $hole) == 2) {
-                        $p{$pn}{$course}{$h}[0]{e}++;
-                        $p{$pn}{te}++;
-                        $y{$cy}{total_eagles}++;
-                        $et{$cy}{$pn} += 1;
-                    }
-                }
+            if (($c{$course}{$h}[0] - $hole) < -2) {
+                $p{$pn}{to}++;
+                $p{$pn}{$course}{$h}[0]{o}++;
+                $y{$cy}{total_other}++;
+                $to{$c{$course}{$h}[0]}{$hole}++;
+            };
+            if (($c{$course}{$h}[0] - $hole) == -2) {
+                $p{$pn}{tdb}++;
+                $p{$pn}{$course}{$h}[0]{db}++;
+                $y{$cy}{total_db}++;
+            }
+            if (($c{$course}{$h}[0] - $hole) == -1) {
+                $p{$pn}{bo}++;
+                $p{$pn}{$course}{$h}[0]{bo}++;
+                $y{$cy}{total_bogies}++;
+            }
+            if (($c{$course}{$h}[0] - $hole) == 0) {
+                $p{$pn}{tp}++;
+                $p{$pn}{$course}{$h}[0]{p}++;
+                $y{$cy}{total_pars}++;
+            }
+            if (($c{$course}{$h}[0] - $hole) == 1) {
+                $p{$pn}{$course}{$h}[0]{b}++;
+                $p{$pn}{tb}++;
+                $y{$cy}{total_birdies}++;
+                $bt{$cy}{$pn} += 1;
+                $bph{$md}{b}++;
+            }
+            if (($c{$course}{$h}[0] - $hole) == 2) {
+                $p{$pn}{$course}{$h}[0]{e}++;
+                $p{$pn}{te}++;
+                $y{$cy}{total_eagles}++;
+                $et{$cy}{$pn} += 1;
             }
         }
     }
-    close(FD);
+    untie %tnfb_db;
 }

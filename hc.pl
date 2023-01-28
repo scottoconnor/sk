@@ -1,13 +1,15 @@
 #! /usr/bin/perl
 #
-# Copyright (c) 2018, 2022 Scott O'Connor
+# Copyright (c) 2018, 2023 Scott O'Connor
 #
 
 require './courses.pl';
 require './tnfb.pl';
+require './tnfb_years.pl';
 require './hcroutines.pl';
 
 use Getopt::Long;
+use GDBM_File;
 
 $debug = 0;
 $trend = 0;
@@ -40,7 +42,7 @@ if ($year > 2019) {
 opendir($dh, "./golfers") || die "Can't open \"golfers\" directory.";
 
 while (readdir $dh) {
-    if ($_ =~ /(^1\d{3}$)/) {
+    if ($_ =~ /(^1\d{3}$\.gdbm)/) {
         push @golfer_list, $_;
     }
 }
@@ -54,9 +56,9 @@ if (@golfer_list == 0) {
 
 while ($fna = shift @golfer_list) {
     if ($trend) {
-        gen_hc_trend("golfers/$fna", $allowance);
+        gen_hc_trend("golfers/$fna", $year, $allowance);
     } else {
-        gen_hc("golfers/$fna", $allowance);
+        gen_hc("golfers/$fna", $year, $allowance);
     }
 }
 
@@ -90,17 +92,14 @@ if ($trend == 0) {
 }
 
 sub gen_hc {
-    my ($fn, $allowance) = @_;
-    my (@scores, $y, $hi, $use, @n, $pn);
+    my ($fn, $year, $allowance) = @_;
+    my (@scores, $y, $hi, $use, @n, $pn, $x, $num_scores);
 
-    undef @n;
+    tie %tnfb_db, 'GDBM_File', $fn, READER, 0644
+        or die "$GDBM_File::gdbm_errno";
 
-    open(FD, $fn);
-    @scores = <FD>;
-    close(FD);
+    ($first, $last, $team, $active) = split(/:/, $tnfb_db{'Player'});
 
-    chomp($scores[0]);
-    ($first, $last, $team, $active) = split(/:/, $scores[0]);
     $pn = $last . ", " . $first;
 
     if ($pn eq "Kittredge, Red") {
@@ -110,27 +109,54 @@ sub gen_hc {
     }
 
     if ($active == 0) {
+        untie $tnfb_db;
         return;
     }
 
     $hc{$pn}{team} = $team;
 
-    shift @scores;
+    $num_scores = 0;
+    foreach $y (reverse (1997..$year)) {
+        foreach $w (reverse (1..15)) {
+            if (exists($tnfb_db{$dates{$y}{$w}})) {
+                push (@scores, $tnfb_db{$dates{$y}{$w}});
+                $num_scores++;
+            }
+            last, if ($num_scores == 20);
+        }
+        last, if ($num_scores == 20);
+    }
+
+    if ($num_scores < 20) {
+        undef @scores;
+        $num_scores = 0;
+        foreach $y (reverse (1997..$year)) {
+            foreach $m (reverse (1..12)) {
+                foreach $d (reverse (1..31)) {
+                    my $newdate = "$y-$m-$d";
+                    if (exists($tnfb_db{$newdate})) {
+                        push (@scores, $tnfb_db{$newdate});
+                        $num_scores++;
+                    }
+                    last, if ($num_scores == 20);
+                }
+                last, if ($num_scores == 20);
+            }
+            last, if ($num_scores == 20);
+        }
+    }
+
+    untie $tnfb_db;
 
     $num = @scores;
 
-    #
-    # If the golfer has more than 20 scores, only grab the last 20.
-    #
     if ($num > 20) {
-        @scores = splice(@scores, ($num - 20), 20);
-        $num = @scores;
+        die "$pn: Number of score is more than 20.\n";
     }
 
     $y = 0;
     foreach my $s (@scores) {
 
-        chomp($s);
         ($course, $course_rating, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $ni) =
             split(/:/, $s);
 

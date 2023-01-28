@@ -1,9 +1,10 @@
 #! /usr/bin/perl
 #
-# Copyright (c) 2018, 2022 Scott O'Connor
+# Copyright (c) 2018, 2023 Scott O'Connor
 #
 
 use POSIX;
+use GDBM_File;
 
 #
 # Determine how many scores to use.
@@ -79,24 +80,34 @@ sub round {
 }
 
 sub gen_hc_trend {
-    my ($fn, $allowance) = @_;
-    my (@scores, $x, $y, $hi, $use, @n, $num_scores, $usga);
+    my ($fn, $year, $allowance) = @_;
+    my (@scores, $x, $y, $m, $d, $hi, $use, @n, $num_scores, $usga);
 
-    undef @n;
+    undef @n, $y, $m, $d;
 
-    open(FD, $fn);
-    @scores = <FD>;
-    close(FD);
+    tie %tnfb_db, 'GDBM_File', $fn, READER, 0644
+        or die "$GDBM_File::gdbm_errno";
 
-    chomp($scores[0]);
-    ($first, $last, $team, $active) = split(/:/, $scores[0]);
+    ($first, $last, $team, $active) = split(/:/, $tnfb_db{'Player'});
     $pn = $first . " " . $last;
 
     if ($team ne "Sub") {
         $team = "TNFB";
     }
 
-    shift @scores;
+    $y = $m = $d = 0;
+    foreach $y (1996..$year) {
+        foreach $m (1..12) {
+            foreach $d (1..31) {
+                my $newdate = "$y-$m-$d";
+                if (exists($tnfb_db{$newdate})) {
+                    push (@scores, $tnfb_db{$newdate});
+                }
+            }
+        }
+    }
+
+    untie $tnfb_db;
 
     $num = @scores;
 
@@ -107,6 +118,7 @@ sub gen_hc_trend {
 
     if (($use = nscores($num, $usga)) == 0) {
         print "$pn: Only $num scores, not enough to generate a trend.\n", if $debug;
+        untie %tnfb_db;
         return;
     }
 

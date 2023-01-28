@@ -1,11 +1,13 @@
 #! /usr/bin/perl
 #
-# Copyright (c) 2018, 2022 Scott O'Connor
+# Copyright (c) 2018, 2023 Scott O'Connor
 #
 
 require './tnfb.pl';
 require './courses.pl';
 require './hcroutines.pl';
+
+use GDBM_File;
 
 #
 # Need to look up each player's trend to get their current
@@ -49,9 +51,14 @@ sub convert_player {
 
     my($fn) = $_[0];
     my($fnnew) = $_[1];
+    my($d);
 
     open(FD, $fn);
-    open(NFD, ">", $fnnew); 
+
+    $fnnew = $fnnew . ".gdbm";
+
+    tie %tnfb_db, 'GDBM_File', $fnnew, GDBM_WRCREAT, 0644
+        or die "$GDBM_File::gdbm_errno";
 
     # First line is the ScoreKeeper tag, throw it away
     # to get to the players name.
@@ -65,10 +72,10 @@ sub convert_player {
     $pn = $first . " " . $last;
 
     if (defined($golfers{$fn})) {
-        print NFD "$first:$last:$golfers{$fn}->{team}:$golfers{$fn}->{active}\n";
+        $tnfb_db{'Player'} = "$first:$last:$golfers{$fn}->{team}:$golfers{$fn}->{active}";
     } else {
+        untie %tnfb_db;
         close(FD);
-        close(NFD); 
         die "$first $last: Unknown golfer: might need to run build-golfers.pl\n";
     }
 
@@ -85,8 +92,8 @@ sub convert_player {
         if ($line =~ /^\d{6,7}\054/) {
             $num = @fields = split(',', $line);
             if ($num != 8) {
+                untie %tnfb_db;
                 close(FD);
-                close(NFD); 
                 die "Error on getting date, shot, post! line: $line\n";
             }
             if ($fields[2] != 0 && $fields[3] != 0) {
@@ -112,6 +119,19 @@ sub convert_player {
             } else {
                 print "Can't determine date!\n";
             }
+        }
+
+        $d = "$year-$month-$day";
+
+        if (exists $tnfb_db{$d}) {
+            #print "entry exists: $pn, $d, $tnfb_db{$d}\n";
+            $line = <FD>;
+            $line = <FD>;
+            $line = <FD>;
+            $line = <FD>;
+            $line = <FD>;
+            $line = <FD>;
+            next;
         }
 
         chomp($line = <FD>);
@@ -149,7 +169,7 @@ sub convert_player {
             # A 9,0 format is score where each hole has a single digit score.
             #
 
-            print NFD "$course:$course_rating:$slope:$year-$month-$day:$shot:$post";
+            $db_out = "$course:$course_rating:$slope:$d:$shot:$post";
 
             ($a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8]) = $line =~
                 /^(\d)(\d)(\d)(\d)(\d)(\d)(\d)(\d)(\d)/;
@@ -159,11 +179,11 @@ sub convert_player {
                 $v = abs($v);
                 if ($v == 0) { $v = 10 };
                 if ($v == 1 && $c{$course}->{$count}[0] > 3) { $v = 11 };
-                print NFD ":$v";
+                $db_out = $db_out . ":$v";
                 $check_shot += $v;
                 $count++;
             }
-            print NFD "\n";
+            $tnfb_db{$d} = $db_out;
 
             if ($check_shot != $shot) {
                 print STDOUT "$pn, $month-$day-$year: 9,0: shot -> $shot, check_shot -> $check_shot.\n";
@@ -183,18 +203,18 @@ sub convert_player {
                 $post = net_double_bogey($pn, "$year-$month-$day", $course, @a);
             }
 
-            print NFD "$course:$course_rating:$slope:$year-$month-$day:$shot:$post";
+            $db_out = "$course:$course_rating:$slope:$d:$shot:$post";
 
             $count = 1;
             while (defined($v = shift(@a))) {
                 $v = abs($v);
                 if ($v == 0) { $v = 10 };
                 if ($v == 1 && $c{$course}->{$count}[0] > 3) { $v = 11 };
-                print NFD ":$v";
+                $db_out = $db_out . ":$v";
                 $check_shot += $v;
                 $count++;
             }
-            print NFD "\n";
+            $tnfb_db{$d} = $db_out;
 
             if ($check_shot != $shot) {
                 print STDOUT "$pn, $month-$day-$year: 8,0: shot -> $shot, check_shot -> $check_shot.\n";
@@ -209,8 +229,8 @@ sub convert_player {
                 /^(\d)(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})\056(\d{2})(\d)\054/;
 
             if ($a[8] != 1 && $a[8] != 2) {
+                untie %tnfb_db;
                 close(FD);
-                close(NFD); 
                 die "Last hole should be 1 or 2 (which is a 10 or 20): line: $line\n";
             }
 
@@ -220,14 +240,14 @@ sub convert_player {
                 $post = net_double_bogey($pn, "$year-$month-$day", $course, @a);
             }
 
-            print NFD "$course:$course_rating:$slope:$year-$month-$day:$shot:$post";
+            $db_out = "$course:$course_rating:$slope:$d:$shot:$post";
 
             while (defined($v = shift(@a))) {
                 $v = abs($v);
-                print NFD ":$v";
+                $db_out = $db_out . ":$v";
                 $check_shot += $v;
             }
-            print NFD "\n";
+            $tnfb_db{$d} = $db_out;
 
             if ($check_shot != $shot) {
                 print STDOUT "$pn, $month-$day-$year: 13,3: shot -> $shot, check_shot -> $check_shot.\n";
@@ -245,14 +265,14 @@ sub convert_player {
                 $post = net_double_bogey($pn, "$year-$month-$day", $course, @a);
             }
 
-            print NFD "$course:$course_rating:$slope:$year-$month-$day:$shot:$post";
+            $db_out = "$course:$course_rating:$slope:$d:$shot:$post";
 
             while (defined($v = shift(@a))) {
                 $v = abs($v);
-                print NFD ":$v";
+                $db_out = $db_out . ":$v";
                 $check_shot += $v;
             }
-            print NFD "\n";
+            $tnfb_db{$d} = $db_out;
 
             if ($check_shot != $shot) {
                 print STDOUT "$pn, $month-$day-$year: 13,4: shot -> $shot, check_shot -> $check_shot.\n";
@@ -272,14 +292,14 @@ sub convert_player {
                 $post = net_double_bogey($pn, "$year-$month-$day", $course, @a);
             }
 
-            print NFD "$course:$course_rating:$slope:$year-$month-$day:$shot:$post";
+            $db_out = "$course:$course_rating:$slope:$d:$shot:$post";
 
             while (defined($v = shift(@a))) {
                 $v = abs($v);
-                print NFD ":$v";
+                $db_out = $db_out . ":$v";
                 $check_shot += $v;
             }
-            print NFD "\n";
+            $tnfb_db{$d} = $db_out;
 
             if ($check_shot != $shot) {
                 print STDOUT "$pn, $month-$day-$year: 14,3: shot -> $shot, check_shot -> $check_shot.\n";
@@ -297,14 +317,14 @@ sub convert_player {
                 $post = net_double_bogey($pn, "$year-$month-$day", $course, @a);
             }
 
-            print NFD "$course:$course_rating:$slope:$year-$month-$day:$shot:$post";
+            $db_out = "$course:$course_rating:$slope:$d:$shot:$post";
 
             while (defined($v = shift(@a))) {
                 $v = abs($v);
-                print NFD ":$v";
+                $db_out = $db_out . ":$v";
                 $check_shot += $v;
             }
-            print NFD "\n";
+            $tnfb_db{$d} = $db_out;
 
             if ($check_shot != $shot) {
                 print STDOUT "$pn, $month-$day-$year: 14,4: shot -> $shot, check_shot -> $check_shot.\n";
@@ -313,7 +333,7 @@ sub convert_player {
             #
             # This is a non hole-by-hole score. "0,0" in ScoreKeeper file
             #
-            print NFD "$course:$course_rating:$slope:$year-$month-$day:$shot:$post\n";
+            $tnfb_db{$d} = "$course:$course_rating:$slope:$d:$shot:$post";
         } else {
             print "Unexpected line: $fn: $line -- $course\n"
         }
@@ -321,8 +341,8 @@ sub convert_player {
         $line = <FD>;
         $line = <FD>;
     }
+    untie %tnfb_db;
     close(FD);
-    close (NFD);
 }
 
 #
