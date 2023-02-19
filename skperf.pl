@@ -740,16 +740,15 @@ get_player_scores {
 
     my($fn, $cy) = @_;
     my($cw, $date, $d);
-    my ($year, $month, $day);
 
     tie %tnfb_db, 'GDBM_File', $fn, GDBM_READER, 0640
         or die "$GDBM_File::gdbm_errno";
 
-    ($first, $last, $team, $active) = split(/:/, $tnfb_db{'Player'});
+    ($first, $last) = split(/:/, $tnfb_db{'Player'});
     $pn = $first . " " . $last;
 
-    $p{$pn}{team} = $team;
-    $p{$pn}{active} = $active;
+    $p{$pn}{team} = $tnfb_db{'Team'};
+    $p{$pn}{active} = $tnfb_db{'Active'};
 
     for ($cw = $start_week; $cw <= $end_week; $cw++) {
 
@@ -758,7 +757,7 @@ get_player_scores {
         #
         # If no score on this week, push on.
         #
-        if (!defined($tnfb_db{$d})) {
+        if (!exists($tnfb_db{$d})) {
             next;
         }
 

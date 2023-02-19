@@ -98,7 +98,9 @@ sub gen_hc {
     tie %tnfb_db, 'GDBM_File', $fn, READER, 0644
         or die "$GDBM_File::gdbm_errno";
 
-    ($first, $last, $team, $active) = split(/:/, $tnfb_db{'Player'});
+    ($first, $last) = split(/:/, $tnfb_db{'Player'});
+    $team = $tnfb_db{'Team'};
+    $active = $tnfb_db{'Active'};
 
     $pn = $last . ", " . $first;
 
