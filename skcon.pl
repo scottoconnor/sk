@@ -169,6 +169,11 @@ sub convert_player {
 
         $check_shot = 0;
 
+        $team = "Team_" . $year;
+        if ($year >= 2022 && !exists($tnfb_db{$team})) {
+            $tnfb_db{$team} = $golfers{$fn}->{team};
+        }
+
         if ($line =~ /^\d{9}\054/) {
 
             #
@@ -341,6 +346,7 @@ sub convert_player {
             #
             $tnfb_db{$d} = "$course:$course_rating:$slope:$d:$shot:$post";
         } else {
+            delete($tnfb_db{$team});
             print "Unexpected line: $fn: $line -- $course\n"
         }
         $line = <FD>;
