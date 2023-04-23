@@ -5,6 +5,7 @@
 
 use POSIX;
 use GDBM_File;
+require './tnfb_years.pl';
 
 #
 # Determine how many scores to use.
@@ -228,6 +229,113 @@ sub gen_hc_trend {
             $first_score = ($last_score - 20);
         }
         $num_scores = ($last_score - $first_score);
+    }
+}
+
+sub
+gen_hi {
+    my ($fn, $year, $allowance) = @_;
+    my (@scores, $y, $hi, $use, @n, $num_scores);
+
+    ($first, $last) = split(/:/, $tnfb_db{'Player'});
+    $team = $tnfb_db{'Team'};
+    $active = $tnfb_db{'Active'};
+
+    #if ($active == 0) {
+        #return;
+    #}
+
+    $num_scores = 0;
+    foreach $y (reverse (1997..$year)) {
+        foreach $w (reverse (1..15)) {
+            if (exists($tnfb_db{$dates{$y}{$w}})) {
+                push (@scores, $tnfb_db{$dates{$y}{$w}});
+                $num_scores++;
+            }
+            last, if ($num_scores == 20);
+        }
+        last, if ($num_scores == 20);
+    }
+
+    if ($num_scores < 20) {
+        undef @scores;
+        $num_scores = 0;
+        foreach $y (reverse (1997..$year)) {
+            foreach $m (reverse (1..12)) {
+                foreach $d (reverse (1..31)) {
+                    my $newdate = "$y-$m-$d";
+                    if (exists($tnfb_db{$newdate})) {
+                        push (@scores, $tnfb_db{$newdate});
+                        $num_scores++;
+                    }
+                    last, if ($num_scores == 20);
+                }
+                last, if ($num_scores == 20);
+            }
+            last, if ($num_scores == 20);
+        }
+    }
+
+    $num = @scores;
+
+    if ($num > 20) {
+        die "$tnfb_db{'Player'}: Number of score is more than 20.\n";
+    }
+
+    #
+    # If the player does not have the required number of scores,
+    # a handicap can not be generted for them.
+    #
+    if (($use = &nscores($num, 0)) == 0) {
+        return (-100);
+    }
+
+    $y = 0;
+    foreach my $s (@scores) {
+
+        ($course, $course_rating, $slope, $date, $aa, $bb, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $ni) =
+            split(/:/, $s);
+
+        if ($post == 100) {
+            print "Bogus posted score of -> $post, need to fix.\n";
+        }
+
+        $n[$y] = ((113 / $slope) * ($post - $course_rating));
+
+        if ($shot > 75) {
+            $n[$y] /= 2;
+        }
+
+        #
+        # Round to the nearest tenth.
+        #
+        $n[$y] = round($n[$y], 10);
+        printf("date=%s: post=%d: differential: %.1f\n", $date, $post, $n[$y]), if $debug;
+
+        $y++;
+    }
+
+    @n = sort {$a <=> $b} @n;
+
+    $hi = 0;
+
+    for ($y = 0; $y < $use; $y++) {
+        printf("%d: %.1f\n", $y, $n[$y]), if $debug;
+        $hi += $n[$y];
+    }
+
+    $hi /= $use;
+
+    if ($usga) {
+        $hi *= $allowance;
+    } else {
+        $hi = round($hi, 10);
+    }
+
+    if ($num < 16) {
+        return (-100);
+    } else {
+        return ($hi);
     }
 }
 1;

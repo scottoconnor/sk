@@ -98,13 +98,6 @@ undef(%y);
 undef(%p);
 
 #
-# Load the players handcaip trend in case they are needed.
-#
-if ($vhc || $most_improved) {
-    get_player_trend();
-}
-
-#
 # Open the league directory and only read the files that
 # have been processed via skcon.pl (ScoreKeeper convert).
 #
@@ -138,22 +131,31 @@ for ($cy = $start_year; $cy <= $end_year; $cy++) {
     printf("Year %d took %.8f\n", $cy, ($t1 - $t0)), if $debug;
 }
 
+if ($most_improved) {
+    show_most_improved();
+}
+
 #
 # Print out the the players score verses their handicap on a weekly
 # basis and average for the years specified.
 #
 if ($vhc) {
 
+    my ($d);
     $num_years = values(%y);
 
     foreach $pn (sort keys %p) {
         if (($p{$pn}{total_strokes} == 0) || ($p{$pn}{total_rounds} == 0)) {
             next;
         }
+        if ($p{$pn}{team} eq "Sub" && ($include_subs == 0)) {
+            next;
+        }
 
         foreach $yp (sort keys %y) {
             foreach $w ($start_week..$end_week) {
-                if ($p{$pn}{$yp}{$w} && defined($p{$pn}{$dates{$yp}{$w}}{hc})) {
+                $d = $dates{$yp}{$w};
+                if ($p{$pn}{$d}{shot} && defined($p{$pn}{$d}{hc})) {
 
                     #
                     # Check Sub. If this player is a sub, change their team to
@@ -165,11 +167,9 @@ if ($vhc) {
                         $p{$pn}{team} = $p{$subs{$yp}{$w}{$pn}}{team};
                         print "$pn: $p{$pn}{team}\n", if $debug;
                     }
-
-                    $p{$pn}{diff} += (($p{$pn}{$yp}{$w} - $p{$pn}{$dates{$yp}{$w}}{hc}) - 36);
-                    printf("%-17s: year %-4d week %-2s shot %d, hc %2d, net %d, diff %d\n", $pn, $yp, $w, $p{$pn}{$yp}{$w},
-                        $p{$pn}{$dates{$yp}{$w}}{hc}, ($p{$pn}{$yp}{$w} - $p{$pn}{$dates{$yp}{$w}}{hc}),
-                            (($p{$pn}{$yp}{$w} - $p{$pn}{$dates{$yp}{$w}}{hc}) - 36));
+                    $p{$pn}{diff} += $p{$pn}{$d}{diff};
+                    printf("%-17s: year %-4d week %-2s shot %d, hc %2d, net %d, diff %d\n", $pn, $yp, $w,
+                        $p{$pn}{$d}{shot}, $p{$pn}{$d}{hc}, $p{$pn}{$d}{net}, $p{$pn}{$d}{diff});
                 }
             }
         }
@@ -690,33 +690,56 @@ if ($birdies_per_hole) {
 printf("Total time = %.2f seconds - processed %d scores\n", $total_time, $totals{total_scores}), if $hires;
 
 sub
-get_player_trend {
+show_most_improved {
 
-    open(TD, "$league/trend.master"), or die "Can't open file trend.\n";
-    my (@ary, $next_year);
+    my ($cy, $cw, $file);
 
     $next_year = ($start_year + 1);
+    $last_year = ($end_year + 1);
 
-    while (<TD>) {
-        @ary = split(/:/, $_);
+    @golfer_list = @global_golfer_list;
+    while ($file = shift @golfer_list) {
 
-        if (!defined($p{$ary[0]}{A}) && $ary[2] =~ /$start_year/) {
-            $p{$ary[0]}{A} = ($ary[5] + 6);
-            $p{$ary[0]}{team} = $ary[1];
-        }
+        tie %tnfb_db, 'GDBM_File', "$league/$file", GDBM_READER, 0640
+            or die "$GDBM_File::gdbm_errno";
 
-        if (!defined($p{$ary[0]}{B}) && defined($p{$ary[0]}{A}) && $ary[2] =~ /current/) {
-            $p{$ary[0]}{B} = ($ary[3] + 6);
-        }
-        if (!defined($p{$ary[0]}{B}) && defined($p{$ary[0]}{A}) && $ary[2] =~ /$next_year/) {
-            $p{$ary[0]}{B} = ($ary[5] + 6);
-        }
-        if ($ary[2] eq "current") {
+        if ($tnfb_db{'Team'} eq "Sub") {
+            untie %tnfb_db;
             next;
         }
-        $p{$ary[0]}{$ary[2]}{hc} = $ary[6];
+        $pn = $tnfb_db{'Player'};
+        $pn =~ tr/:/ /;
+
+        $cy = $start_year;
+        for ($cw = $start_week; $cw <= $end_week; $cw++) {
+            $d = $dates{$cy}{$cw};
+            if (!defined($p{$pn}{A}) && exists($tnfb_db{$d})) {
+                @score = split(/:/, $tnfb_db{$d});
+                if (@score[4] != -1) {
+                    $p{$pn}{A} = (@score[4] + 6);
+                    #print "$pn: A: $p{$pn}{A}, date -> $d\n";
+                    last;
+                }
+            }
+        }
+        $cy = ($end_year + 1);
+        for ($cw = $start_week; $cw <= $end_week; $cw++) {
+            $d = $dates{$cy}{$cw};
+            if (exists($tnfb_db{$d}) && defined($p{$pn}{A})) {
+                @score = split(/:/, $tnfb_db{$d});
+                if (@score[4] != -1) {
+                    $p{$pn}{B} = (@score[4] + 6);
+                    #print "$pn: B: $p{$pn}{B}, date -> $d\n";
+                    last;
+                }
+            }
+        }
+        if (!defined($p{$pn}{B}) && defined($p{$pn}{A})) {
+            $p{$pn}{B} = ($tnfb_db{current} + 6);
+            #print "$pn: B: $p{$pn}{B}, date -> current\n";
+        }
+        untie %tnfb_db;
     }
-    close(TD);
 
     if ($most_improved) {
             foreach $pn (keys %p) {
@@ -749,6 +772,7 @@ get_player_scores {
 
     $p{$pn}{team} = $tnfb_db{'Team'};
     $p{$pn}{active} = $tnfb_db{'Active'};
+    $p{$pn}{current} = $tnfb_db{'current'};
 
     for ($cw = $start_week; $cw <= $end_week; $cw++) {
 
@@ -761,16 +785,17 @@ get_player_scores {
             next;
         }
 
-        $num = ($course, $par, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $n) = split(/:/, $tnfb_db{$d});
+        $num = @score_record = split(/:/, $tnfb_db{$d});
 
         #
         # Only provide stats with hole-by-hole data.
         #
-        if ($num < 14) {
+        if ($num < 17) {
             next;
         }
 
-        @score = ($o, $t, $th, $f, $fv, $s, $sv, $e, $n);
+        ($course, $par, $slope, $date, $hhi, $hhc, $shot, $post) = @score_record[0..7];
+        @score = @score_record[8..16];
 
         if (defined($p{$pn}{$cy}{$cw})) {
             print "Possible double score: $pn: Week=$cw, Date=$d\n";
@@ -787,6 +812,11 @@ get_player_scores {
         $p{$pn}{total_strokes} += $shot;
         $p{$pn}{$course}{xplayed}++;
         $p{$pn}{$cy}{$cw} = $shot;
+        $p{$pn}{$d}{shot} = $shot;
+        $p{$pn}{$d}{hc} = $hhc;
+        $p{$pn}{$d}{hi} = $hhi;
+        $p{$pn}{$d}{net} = ($shot - $hhc);
+        $p{$pn}{$d}{diff} = (($shot - $hhc) - 36);
         if ($shot >= 50) {
             $y{$cy}{fifty_plus}++;
         }

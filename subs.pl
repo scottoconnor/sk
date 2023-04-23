@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2022, Scott O'Connor
+# Copyright (c) 2022, 2023 Scott O'Connor
 #
 
 #
@@ -147,5 +147,10 @@
         15 => { "Jeff Aucoin" => "Jeff Miller",
                 "Joe Graceffa" => "Ray Curley" ,
                 "Todd Chapin" => "Bob Kilgus" },
+    },
+    2023 => {
+        1 => { "Paul Rotker" => "Charlie Weeks",
+               "Jeff LaPlante" => "Mike Perisho" ,
+               "Dave Sherman" => "Charlie Bacon" },
     },
 );

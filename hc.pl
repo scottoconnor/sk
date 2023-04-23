@@ -91,7 +91,8 @@ if ($trend == 0) {
     }
 }
 
-sub gen_hc {
+sub
+gen_hc {
     my ($fn, $year, $allowance) = @_;
     my (@scores, $y, $hi, $use, @n, $pn, $x, $num_scores);
 
@@ -159,7 +160,7 @@ sub gen_hc {
     $y = 0;
     foreach my $s (@scores) {
 
-        ($course, $course_rating, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $ni) =
+        ($course, $course_rating, $slope, $date, $aa, $bb, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $ni) =
             split(/:/, $s);
 
         if ($post == 100) {
@@ -206,6 +207,8 @@ sub gen_hc {
     if ($pn eq "O'Connor, S") {
         $hi = 9.8;
     }
+
+    $hi = $tnfb_db{'current'};
 
     if ($usga) {
         $hi *= $allowance;
