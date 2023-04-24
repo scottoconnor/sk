@@ -21,29 +21,6 @@ $nine{'SF'} = 0;
 $nine{'SB'} = 0;
 $num_scores = 0;
 
-#
-# Need to look up each player's trend to get their current
-# handicap index. This is needed for calculating net double bogie
-# for the World Handicap System.
-#
-open(TD, "trend"), or die "Can't open file trend.\n";
-my (@ary);
-
-while (<TD>) {
-    @ary = split(/:/, $_);
-
-    if ($ary[2] ne "current") {
-        $index{$ary[0]}{$ary[2]}{hi} = $ary[5];
-        chop($ary[6]);
-        $index{$ary[0]}{$ary[2]}{hc} = $ary[6];
-    }
-    #else {
-        #chop($ary[3]);
-        #$index{$ary[0]}{$ary[2]} = $ary[3];
-    #}
-}
-close(TD);
-
 opendir($dh, "./golfers") || die "Can't open \"golfers\" directory.";
 
 while (readdir $dh) {
@@ -422,7 +399,7 @@ sub convert_player {
     }
 
     $new_hi = gen_hi($fnnew, $year, 0.9);
-    $tnfb_db{'current'} = $new_hi;
+    $tnfb_db{'Current'} = $new_hi;
 
     untie %tnfb_db;
     close(FD);
@@ -455,16 +432,12 @@ net_double_bogey {
     my ($pn, $date, $course, @s) = @_;
     my ($v, $hole, $post, $hi);
 
-    # 
-    # If this score is a score prior to the current date, use the handicap index at
-    # that time to determine their net double bogey. Otherwise, this is a score from
-    # the current match day and use their current handicap index.
+    $hi = $tnfb_db{'Current'};
+
     #
-    if (defined($index{$pn}{$date})) {
-        $hi = $index{$pn}{$date}{hi};
-    } elsif (!defined($index{$pn}{$date}) && defined($index{$pn}{"current"})) {
-        $hi = $index{$pn}{"current"};
-    }
+    # If the player does not have enough scores for a stable index,
+    # input here what they player played at that night.
+    #
     if ($hi == -100) { 
         #
         # Enter the player's index determined before the round.

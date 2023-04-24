@@ -204,11 +204,12 @@ gen_hc {
 
     $hi /= $use;
 
+    $hi = $tnfb_db{'Current'};
+
     if ($pn eq "O'Connor, S") {
-        $hi = 9.8;
+        $hi = 6.1;
     }
 
-    $hi = $tnfb_db{'current'};
 
     if ($usga) {
         $hi *= $allowance;

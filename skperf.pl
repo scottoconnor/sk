@@ -735,8 +735,8 @@ show_most_improved {
             }
         }
         if (!defined($p{$pn}{B}) && defined($p{$pn}{A})) {
-            $p{$pn}{B} = ($tnfb_db{current} + 6);
-            #print "$pn: B: $p{$pn}{B}, date -> current\n";
+            $p{$pn}{B} = ($tnfb_db{'Current'} + 6);
+            #print "$pn: B: $p{$pn}{B}, date -> Current\n";
         }
         untie %tnfb_db;
     }
@@ -772,7 +772,7 @@ get_player_scores {
 
     $p{$pn}{team} = $tnfb_db{'Team'};
     $p{$pn}{active} = $tnfb_db{'Active'};
-    $p{$pn}{current} = $tnfb_db{'current'};
+    $p{$pn}{current} = $tnfb_db{'Current'};
 
     for ($cw = $start_week; $cw <= $end_week; $cw++) {
 
