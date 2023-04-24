@@ -283,10 +283,10 @@ gen_hi {
     }
 
     #
-    # Make 15 the number of score for a League Handicap. Anything under
+    # Make 10 the number of score for a League Handicap. Anything under
     # this, refer to the players World Handicap index.
     #
-    return (-100), if ($num < 15);
+    return (-100), if ($num < 10);
 
     #
     # If the player does not have the required number of scores,
