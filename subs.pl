@@ -151,6 +151,7 @@
     2023 => {
         1 => { "Paul Rotker" => "Charlie Weeks",
                "Jeff LaPlante" => "Mike Perisho" ,
-               "Dave Sherman" => "Charlie Bacon" },
+               "Dave Sherman" => "Charlie Bacon" ,
+               "Leo Palatino" => "Paul Correia" },
     },
 );

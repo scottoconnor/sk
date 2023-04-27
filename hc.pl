@@ -12,13 +12,13 @@ use Getopt::Long;
 use GDBM_File;
 
 $debug = 0;
-$trend = 0;
 $allowance = 0.9;
+$update = 0;
 
 GetOptions (
     "a=f" => \$allowance,
-    "t" =>  \$trend,
-    "d" => \$debug)
+    "d" => \$debug,
+    "u" => \$update),
 or die("Error in command line arguments\n");
 
 $month = (localtime)[4];
@@ -55,39 +55,32 @@ if (@golfer_list == 0) {
 }
 
 while ($fna = shift @golfer_list) {
-    if ($trend) {
-        gen_hc_trend("golfers/$fna", $year, $allowance);
-    } else {
-        gen_hc("golfers/$fna", $year, $allowance);
-    }
+    gen_hc("golfers/$fna", $year, $allowance);
 }
 
-if ($trend == 0) {
+print "$month-$day-$year              (sf sb nf nb)\n";
 
-    print "$month-$day-$year              (sf sb nf nb)\n";
-
-    foreach $team (sort keys(%t)) {
-        if ($team eq "Sub") {
-            next;
-        }
-        printf("%s\n", $team);
-        printf("%-17s %4.1fN /%2d %2d %2d %2d\n", $t{$team}{1}, $hc{$t{$team}{1}}{hi}, $hc{$t{$team}{1}}{sfhc},
-            $hc{$t{$team}{1}}{sbhc}, $hc{$t{$team}{1}}{nfhc}, $hc{$t{$team}{1}}{nbhc});
-        printf("%-17s %4.1fN /%2d %2d %2d %2d\n", $t{$team}{2}, $hc{$t{$team}{2}}{hi}, $hc{$t{$team}{2}}{sfhc},
-            $hc{$t{$team}{2}}{sbhc}, $hc{$t{$team}{2}}{nfhc}, $hc{$t{$team}{2}}{nbhc});
-        print "\n";
+foreach $team (sort keys(%t)) {
+    if ($team eq "Sub") {
+        next;
     }
+    printf("%s\n", $team);
+    printf("%-17s %4.1fN /%2d %2d %2d %2d\n", $t{$team}{1}, $hc{$t{$team}{1}}{hi}, $hc{$t{$team}{1}}{sfhc},
+        $hc{$t{$team}{1}}{sbhc}, $hc{$t{$team}{1}}{nfhc}, $hc{$t{$team}{1}}{nbhc});
+    printf("%-17s %4.1fN /%2d %2d %2d %2d\n", $t{$team}{2}, $hc{$t{$team}{2}}{hi}, $hc{$t{$team}{2}}{sfhc},
+        $hc{$t{$team}{2}}{sbhc}, $hc{$t{$team}{2}}{nfhc}, $hc{$t{$team}{2}}{nbhc});
+    print "\n";
+}
 
-    print "\014\n";
-    print "Sub\n";
-    foreach $p (sort keys %hc) {
-        if ($hc{$p}{team} ne "Sub") {
-            next;
-        }
-        if (defined($hc{$p}{hi})) {
-            printf("%-17s %4.1fN /%2d %2d %2d %2d\n", $p, $hc{$p}{hi}, $hc{$p}{sfhc},
-                $hc{$p}{sbhc}, $hc{$p}{nfhc}, $hc{$p}{nbhc});
-        }
+print "\014\n";
+print "Sub\n";
+foreach $p (sort keys %hc) {
+    if ($hc{$p}{team} ne "Sub") {
+        next;
+    }
+    if (defined($hc{$p}{hi})) {
+        printf("%-17s %4.1fN /%2d %2d %2d %2d\n", $p, $hc{$p}{hi}, $hc{$p}{sfhc},
+            $hc{$p}{sbhc}, $hc{$p}{nfhc}, $hc{$p}{nbhc});
     }
 }
 
@@ -96,7 +89,7 @@ gen_hc {
     my ($fn, $year, $allowance) = @_;
     my (@scores, $y, $hi, $use, @n, $pn, $x, $num_scores);
 
-    tie %tnfb_db, 'GDBM_File', $fn, READER, 0644
+    tie %tnfb_db, 'GDBM_File', $fn, GDBM_WRCREAT, 0644
         or die "$GDBM_File::gdbm_errno";
 
     ($first, $last) = split(/:/, $tnfb_db{'Player'});
@@ -149,11 +142,10 @@ gen_hc {
         }
     }
 
-    untie $tnfb_db;
-
     $num = @scores;
 
     if ($num > 20) {
+        untie $tnfb_db;
         die "$pn: Number of score is more than 20.\n";
     }
 
@@ -190,6 +182,8 @@ gen_hc {
     #
     if (($use = &nscores($num, $usga)) == 0) {
         print "$pn: Only $num scores, can not generate handicap\n", if $debug;
+        $tnfb_db{'Current'} = -100;
+        untie $tnfb_db;
         return;
     }
 
@@ -204,7 +198,9 @@ gen_hc {
 
     $hi /= $use;
 
-    $hi = $tnfb_db{'Current'};
+    if ($update == 0) {
+        $hi = $tnfb_db{'Current'};
+    }
 
     if ($pn eq "O'Connor, S") {
         $hi = 6.1;
@@ -251,6 +247,12 @@ gen_hc {
     $hc{$pn}{sbhc} = $sb;
     $hc{$pn}{nfhc} = $nf;
     $hc{$pn}{nbhc} = $nb;
+
+    if ($update == 1) {
+        $tnfb_db{'Current'} = $hi;
+    }
+
+    untie $tnfb_db;
 
     printf ("%-17s - %5.1fN  SF=%-3d SB=%-3d NF=%-3d NB=%-3d\n", $pn, $hi, $sf, $sb, $nf, $nb), if $debug;
 }

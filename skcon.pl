@@ -43,7 +43,7 @@ sub convert_player {
 
     my($fn) = $_[0];
     my($fnnew) = $_[1];
-    my($d);
+    my($d, $cch, $ch, $hi, $ph);
 
     open(FD, $fn);
 
@@ -169,27 +169,41 @@ sub convert_player {
         $nine{$course}++;
         $num_scores++;
 
-        $trend_hi = -1;
-        $trend_ph = -1;
+        $hi = $tnfb_db{'Current'};
+
+        #
+        # If the player does not have enough scores for a stable index,
+        # input here what they player played at that night.
+        #
+        if ($hi == -100) { 
+            #
+            # Enter the player's index determined before the round.
+            #
+            print "Enter index for $pn: ";
+            $hi = <STDIN>;
+            chomp $hi;
+            print "$pn: using handicap index of -> $hi\n"
+        }
+
+        $ccd = ($c{$course}{course_rating} - $c{$course}{par});
+        $ccd = round($ccd, 10);
+        $ch = (($hi * ($c{$course}->{slope} / 113)) + $ccd);
+        $cch = sprintf("%.0f", ($ch * 1.0));
+        $ph = sprintf("%.0f", ($ch * 0.9));
+        $ph = abs($ph), if ($ph == 0.0);
 
         if ($line =~ /^\d{9}\054/) {
 
             #
             # A 9,0 format is score where each hole has a single digit score.
             #
-            if (defined($index{$pn}{$d}{hi})) {
-                $trend_hi = $index{$pn}{$d}{hi};
-            }
-            if (defined($index{$pn}{$d}{hc})) {
-                $trend_ph = $index{$pn}{$d}{hc};
-            }
-            $db_out = "$course:$course_rating:$slope:$d:$trend_hi:$trend_ph:$shot:$post";
+            $db_out = "$course:$course_rating:$slope:$d:$hi:$ph:$shot:$post";
 
             ($a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8]) = $line =~
                 /^(\d)(\d)(\d)(\d)(\d)(\d)(\d)(\d)(\d)/;
 
             if ($year >= 2020) {
-                $post = net_double_bogey($pn, $d, $course, @a);
+                $post = net_double_bogey($cch, $course, @a);
             }
 
             $count = 1;
@@ -218,16 +232,10 @@ sub convert_player {
             $a[0] = 10;
 
             if ($year >= 2020) {
-                $post = net_double_bogey($pn, $d, $course, @a);
+                $post = net_double_bogey($cch, $course, @a);
             }
 
-            if (defined($index{$pn}{$d}{hi})) {
-                $trend_hi = $index{$pn}{$d}{hi};
-            }
-            if (defined($index{$pn}{$d}{hc})) {
-                $trend_ph = $index{$pn}{$d}{hc};
-            }
-            $db_out = "$course:$course_rating:$slope:$d:$trend_hi:$trend_ph:$shot:$post";
+            $db_out = "$course:$course_rating:$slope:$d:$hi:$ph:$shot:$post";
 
             $count = 1;
             while (defined($v = shift(@a))) {
@@ -261,16 +269,10 @@ sub convert_player {
             $a[8] *= 10;     # 10 or 20 in his format
 
             if ($year >= 2020) {
-                $post = net_double_bogey($pn, $d, $course, @a);
+                $post = net_double_bogey($cch, $course, @a);
             }
 
-            if (defined($index{$pn}{$d}{hi})) {
-                $trend_hi = $index{$pn}{$d}{hi};
-            }
-            if (defined($index{$pn}{$d}{hc})) {
-                $trend_ph = $index{$pn}{$d}{hc};
-            }
-            $db_out = "$course:$course_rating:$slope:$d:$trend_hi:$trend_ph:$shot:$post";
+            $db_out = "$course:$course_rating:$slope:$d:$hi:$ph:$shot:$post";
 
             while (defined($v = shift(@a))) {
                 $v = abs($v);
@@ -292,16 +294,10 @@ sub convert_player {
                 /^(\d)(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})\056(\d{2})(\d{2})\054/;
 
             if ($year >= 2020) {
-                $post = net_double_bogey($pn, $d, $course, @a);
+                $post = net_double_bogey($cch, $course, @a);
             }
 
-            if (defined($index{$pn}{$d}{hi})) {
-                $trend_hi = $index{$pn}{$d}{hi};
-            }
-            if (defined($index{$pn}{$d}{hc})) {
-                $trend_ph = $index{$pn}{$d}{hc};
-            }
-            $db_out = "$course:$course_rating:$slope:$d:$trend_hi:$trend_ph:$shot:$post";
+            $db_out = "$course:$course_rating:$slope:$d:$hi:$ph:$shot:$post";
 
             while (defined($v = shift(@a))) {
                 $v = abs($v);
@@ -325,16 +321,10 @@ sub convert_player {
             $a[8] = 10;  # in this format
 
             if ($year >= 2020) {
-                $post = net_double_bogey($pn, $d, $course, @a);
+                $post = net_double_bogey($cch, $course, @a);
             }
 
-            if (defined($index{$pn}{$d}{hi})) {
-                $trend_hi = $index{$pn}{$d}{hi};
-            }
-            if (defined($index{$pn}{$d}{hc})) {
-                $trend_ph = $index{$pn}{$d}{hc};
-            }
-            $db_out = "$course:$course_rating:$slope:$d:$trend_hi:$trend_ph:$shot:$post";
+            $db_out = "$course:$course_rating:$slope:$d:$hi:$ph:$shot:$post";
 
             while (defined($v = shift(@a))) {
                 $v = abs($v);
@@ -356,16 +346,10 @@ sub convert_player {
                 /^(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})\056(\d{2})(\d{2})\054/;
 
             if ($year >= 2020) {
-                $post = net_double_bogey($pn, $d, $course, @a);
+                $post = net_double_bogey($cch, $course, @a);
             }
 
-            if (defined($index{$pn}{$d}{hi})) {
-                $trend_hi = $index{$pn}{$d}{hi};
-            }
-            if (defined($index{$pn}{$d}{hc})) {
-                $trend_ph = $index{$pn}{$d}{hc};
-            }
-            $db_out = "$course:$course_rating:$slope:$d:$trend_hi:$trend_ph:$shot:$post";
+            $db_out = "$course:$course_rating:$slope:$d:$hi:$ph:$shot:$post";
 
             while (defined($v = shift(@a))) {
                 $v = abs($v);
@@ -381,13 +365,7 @@ sub convert_player {
             #
             # This is a non hole-by-hole score. "0,0" in ScoreKeeper file
             #
-            if (defined($index{$pn}{$d}{hi})) {
-                $trend_hi = $index{$pn}{$d}{hi};
-            }
-            if (defined($index{$pn}{$d}{hc})) {
-                $trend_ph = $index{$pn}{$d}{hc};
-            }
-            $db_out = "$course:$course_rating:$slope:$d:$trend_hi:$trend_ph:$shot:$post";
+            $db_out = "$course:$course_rating:$slope:$d:$hi:$ph:$shot:$post";
             $tnfb_db{$d} = $db_out;
         } else {
             delete($tnfb_db{$team});
@@ -398,7 +376,7 @@ sub convert_player {
         $line = <FD>;
     }
 
-    $new_hi = gen_hi($fnnew, $year, 0.9);
+    $new_hi = gen_hi($fnnew, $year);
     $tnfb_db{'Current'} = $new_hi;
 
     untie %tnfb_db;
@@ -429,32 +407,8 @@ if ($nine{'SB'} != 0 && $nine{'SB'} != $num_SB_scores) {
 #
 sub
 net_double_bogey {
-    my ($pn, $date, $course, @s) = @_;
-    my ($v, $hole, $post, $hi);
-
-    $hi = $tnfb_db{'Current'};
-
-    #
-    # If the player does not have enough scores for a stable index,
-    # input here what they player played at that night.
-    #
-    if ($hi == -100) { 
-        #
-        # Enter the player's index determined before the round.
-        #
-        print "Enter index for $pn: ";
-        $hi = <STDIN>;
-        chomp $hi;
-        print "$pn: using handicap index of -> $hi\n"
-    }
-
-    #
-    # Figure out the players current course handicap (cch)
-    #
-    $cd  = ($c{$course}{course_rating} - $c{$course}{par});
-    $cd  = round($cd, 10);
-    $cch = (($hi * ($c{$course}->{slope} / 113)) + $cd);
-    $cch = sprintf("%.0f", $cch);
+    my ($cch, $course, @s) = @_;
+    my ($v, $hole, $post);
 
     $hole = 1; $post = 0;
     while (defined($v = shift(@s))) {
