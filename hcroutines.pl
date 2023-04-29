@@ -82,7 +82,7 @@ sub round {
 sub
 gen_hi {
     my ($fn, $year) = @_;
-    my (@scores, $y, $hi, $use, @n, $num_scores);
+    my (@scores, $y, $hi, $use, @n, $num_scores, $d);
 
     ($first, $last) = split(/:/, $tnfb_db{'Player'});
     $team = $tnfb_db{'Team'};
@@ -95,8 +95,9 @@ gen_hi {
     $num_scores = 0;
     foreach $y (reverse (1997..$year)) {
         foreach $w (reverse (1..15)) {
-            if (exists($tnfb_db{$dates{$y}{$w}})) {
-                push (@scores, $tnfb_db{$dates{$y}{$w}});
+            $d = $dates{$y}{$w};
+            if (exists($tnfb_db{$d})) {
+                push (@scores, $tnfb_db{$d});
                 $num_scores++;
             }
             last, if ($num_scores == 20);
@@ -110,9 +111,9 @@ gen_hi {
         foreach $y (reverse (1997..$year)) {
             foreach $m (reverse (1..12)) {
                 foreach $d (reverse (1..31)) {
-                    my $newdate = "$y-$m-$d";
-                    if (exists($tnfb_db{$newdate})) {
-                        push (@scores, $tnfb_db{$newdate});
+                    my $d = "$y-$m-$d";
+                    if (exists($tnfb_db{$d})) {
+                        push (@scores, $tnfb_db{$d});
                         $num_scores++;
                     }
                     last, if ($num_scores == 20);

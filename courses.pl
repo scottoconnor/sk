@@ -1,9 +1,9 @@
 #
+# Copyright (c) 2018, 2023 Scott O'Connor
+#
 # Par rating, slope and par for each course.
 #
 # Par and handicap hole for each hole.
-#
-# Copyright (c) 2018, 2022 Scott O'Connor
 #
 %c = (
     # South Front

@@ -158,6 +158,14 @@ if ($vhc) {
                 if ($p{$pn}{$d}{shot} && defined($p{$pn}{$d}{hc})) {
 
                     #
+                    # Do not count weeks we don't have a valid
+                    # handicap index or handicap.
+                    #
+                    if ($p{$pn}{$d}{hc} == -1) {
+                        next;
+                    }
+
+                    #
                     # Check Sub. If this player is a sub, change their team to
                     # the team they are subbing for.
                     #
@@ -764,7 +772,7 @@ sub
 get_player_scores {
 
     my($fn, $cy) = @_;
-    my($cw, $date, $d);
+    my($cw, $date, $d, $hi, $hc);
 
     tie %tnfb_db, 'GDBM_File', $fn, GDBM_READER, 0640
         or die "$GDBM_File::gdbm_errno";
@@ -796,7 +804,7 @@ get_player_scores {
             next;
         }
 
-        ($course, $par, $slope, $date, $hhi, $hhc, $shot, $post) = @score_record[0..7];
+        ($course, $par, $slope, $date, $hi, $hc, $shot, $post) = @score_record[0..7];
         @score = @score_record[8..16];
 
         if (defined($p{$pn}{$cy}{$cw})) {
@@ -815,10 +823,10 @@ get_player_scores {
         $p{$pn}{$course}{xplayed}++;
         $p{$pn}{$cy}{$cw} = $shot;
         $p{$pn}{$d}{shot} = $shot;
-        $p{$pn}{$d}{hc} = $hhc;
-        $p{$pn}{$d}{hi} = $hhi;
-        $p{$pn}{$d}{net} = ($shot - $hhc);
-        $p{$pn}{$d}{diff} = (($shot - $hhc) - 36);
+        $p{$pn}{$d}{hc} = $hc;
+        $p{$pn}{$d}{hi} = $hi;
+        $p{$pn}{$d}{net} = ($shot - $hc);
+        $p{$pn}{$d}{diff} = (($shot - $hc) - 36);
         if ($shot >= 50) {
             $y{$cy}{fifty_plus}++;
         }
