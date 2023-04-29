@@ -13,12 +13,12 @@ use GDBM_File;
 
 $debug = 0;
 $allowance = 0.9;
-$update = 0;
+$update_hi = 0;
 
 GetOptions (
     "a=f" => \$allowance,
     "d" => \$debug,
-    "u" => \$update),
+    "u" => \$update_hi),
 or die("Error in command line arguments\n");
 
 $month = (localtime)[4];
@@ -198,7 +198,7 @@ gen_hc {
 
     $hi /= $use;
 
-    if ($update == 0) {
+    if ($update_hi == 0) {
         $hi = $tnfb_db{'Current'};
     }
 
@@ -248,7 +248,7 @@ gen_hc {
     $hc{$pn}{nfhc} = $nf;
     $hc{$pn}{nbhc} = $nb;
 
-    if ($update == 1) {
+    if ($update_hi == 1) {
         $tnfb_db{'Current'} = $hi;
     }
 

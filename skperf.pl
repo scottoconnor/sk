@@ -212,6 +212,7 @@ foreach $yp (reverse sort keys %y) {
 
 if ($top_gun) {
 
+    my ($thirty);
     $thirty = 0;
 
     #
@@ -246,6 +247,7 @@ if ($top_gun) {
     foreach $yp (sort keys %y) {
         foreach $w ($start_week..$end_week) {
             %ty = %{$thirty{$yp}{$w}};
+            $has_rounds = 0;
             foreach my $pn (sort { $ty{$a} <=> $ty{$b} } keys %ty) {
                 print "  <tr>\n", if $html;
                 printf("    <td>%s</td>\n", $pn), if $html;
@@ -254,7 +256,7 @@ if ($top_gun) {
                 printf("%-17s: shot %d (week %d, year %d)\n", $pn, $ty{$pn}, $w, $yp), if !$html;
                 $has_rounds = 1;
             }
-            print "\n", if (!$html && ($start_week != $end_week));
+            print "\n", if (!$html && ($start_week != $end_week) && ($has_rounds));
         }
     }
     print "</table></br>\n", if $html;
