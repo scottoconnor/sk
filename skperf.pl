@@ -17,6 +17,7 @@ use Getopt::Long;
 #
 $all_time = 0;
 $birdies_per_hole = 0;
+$birdies_per_player = 0;
 $cur_month = (localtime)[4];
 $cur_day = (localtime)[3];
 $start_year = $end_year = (1900 + (localtime)[5]);
@@ -72,6 +73,7 @@ GetOptions (
     "o" => \$others,
     "ha" => \$hardest,
     "b" => \$birdies_per_hole,
+    "bpp" => \$birdies_per_player,
     "r" => \$hires,
     "h" =>  \$html,
     "d" => \$debug)
@@ -82,7 +84,7 @@ if ($all_time || ($start_year < 1997)) {
 }
 
 if ($all_time || $stats || $tables || $top_gun || $vhc || $others || $hardest ||
-    $course_stats || $birdies_per_hole) {
+    $course_stats || $birdies_per_hole || $birdies_per_player) {
         $include_subs = 1;
 }
 
@@ -768,11 +770,26 @@ show_most_improved {
     }
 }
 
+if ($birdies_per_player) {
+    foreach $cc (reverse sort keys %bpp) {
+        %holes = %{$bpp{$cc}};
+        foreach $hn (sort keys(%holes)) {
+            print "$c{$cc}{name}: \#$hn\n";
+            print "-----------\n";
+            %players = %{$bpp{$cc}{$hn}};
+            foreach $pn (reverse sort { $players{$a} <=> $players{$b} } (keys(%players))) {
+                print "$pn: $players{$pn}\n";
+            }
+            print "\n\n";
+        }
+    }
+}
+
 sub
 get_player_scores {
 
     my($fn, $cy) = @_;
-    my($cw, $date, $d, $hi, $hc);
+    my($cw, $date, $h, $d, $hi, $hc);
 
     tie %tnfb_db, 'GDBM_File', $fn, GDBM_READER, 0640
         or die "$GDBM_File::gdbm_errno";
@@ -837,6 +854,11 @@ get_player_scores {
         for ($h = 1; $h < 10; $h++) {
             $hole = abs(shift @score);
 
+            $bh = $h;
+            if (($course eq 'SB') || ($course eq 'NB')) {
+                $bh += 9;
+            }
+
             $md = ($h + (($course eq 'SF') ? 0 : ($course eq 'SB') ? 9 :
                 ($course eq 'NF') ? 18 : ($course eq 'NB') ? 27 : 0)), if ($hardest || $birdies_per_hole);
             $difficult{$md}{score} += $hole, if $hardest;
@@ -871,6 +893,7 @@ get_player_scores {
                 $y{$cy}{total_birdies}++;
                 $bt{$cy}{$pn} += 1;
                 $bph{$md}{b}++;
+                $bpp{$course}{$bh}{$pn}++;
             }
             if (($c{$course}{$h}[0] - $hole) == 2) {
                 $p{$pn}{$course}{$h}[0]{e}++;
