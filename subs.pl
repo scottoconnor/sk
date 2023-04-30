@@ -153,5 +153,8 @@
                "Jeff LaPlante" => "Mike Perisho" ,
                "Dave Sherman" => "Charlie Bacon" ,
                "Leo Palatino" => "Paul Correia" },
+        2 => { "Carl Humphreys" => "Charlie Weeks",
+               "Leo Palatino" => "Paul Correia" },
+        3 => { "Alex Williams" => "Mike Gill" },
     },
 );
