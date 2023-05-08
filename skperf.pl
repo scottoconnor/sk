@@ -163,7 +163,7 @@ if ($vhc) {
                     # Do not count weeks we don't have a valid
                     # handicap index or handicap.
                     #
-                    if ($p{$pn}{$d}{hc} == -1) {
+                    if ($p{$pn}{$d}{hc} eq "NA") {
                         next;
                     }
 
