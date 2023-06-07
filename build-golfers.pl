@@ -18,7 +18,7 @@ print NFD "%t = (
     \"TNFB/East/Terriers\"       => { 1 => \"O'Connor, Scott\", 2 => \"Percuoco, Paul\" },
     \"TNFB/East/Warriors\"       => { 1 => \"Donahue, Pat\", 2 => \"Sullivan, Joe\" },
     \"TNFB/East/Wildcats\"       => { 1 => \"Carter, Randy\", 2 => \"O'Keefe, Jim\" },
-    \"TNFB/West/Badgers\"        => { 1 => \"Kilgus, Bob\", 2 => \"Jodoin, Derek\" },
+    \"TNFB/West/Badgers\"        => { 1 => \"Kilgus, Bobby\", 2 => \"Jodoin, Derek\" },
     \"TNFB/West/Buckeyes\"       => { 1 => \"Bacon, Charlie\", 2 => \"Fryatt, Larry\" },
     \"TNFB/West/Bulldogs\"       => { 1 => \"Gill, Mike\", 2 => \"Foland, Marc\" },
     \"TNFB/West/Fighting Sioux\" => { 1 => \"Albertini, Tony\", 2 => \"Kittredge, Kevin\" },

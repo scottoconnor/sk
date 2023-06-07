@@ -202,6 +202,11 @@ gen_hc {
         $hi = $tnfb_db{'Current'};
     }
 
+    if ($hi == -100) {
+        untie $tnfb_db;
+        return;
+    }
+
     if ($pn eq "O'Connor, S") {
         $hi = 6.1;
     }

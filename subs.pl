@@ -169,5 +169,10 @@
         5 => { "Leo Palatino" => "Dan Correia" ,
                "Brian Sargent" => "Marc Foland" ,
                "Ron Melanson" => "John Breslouf" },
+        6 => { "Leo Palatino" => "Dan Correia" ,
+               "Paul Rotker" => "Charlie Weeks", },
+        7 => { "Derek Palatino" => "Dan Correia" ,
+               "Brian Sargent" => "Paul Percuoco" ,
+               "Steve Calvao" => "Jim O'Keefe" },
     },
 );
