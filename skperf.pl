@@ -720,7 +720,6 @@ show_most_improved {
             next;
         }
         $pn = $tnfb_db{'Player'};
-        $pn =~ tr/:/ /;
 
         $cy = $start_year;
         for ($cw = $start_week; $cw <= $end_week; $cw++) {
@@ -734,8 +733,8 @@ show_most_improved {
                 }
             }
         }
-        $cy = ($end_year + 1);
-        for ($cw = $start_week; $cw <= $end_week; $cw++) {
+        $cy = $end_year;
+        for ($cw = $end_week; $cw >= $start_week; $cw--) {
             $d = $dates{$cy}{$cw};
             if (exists($tnfb_db{$d}) && defined($p{$pn}{A})) {
                 @score = split(/:/, $tnfb_db{$d});
@@ -794,8 +793,7 @@ get_player_scores {
     tie %tnfb_db, 'GDBM_File', $fn, GDBM_READER, 0640
         or die "$GDBM_File::gdbm_errno";
 
-    ($first, $last) = split(/:/, $tnfb_db{'Player'});
-    $pn = $first . " " . $last;
+    $pn = $tnfb_db{'Player'};
 
     $p{$pn}{team} = $tnfb_db{'Team'};
     $p{$pn}{active} = $tnfb_db{'Active'};

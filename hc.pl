@@ -92,7 +92,7 @@ gen_hc {
     tie %tnfb_db, 'GDBM_File', $fn, GDBM_WRCREAT, 0644
         or die "$GDBM_File::gdbm_errno";
 
-    ($first, $last) = split(/:/, $tnfb_db{'Player'});
+    ($first, $last) = split(/:/, $tnfb_db{'Player'}, 2);
     $team = $tnfb_db{'Team'};
     $active = $tnfb_db{'Active'};
 

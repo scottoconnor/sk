@@ -84,7 +84,6 @@ gen_hi {
     my ($fn, $year) = @_;
     my (@scores, $y, $hi, $use, @n, $num_scores, $d);
 
-    ($first, $last) = split(/:/, $tnfb_db{'Player'});
     $team = $tnfb_db{'Team'};
     $active = $tnfb_db{'Active'};
 

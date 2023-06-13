@@ -66,14 +66,10 @@ sub convert_player {
     if (!defined($golfers{$fn})) {
         untie %tnfb_db;
         close(FD);
-        die "$first $last: Unknown golfer: might need to run build-golfers.pl\n";
+        die "$pn: Unknown golfer: might need to run build-golfers.pl\n";
     }
 
-    #
-    # name has to be first:last since some players have "Jr", "II" as
-    # as part of their last name. Therefore can't split on spaces.
-    #
-    $tnfb_db{'Player'} = "$first:$last";
+    $tnfb_db{'Player'} = "$pn";
     $tnfb_db{'Team'} = $golfers{$fn}->{team};
     $tnfb_db{'Active'} = $golfers{$fn}->{active};
     
