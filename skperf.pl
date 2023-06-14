@@ -726,7 +726,7 @@ show_most_improved {
             $d = $dates{$cy}{$cw};
             if (!defined($p{$pn}{A}) && exists($tnfb_db{$d})) {
                 @score = split(/:/, $tnfb_db{$d});
-                if (@score[4] != -1) {
+                if (@score[4] != NA) {
                     $p{$pn}{A} = (@score[4] + 6);
                     #print "$pn: A: $p{$pn}{A}, date -> $d\n";
                     last;
@@ -738,7 +738,7 @@ show_most_improved {
             $d = $dates{$cy}{$cw};
             if (exists($tnfb_db{$d}) && defined($p{$pn}{A})) {
                 @score = split(/:/, $tnfb_db{$d});
-                if (@score[4] != -1) {
+                if (@score[4] != NA) {
                     $p{$pn}{B} = (@score[4] + 6);
                     #print "$pn: B: $p{$pn}{B}, date -> $d\n";
                     last;

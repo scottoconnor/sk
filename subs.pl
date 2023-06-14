@@ -174,5 +174,9 @@
         7 => { "Derek Palatino" => "Dan Correia" ,
                "Brian Sargent" => "Paul Percuoco" ,
                "Steve Calvao" => "Jim O'Keefe" },
+        8 => { "Derek Palatino" => "Pat Donahue" ,
+               "Joe Graceffa" => "Bob Tuttle" ,
+               "Alex Williams" => "Jeff Miller" },
+        9 => { "Todd Chapin" => "Derek Jodoin" },
     },
 );
