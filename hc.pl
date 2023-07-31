@@ -180,7 +180,10 @@ gen_hc {
     # If the player does not have the required number of scores,
     # a handicap can not be generted for them.
     #
-    if (($use = &nscores($num, $usga)) == 0) {
+    # Due to the discrepancies of WHS and League handicap indexes, do
+    # not calculate a TNFB league handicap until 15 scores are in the record.
+    #
+    if (($use = &nscores($num, $usga)) == 0 || $num < 15) {
         print "$pn: Only $num scores, can not generate handicap\n", if $debug;
         $tnfb_db{'Current'} = -100;
         untie $tnfb_db;
