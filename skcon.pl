@@ -372,7 +372,7 @@ sub convert_player {
         $line = <FD>;
     }
 
-    $new_hi = gen_hi($fnnew, $year);
+    $new_hi = gen_hi();
     $tnfb_db{'Current'} = $new_hi;
 
     untie %tnfb_db;
