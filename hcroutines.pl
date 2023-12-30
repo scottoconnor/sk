@@ -5,7 +5,6 @@
 
 use POSIX;
 use GDBM_File;
-require './tnfb_years.pl';
 
 #
 # Determine how many scores to use.
@@ -13,7 +12,8 @@ require './tnfb_years.pl';
 # Starting in 2020, the World Handicap System was implemented.  The number
 # of scores used is different than the previous USGA handicap formula.
 #
-sub nscores {
+sub
+nscores {
     my ($x, $usga) = @_;
 
     if ($usga) {
@@ -81,8 +81,10 @@ sub round {
 
 sub
 gen_hi {
-    my ($fn, $year) = @_;
+    my ($year);
     my (@scores, $y, $hi, $use, @n, $num_scores, $d);
+
+    $year = (1900 + (localtime)[5]);
 
     $team = $tnfb_db{'Team'};
     $active = $tnfb_db{'Active'};
@@ -125,6 +127,8 @@ gen_hi {
 
     $num = @scores;
 
+    die, if ($num != $num_scores);
+
     if ($num > 20) {
         die "$tnfb_db{'Player'}: Number of score is more than 20.\n";
     }
@@ -163,7 +167,6 @@ gen_hi {
         # Round to the nearest tenth.
         #
         $n[$y] = round($n[$y], 10);
-        printf("date=%s: post=%d: differential: %.1f\n", $date, $post, $n[$y]), if $debug;
 
         $y++;
     }
@@ -173,7 +176,6 @@ gen_hi {
     $hi = 0;
 
     for ($y = 0; $y < $use; $y++) {
-        printf("%d: %.1f\n", $y, $n[$y]), if $debug;
         $hi += $n[$y];
     }
 
