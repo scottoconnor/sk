@@ -5,7 +5,6 @@
 
 require './courses.pl';
 require './tnfb.pl';
-require './tnfb_years.pl';
 require './hcroutines.pl';
 
 use Getopt::Long;
@@ -181,9 +180,9 @@ gen_hc {
     # a handicap can not be generted for them.
     #
     # Due to the discrepancies of WHS and League handicap indexes, do
-    # not calculate a TNFB league handicap until 15 scores are in the record.
+    # not calculate a TNFB league handicap until 10 scores are in the record.
     #
-    if (($use = &nscores($num, $usga)) == 0 || $num < 15) {
+    if (($use = &nscores($num, $usga)) == 0 || $num < 10) {
         print "$pn: Only $num scores, can not generate handicap\n", if $debug;
         $tnfb_db{'Current'} = -100;
         untie $tnfb_db;
