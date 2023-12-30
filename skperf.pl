@@ -7,6 +7,7 @@ require './tnfb_years.pl';
 require './courses.pl';
 require './subs.pl';
 require './hcroutines.pl';
+#require './tnfb.pl';
 
 use Time::HiRes qw(gettimeofday);
 use GDBM_File;
@@ -39,7 +40,10 @@ $hardest = 0;
 $course_stats = 0;
 $most_improved = 0;
 $league = "golfers";
-$debug = 0;
+$delete = 0;
+$add = 0;
+$perf = 1;
+$total_time = 0;
 
 if ($#ARGV < 0) {
     exit;
@@ -76,8 +80,16 @@ GetOptions (
     "bpp" => \$birdies_per_player,
     "r" => \$hires,
     "h" =>  \$html,
-    "d" => \$debug)
+    "d" => \$delete,
+    "a" => \$add)
 or die("Error in command line arguments\n");
+
+#
+# If we are adding or deleting scores, we don't need to get data for stats.
+#
+if ($add || $delete) {
+    $perf = 0;
+}
 
 if ($all_time || ($start_year < 1997)) {
     $start_year = 1997;
@@ -107,7 +119,11 @@ opendir($dh, "./$league") || die "Can't open \"$league\" directory.";
 
 while (readdir $dh) {
     if ($_ =~ /(^1\d{3}$\.gdbm)/) {
-        push @global_golfer_list, $_;
+        push @global_golfer_list, "$league/$_";
+        tie %tnfb_db, 'GDBM_File', "$league/$_", GDBM_READER, 0644
+            or die "$GDBM_File::gdbm_errno";
+        $golfers_gdbm{$tnfb_db{'Player'}} = "$league/$_";
+        untie %tnfb_db;
     }
 }
 closedir ($dh);
@@ -122,19 +138,225 @@ closedir ($dh);
 #
 # After we get that, the other routines can use that data to generate stats.
 #
-for ($cy = $start_year; $cy <= $end_year; $cy++) {
+for ($cy = $start_year; $cy <= $end_year && $perf; $cy++) {
     @golfer_list = @global_golfer_list;
     $t0 = gettimeofday(), if $hires;
     while ($fna = shift @golfer_list) {
-        get_player_scores("$league/$fna", $cy);
+        get_player_scores($fna, $cy);
     }
     $t1 = gettimeofday(), if $hires;
     $total_time += ($t1 - $t0), if $hires;
-    printf("Year %d took %.8f\n", $cy, ($t1 - $t0)), if $debug;
 }
 
 if ($most_improved) {
     show_most_improved();
+}
+
+#
+# Delete a week of scores. The 'key' is the date of scores to delete.
+#
+if ($delete) {
+
+    my ($count, $new_hi, $key);
+
+    print "Enter date of scores to delete: ";
+    chomp(my $key = <STDIN>);
+
+    $count = 0;
+    while ($fna = shift @global_golfer_list) {
+        tie %tnfb_db, 'GDBM_File', $fna, GDBM_WRITER, 0640
+            or die "$GDBM_File::gdbm_errno";
+
+        if (defined($tnfb_db{$key})) {
+            delete($tnfb_db{$key});
+            $new_hi = gen_hi();
+            $tnfb_db{'Current'} = $new_hi;
+            $count++;
+        }
+        untie %tnfb_db;
+    }
+    print "$key: Deleted $count scores.\n";
+}
+
+#
+# Add a week of scores.
+#
+if ($add) {
+
+    my ($db_out, $course_rating, $slope, $gdbm_file, @sr, $pn, $new_hi);
+    my ($date, $fn, @week, $month, $year, $day, $course, $line);
+
+    print "Enter week of play: ";
+    chomp($w = <STDIN>);
+
+    my @files = ("../golf/week$w-1.csv", "../golf/week$w-2.csv");
+
+    foreach $fn (@files) {
+
+        open(FD, $fn);
+
+        while ($line = <FD>) {
+
+            #
+            # The first "if" gets the date, course information. Once we get this information
+            # the next 4 matches will be the scores for that time slot. This will happen
+            # 4 times per sheet, 8 times for both sheets.
+            #
+            chomp($line);
+            if ($line =~ /(4|5)\072\d{2}/) {
+                @week = split (/,/, $line);
+                $date = @week[0];
+                ($year, $month, $day) = split /-/, $date;
+                $month = abs($month);
+                $day = abs($day);
+                $date = "$year-$month-$day";
+                $course = get_course(@week[3]);
+                $course_rating = $c{$course}{course_rating};
+                $slope = $c{$course}{slope};
+            } elsif ($line =~ /^(\d{1,2})/) {
+                @sr = split (/,/, $line);
+                $pn = $sr[3];
+                #
+                # If the player doesn't exit, create their db file.
+                #
+                if (!exists($golfers_gdbm{$pn})) {
+                    create_tnfb_db($pn);
+                }
+                $gdbm_file = $golfers_gdbm{$pn};
+                $shot = abs(@sr[13]);
+                @swings = @sr[4..12];
+                ($hi, $ph, $post) = net_double_bogey($pn, $gdbm_file, $course, @swings);
+                $db_out = "$course:$course_rating:$slope:$date:$hi:$ph:$shot:$post";
+                while (my $swing = shift @swings) {
+                    $db_out = $db_out . ":$swing";
+                }
+                tie %tnfb_db, 'GDBM_File', $gdbm_file, GDBM_WRITER, 0644
+                    or die "$GDBM_File::gdbm_errno";
+                        if (!defined($tnfb_db{$date})) {
+                            $team = "Team_" . $year;
+                            if ($year >= 2022 && !exists($tnfb_db{$team})) {
+                                $tnfb_db{$team} = $tnfb_db{'Team'};
+                            }
+                            print "$pn $date: $db_out\n";
+                            $tnfb_db{$date} = $db_out;
+                            $new_hi = gen_hi();
+                            $tnfb_db{'Current'} = $new_hi;
+                        } else {
+                            print "$pn: Score already exists.\n";
+                        }
+                untie %tnfb_db;
+            }
+        }
+        close(FD);
+    }
+}
+
+sub
+get_course {
+        my ($nine_holes) = @_;
+
+        if ($nine_holes =~ /South Front/) {
+            return ('SF');
+        } elsif ($nine_holes =~ /South Back/) {
+            return ('SB');
+        } elsif ($nine_holes =~ /North Front/) {
+            return ('NF');
+        } elsif ($nine_holes =~ /North Back/) {
+            return ('NB');
+        } else {
+            # non-league or away course.
+            return ('NL');
+        }
+}
+
+#
+# Take the players round, calculate current course handicap and figure
+# out their net double bogey for each hole.
+#
+sub
+net_double_bogey {
+    my ($pn, $file, $course, @s) = @_;
+    my ($v, $hole, $post, $hi);
+
+    tie %tnfb_db, 'GDBM_File', $file, GDBM_READER, 0644
+        or die "$GDBM_File::gdbm_errno";
+
+    $hi = $tnfb_db{'Current'};
+
+    untie %tnfb_db;
+
+    #
+    # If the player does not have enough scores for a stable index,
+    # input here what they player played at that night.
+    #
+    if ($hi == -100) { 
+        #
+        # Enter the player's index determined before the round.
+        #
+        print "Enter index for $pn: ";
+        $hi = <STDIN>;
+        chomp $hi;
+        print "$pn: using handicap index of -> $hi\n"
+    }
+
+    $ccd = ($c{$course}{course_rating} - $c{$course}{par});
+    $ccd = round($ccd, 10);
+    $ch = (($hi * ($c{$course}->{slope} / 113)) + $ccd);
+    $cch = sprintf("%.0f", ($ch * 1.0));
+    $ph = sprintf("%.0f", ($ch * 0.9));
+    $ph = abs($ph), if ($ph == 0.0);
+
+    $hole = 1; $post = 0;
+    while (defined($v = shift(@s))) {
+        $v = abs($v);
+
+        #
+        # Each player is allowed double bogey on each hole.  If the
+        # hole is one of the player's handicap hole, they are allowed
+        # one or more strokes.
+        #
+        $max_score = ($c{$course}{$hole}[0] + 2);
+
+        $add_stroke = ($cch - $c{$course}{$hole}[1]);
+        if ($add_stroke >= 0 && $add_stroke < 9) {
+            $max_score++;
+        }
+        if ($add_stroke >= 9) {
+            $max_score += 2;
+        }
+        #if ($c{$course}{$hole}[1] <= $cch) { $max_score++ };
+
+        $post += ($v > $max_score) ? $max_score : $v;
+        $hole++;
+    }
+    return ($hi, $ph, $post);
+}
+
+sub
+create_tnfb_db() {
+    my ($new_pn) = @_;
+    my ($new_file, $x, $y);
+
+    for ($x = 1; $x < 300; $x++) {
+        $y = 1000 + $x;
+        $new_file = "golfers/" . $y . ".gdbm";
+        if (! -e $new_file) {
+            print "$new_pn new db file is: $new_file\n";
+            $x = 1000;
+        }
+    }
+    tie %tnfb_db, 'GDBM_File', $new_file, GDBM_WRCREAT, 0644
+        or die "$GDBM_File::gdbm_errno";
+    $tnfb_db{'Player'} = $new_pn;
+    $tnfb_db{'Team'} = "Sub";
+    $tnfb_db{'Active'} = 1;
+    $tnfb_db{'Current'} = -100;
+    untie %tnfb_db;
+
+    #
+    # Update golfers_gdbm hash
+    #
+    $golfers_gdbm{$new_pn} = $new_file;
 }
 
 #
@@ -173,9 +395,7 @@ if ($vhc) {
                     #
                     if ($p{$pn}{team} eq "Sub") {
                         die "$pn is not a valid sub?\n", if !defined($subs{$yp}{$w}{$pn});
-                        print "$pn is subbing for $subs{$yp}{$w}{$pn}\n", if $debug;
                         $p{$pn}{team} = $p{$subs{$yp}{$w}{$pn}}{team};
-                        print "$pn: $p{$pn}{team}\n", if $debug;
                     }
                     $p{$pn}{diff} += $p{$pn}{$d}{diff};
                     printf("%-17s: year %-4d week %-2s shot %d, hc %2d, net %d, diff %d\n", $pn, $yp, $w,
@@ -574,7 +794,6 @@ print_player_stats {
         }
 
         print "$x\n\n";
-        print "$p{$x}{team}\n\n", if $debug;
 
         my $total_player_rounds = 0;
         while ($sc = shift @courses) {
@@ -712,7 +931,7 @@ show_most_improved {
     @golfer_list = @global_golfer_list;
     while ($file = shift @golfer_list) {
 
-        tie %tnfb_db, 'GDBM_File', "$league/$file", GDBM_READER, 0640
+        tie %tnfb_db, 'GDBM_File', $file, GDBM_READER, 0640
             or die "$GDBM_File::gdbm_errno";
 
         if ($tnfb_db{'Team'} eq "Sub") {
