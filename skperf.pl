@@ -233,9 +233,10 @@ if ($add) {
                 tie %tnfb_db, 'GDBM_File', $gdbm_file, GDBM_WRITER, 0644
                     or die "$GDBM_File::gdbm_errno";
                         if (!defined($tnfb_db{$date})) {
-                            $team = "Team_" . $year;
+                            $team = "Team_$year";
                             if ($year >= 2022 && !exists($tnfb_db{$team})) {
                                 $tnfb_db{$team} = $tnfb_db{'Team'};
+                                $tnfb_db{'Active'} = 1;
                             }
                             print "$pn $date: $db_out\n";
                             $tnfb_db{$date} = $db_out;
@@ -923,10 +924,7 @@ printf("Total time = %.2f seconds - processed %d scores\n", $total_time, $totals
 sub
 show_most_improved {
 
-    my ($cy, $cw, $file);
-
-    $next_year = ($start_year + 1);
-    $last_year = ($end_year + 1);
+    my ($cy, $cw, $file, @golfer_list);
 
     @golfer_list = @global_golfer_list;
     while ($file = shift @golfer_list) {
@@ -947,7 +945,7 @@ show_most_improved {
                 @score = split(/:/, $tnfb_db{$d});
                 if (@score[4] != NA) {
                     $p{$pn}{A} = (@score[4] + 6);
-                    #print "$pn: A: $p{$pn}{A}, date -> $d\n";
+                    print "$pn: A: $p{$pn}{A}, date -> $d\n", if 0;
                     last;
                 }
             }
@@ -959,14 +957,14 @@ show_most_improved {
                 @score = split(/:/, $tnfb_db{$d});
                 if (@score[4] != NA) {
                     $p{$pn}{B} = (@score[4] + 6);
-                    #print "$pn: B: $p{$pn}{B}, date -> $d\n";
+                    print "$pn: B: $p{$pn}{B}, date -> $d\n", if 0;;
                     last;
                 }
             }
         }
         if (!defined($p{$pn}{B}) && defined($p{$pn}{A})) {
             $p{$pn}{B} = ($tnfb_db{'Current'} + 6);
-            #print "$pn: B: $p{$pn}{B}, date -> Current\n";
+            print "$pn: B: $p{$pn}{B}, date -> Current\n", if 0;
         }
         untie %tnfb_db;
     }
