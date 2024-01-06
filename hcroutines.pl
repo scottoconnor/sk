@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 #
-# Copyright (c) 2018, 2023 Scott O'Connor
+# Copyright (c) 2018, 2024 Scott O'Connor
 #
 
 use POSIX;
@@ -75,13 +75,6 @@ gen_hi {
 
     $year = (1900 + (localtime)[5]);
 
-    $team = $tnfb_db{'Team'};
-    $active = $tnfb_db{'Active'};
-
-    #if ($active == 0) {
-        #return;
-    #}
-
     $num_scores = 0;
     foreach $y (reverse (1997..$year)) {
         foreach $w (reverse (1..15)) {
@@ -123,16 +116,11 @@ gen_hi {
     }
 
     #
-    # Make 10 the number of score for a League Handicap. Anything under
-    # this, refer to the players World Handicap index.
-    #
-    return (-100), if ($num < 10);
-
-    #
     # If the player does not have the required number of scores,
     # a handicap can not be generted for them.
     #
-    if (($use = &nscores($num, 0)) == 0) {
+    if (($use = &nscores($num)) == 0) {
+        print "$pn: Only $num scores, can not generate handicap\n", if $debug;
         return (-100);
     }
 

@@ -83,7 +83,6 @@ gen_hc {
 
     ($first, $last) = split(/ /, $tnfb_db{'Player'}, 2);
     $team = $tnfb_db{'Team'};
-    $active = $tnfb_db{'Active'};
 
     $last_year = 0;
 
@@ -139,6 +138,8 @@ gen_hc {
         if ($tnfb_db{'Current'} != -100) {
             print "$pn: hi changing to -100\n";
             $tnfb_db{'Current'} = -100;
+            untie $tnfb_db;
+            return;
         }
     }
 
@@ -147,6 +148,17 @@ gen_hc {
     if ($num > 20) {
         untie $tnfb_db;
         die "$pn: Number of score is more than 20.\n";
+    }
+
+    #
+    # If the player does not have the required number of scores,
+    # a handicap can not be generted for them.
+    #
+    if (($use = &nscores($num)) == 0) {
+        print "$pn: Only $num scores, can not generate handicap\n", if $debug;
+        $tnfb_db{'Current'} = -100;
+        untie $tnfb_db;
+        return;
     }
 
     $y = 0;
@@ -174,17 +186,6 @@ gen_hc {
         printf("date=%s: post=%d: differential: %.1f\n", $date, $post, $n[$y]), if $debug;
 
         $y++;
-    }
-
-    #
-    # If the player does not have the required number of scores,
-    # a handicap can not be generted for them.
-    #
-    if (($use = &nscores($num)) == 0) {
-        print "$pn: Only $num scores, can not generate handicap\n", if $debug;
-        $tnfb_db{'Current'} = -100;
-        untie $tnfb_db;
-        return;
     }
 
     @n = sort {$a <=> $b} @n;
@@ -233,7 +234,10 @@ gen_hc {
     $nb = (($hi * ($c{NB}->{slope} / 113)) + $nbd);
     $nb = sprintf("%.0f", ($nb * $allowance));
 
-    if ($active == 1) {
+    #
+    # Only add a player to the handicap list if they are active.
+    #
+    if ($tnfb_db{'Active'}) {
         $hc{$pn}{hi} = $hi;
         $hc{$pn}{sfhc} = $sf;
         $hc{$pn}{sbhc} = $sb;
