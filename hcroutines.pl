@@ -9,39 +9,28 @@ use GDBM_File;
 #
 # Determine how many scores to use.
 #
-# Starting in 2020, the World Handicap System was implemented.  The number
-# of scores used is different than the previous USGA handicap formula.
+# Due to the discrepancies of WHS and League handicap indexes, do
+# not calculate a TNFB league handicap until 10 scores are in the record.
 #
 sub
 nscores {
-    my ($x, $usga) = @_;
+    my ($x) = @_;
 
-    if ($usga) {
-        if ($x < 5) { return 0; }
+    #if ($x < 3) { return 0; }
+    #if ($x >= 3 && $x <= 5) { return 1; }
+    #if ($x == 6) { return 2; }
+    #if ($x >= 7 && $x <= 8) { return 2; }
+    #if ($x >= 9 && $x <= 11) { return 3; }
+    #
+    # 10 or more scores. modified from line above.
+    #
+    if ($x > 9 && $x <= 11) { return 3; }
 
-        if ($x >= 5 && $x <= 6) { return 1; }
-        if ($x >= 7 && $x <= 8) { return 2; }
-        if ($x >= 9 && $x <= 10) { return 3; }
-        if ($x >= 11 && $x <= 12) { return 4; }
-        if ($x >= 13 && $x <= 14) { return 5; }
-        if ($x >= 15 && $x <= 16) { return 6; }
-        if ($x == 17) { return 7; }
-        if ($x == 18) { return 8; }
-        if ($x == 19) { return 9; }
-        if ($x >= 20) { return 10; }
-    } else {
-        if ($x < 3) { return 0; }
-
-        if ($x >= 3 && $x <= 5) { return 1; }
-        if ($x == 6) { return 2; }
-        if ($x >= 7 && $x <= 8) { return 2; }
-        if ($x >= 9 && $x <= 11) { return 3; }
-        if ($x >= 12 && $x <= 14) { return 4; }
-        if ($x >= 15 && $x <= 16) { return 5; }
-        if ($x >= 17 && $x <= 18) { return 6; }
-        if ($x == 19) { return 7; }
-        if ($x >= 20) { return 8; }
-    }
+    if ($x >= 12 && $x <= 14) { return 4; }
+    if ($x >= 15 && $x <= 16) { return 5; }
+    if ($x >= 17 && $x <= 18) { return 6; }
+    if ($x == 19) { return 7; }
+    if ($x >= 20) { return 8; }
 }
 
 #

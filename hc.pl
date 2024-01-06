@@ -26,17 +26,7 @@ $day = (localtime)[3];
 $year = (1900 + (localtime)[5]);
 
 #
-# Years prior to 2020, we use the USGA method of handicapping.
-# 2020 and beyond, we use the World Handicapping System.
-#
-if ($year > 2019) {
-    $usga = 0;
-} else {
-    $usga = 1;
-}
-
-#
-# Only used files processed by skcon.pl (ScoreKeeper Convert).
+# Read the Gnu database files.
 #
 opendir($dh, "./golfers") || die "Can't open \"golfers\" directory.";
 
@@ -101,11 +91,6 @@ gen_hc {
         $debug = 1;
     } else {
         $debug = 0;
-    }
-
-    if ($active == 0) {
-        untie $tnfb_db;
-        return;
     }
 
     $hc{$pn}{team} = $team;
@@ -179,10 +164,7 @@ gen_hc {
     # If the player does not have the required number of scores,
     # a handicap can not be generted for them.
     #
-    # Due to the discrepancies of WHS and League handicap indexes, do
-    # not calculate a TNFB league handicap until 10 scores are in the record.
-    #
-    if (($use = &nscores($num, $usga)) == 0 || $num < 10) {
+    if (($use = &nscores($num)) == 0) {
         print "$pn: Only $num scores, can not generate handicap\n", if $debug;
         $tnfb_db{'Current'} = -100;
         untie $tnfb_db;
@@ -213,47 +195,35 @@ gen_hc {
         $hi = 6.1;
     }
 
+    $hi = round($hi, 10);
 
-    if ($usga) {
-        $hi *= $allowance;
-        $hi = (int($hi * 10) / 10);
-        $sf = ($hi * $c{SF}->{slope} / 113);
-        $sf = sprintf("%.0f", $sf);
-        $sb = ($hi * $c{SB}->{slope} / 113);
-        $sb = sprintf("%.0f", $sb);
-        $nf = ($hi * $c{NF}->{slope} / 113);
-        $nf = sprintf("%.0f", $nf);
-        $nb = ($hi * $c{NB}->{slope} / 113);
-        $nb = sprintf("%.0f", $nb);
-    } else {
-        $hi = round($hi, 10);
+    $sfd = ($c{SF}{course_rating} - $c{SF}{par});
+    $sfd = round($sfd, 10);
+    $sf = (($hi * ($c{SF}->{slope} / 113)) + $sfd);
+    $sf = sprintf("%.0f", ($sf * $allowance));
 
-        $sfd = ($c{SF}{course_rating} - $c{SF}{par});
-        $sfd = round($sfd, 10);
-        $sf = (($hi * ($c{SF}->{slope} / 113)) + $sfd);
-        $sf = sprintf("%.0f", ($sf * $allowance));
+    $sbd = ($c{SB}{course_rating} - $c{SB}{par});
+    $sbd = round($sbd, 10);
+    $sb = (($hi * ($c{SB}->{slope} / 113)) + $sbd);
+    $sb = sprintf("%.0f", ($sb * $allowance));
 
-        $sbd = ($c{SB}{course_rating} - $c{SB}{par});
-        $sbd = round($sbd, 10);
-        $sb = (($hi * ($c{SB}->{slope} / 113)) + $sbd);
-        $sb = sprintf("%.0f", ($sb * $allowance));
+    $nfd = ($c{NF}{course_rating} - $c{NF}{par});
+    $nfd = round($nfd, 10);
+    $nf = (($hi * ($c{NF}->{slope} / 113)) + $nfd);
+    $nf = sprintf("%.0f", ($nf * $allowance));
 
-        $nfd = ($c{NF}{course_rating} - $c{NF}{par});
-        $nfd = round($nfd, 10);
-        $nf = (($hi * ($c{NF}->{slope} / 113)) + $nfd);
-        $nf = sprintf("%.0f", ($nf * $allowance));
+    $nbd = ($c{NB}{course_rating} - $c{NB}{par});
+    $nbd = round($nbd, 10);
+    $nb = (($hi * ($c{NB}->{slope} / 113)) + $nbd);
+    $nb = sprintf("%.0f", ($nb * $allowance));
 
-        $nbd = ($c{NB}{course_rating} - $c{NB}{par});
-        $nbd = round($nbd, 10);
-        $nb = (($hi * ($c{NB}->{slope} / 113)) + $nbd);
-        $nb = sprintf("%.0f", ($nb * $allowance));
+    if ($active == 1) {
+        $hc{$pn}{hi} = $hi;
+        $hc{$pn}{sfhc} = $sf;
+        $hc{$pn}{sbhc} = $sb;
+        $hc{$pn}{nfhc} = $nf;
+        $hc{$pn}{nbhc} = $nb;
     }
-
-    $hc{$pn}{hi} = $hi;
-    $hc{$pn}{sfhc} = $sf;
-    $hc{$pn}{sbhc} = $sb;
-    $hc{$pn}{nfhc} = $nf;
-    $hc{$pn}{nbhc} = $nb;
 
     if ($update_hi == 1) {
         $tnfb_db{'Current'} = $hi;
