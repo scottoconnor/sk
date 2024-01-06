@@ -924,7 +924,7 @@ printf("Total time = %.2f seconds - processed %d scores\n", $total_time, $totals
 sub
 show_most_improved {
 
-    my ($cy, $cw, $file, @golfer_list);
+    my ($cy, $cw, $file, $mi, @golfer_list);
 
     @golfer_list = @global_golfer_list;
     while ($file = shift @golfer_list) {
@@ -969,20 +969,18 @@ show_most_improved {
         untie %tnfb_db;
     }
 
-    if ($most_improved) {
-            foreach $pn (keys %p) {
-            if (defined($p{$pn}{A}) && defined($p{$pn}{B})) {
-                $m{$pn}{mi} = ($p{$pn}{A} / $p{$pn}{B});
-                $m{$pn}{mi} = round($m{$pn}{mi}, 1000);
-                $m{$pn}{team} = $p{$pn}{team};
-            }
+    foreach $pn (keys %p) {
+        if (defined($p{$pn}{A}) && defined($p{$pn}{B})) {
+            $mi{$pn}{mi} = ($p{$pn}{A} / $p{$pn}{B});
+            $mi{$pn}{mi} = round($mi{$pn}{mi}, 1000);
+            $mi{$pn}{team} = $p{$pn}{team};
         }
-        foreach $pn (reverse sort { $m{$a}{mi} <=> $m{$b}{mi} } (keys(%m))) {
-            if ($m{$pn}{team} eq "Sub") {
-                next;
-            }
-            printf("%-17s %.3f\n", $pn, $m{$pn}{mi});
+    }
+    foreach $pn (reverse sort { $mi{$a}{mi} <=> $mi{$b}{mi} } (keys(%mi))) {
+        if ($mi{$pn}{team} eq "Sub") {
+            next;
         }
+        printf("%-17s %.3f\n", $pn, $mi{$pn}{mi});
     }
 }
 
