@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 #
-# Copyright (c) 2018, 2023 Scott O'Connor
+# Copyright (c) 2018, 2024 Scott O'Connor
 #
 
 require './courses.pl';
@@ -78,7 +78,7 @@ gen_hc {
     my ($fn, $year, $allowance) = @_;
     my (@scores, $y, $hi, $use, @n, $pn, $x, $num_scores);
 
-    tie %tnfb_db, 'GDBM_File', $fn, GDBM_WRCREAT, 0644
+    tie %tnfb_db, 'GDBM_File', $fn, GDBM_WRITER, 0644
         or die "$GDBM_File::gdbm_errno";
 
     ($first, $last) = split(/ /, $tnfb_db{'Player'}, 2);
