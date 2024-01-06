@@ -76,7 +76,7 @@ foreach $p (sort keys %hc) {
 sub
 gen_hc {
     my ($fn, $year, $allowance) = @_;
-    my (@scores, $y, $hi, $use, @n, $pn, $x, $num_scores);
+    my (@scores, $y, $hi, $use, @n, $pn, $x, $num_scores, $last_year);
 
     tie %tnfb_db, 'GDBM_File', $fn, GDBM_WRITER, 0644
         or die "$GDBM_File::gdbm_errno";
@@ -84,6 +84,8 @@ gen_hc {
     ($first, $last) = split(/ /, $tnfb_db{'Player'}, 2);
     $team = $tnfb_db{'Team'};
     $active = $tnfb_db{'Active'};
+
+    $last_year = 0;
 
     $pn = $last . ", " . $first;
 
@@ -101,6 +103,7 @@ gen_hc {
             if (exists($tnfb_db{$dates{$y}{$w}})) {
                 push (@scores, $tnfb_db{$dates{$y}{$w}});
                 $num_scores++;
+                if ($last_year < $y) { $last_year = $y };
             }
             last, if ($num_scores == 20);
         }
@@ -109,6 +112,7 @@ gen_hc {
 
     if ($num_scores < 20) {
         undef @scores;
+        $last_year = 0;
         $num_scores = 0;
         foreach $y (reverse (1997..$year)) {
             foreach $m (reverse (1..12)) {
@@ -117,12 +121,24 @@ gen_hc {
                     if (exists($tnfb_db{$newdate})) {
                         push (@scores, $tnfb_db{$newdate});
                         $num_scores++;
+                        if ($last_year < $y) { $last_year = $y };
                     }
                     last, if ($num_scores == 20);
                 }
                 last, if ($num_scores == 20);
             }
             last, if ($num_scores == 20);
+        }
+    }
+
+    #
+    # If a player hasn't posted a score in 7 years,
+    # invalid their handicap index.
+    #
+    if (($year - $last_year) > 7) {
+        if ($tnfb_db{'Current'} != -100) {
+            print "$pn: hi changing to -100\n";
+            $tnfb_db{'Current'} = -100;
         }
     }
 
