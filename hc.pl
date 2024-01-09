@@ -140,6 +140,9 @@ gen_hc {
             $tnfb_db{'Current'} = -100;
             untie $tnfb_db;
             return;
+        } else {
+            untie $tnfb_db;
+            return;
         }
     }
 
