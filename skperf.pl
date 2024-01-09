@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 #
-# Copyright (c) 2018, 2023, Scott O'Connor
+# Copyright (c) 2018, 2024, Scott O'Connor
 #
 
 require './tnfb_years.pl';
@@ -112,8 +112,7 @@ undef(%y);
 undef(%p);
 
 #
-# Open the league directory and only read the files that
-# have been processed via skcon.pl (ScoreKeeper convert).
+# Open the league directory and only read the Gnu database files.
 #
 opendir($dh, "./$league") || die "Can't open \"$league\" directory.";
 
@@ -1011,7 +1010,6 @@ get_player_scores {
     $pn = $tnfb_db{'Player'};
 
     $p{$pn}{team} = $tnfb_db{'Team'};
-    $p{$pn}{active} = $tnfb_db{'Active'};
     $p{$pn}{current} = $tnfb_db{'Current'};
 
     for ($cw = $start_week; $cw <= $end_week; $cw++) {
@@ -1031,7 +1029,8 @@ get_player_scores {
         # Only provide stats with hole-by-hole data.
         #
         if ($num < 17) {
-            next;
+            untie %tnfb_db;
+            die "Bogus score for $pn on $d\n";
         }
 
         ($course, $par, $slope, $date, $hi, $hc, $shot, $post) = @score_record[0..7];
