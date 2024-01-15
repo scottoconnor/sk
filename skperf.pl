@@ -7,7 +7,6 @@ require './tnfb_years.pl';
 require './courses.pl';
 require './subs.pl';
 require './hcroutines.pl';
-#require './tnfb.pl';
 
 use Time::HiRes qw(gettimeofday);
 use GDBM_File;

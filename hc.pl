@@ -5,6 +5,7 @@
 
 require './courses.pl';
 require './tnfb.pl';
+require './tnfb_years.pl';
 require './hcroutines.pl';
 
 use Getopt::Long;
