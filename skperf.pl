@@ -349,6 +349,7 @@ create_tnfb_db() {
     $tnfb_db{'Player'} = $new_pn;
     $tnfb_db{'Team'} = "Sub";
     $tnfb_db{'Active'} = 1;
+    $tnfb_db{'Slot'} = 0;
     $tnfb_db{'Current'} = -100;
     untie %tnfb_db;
 

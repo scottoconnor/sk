@@ -83,19 +83,17 @@ gen_hc {
         or die "$GDBM_File::gdbm_errno";
 
     ($first, $last) = split(/ /, $tnfb_db{'Player'}, 2);
-    $team = $tnfb_db{'Team'};
+    $pn = "$last, $first";
+    $hc{$pn}{team} = $tnfb_db{'Team'};
 
     $last_year = 0;
 
-    $pn = $last . ", " . $first;
 
     if ($pn eq "Kittredge, Red") {
         $debug = 1;
     } else {
         $debug = 0;
     }
-
-    $hc{$pn}{team} = $team;
 
     $num_scores = 0;
     foreach $y (reverse (1997..$year)) {
@@ -147,9 +145,7 @@ gen_hc {
         }
     }
 
-    $num = @scores;
-
-    if ($num > 20) {
+    if ($num_scores > 20) {
         untie $tnfb_db;
         die "$pn: Number of score is more than 20.\n";
     }
@@ -158,8 +154,8 @@ gen_hc {
     # If the player does not have the required number of scores,
     # a handicap can not be generted for them.
     #
-    if (($use = &nscores($num)) == 0) {
-        print "$pn: Only $num scores, can not generate handicap\n", if $debug;
+    if (($use = &nscores($num_scores)) == 0) {
+        print "$pn: Only $num_scores scores, can not generate handicap\n", if $debug;
         $tnfb_db{'Current'} = -100;
         untie $tnfb_db;
         return;
