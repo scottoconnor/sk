@@ -11,9 +11,10 @@ require './hcroutines.pl';
 use Getopt::Long;
 use GDBM_File;
 
-$debug = 0;
-$allowance = 0.9;
-$update_hi = 0;
+my ($debug) = 0;
+my ($allowance) = 0.9;
+my ($update_hi) = 0;
+my ($hc);
 
 GetOptions (
     "a=f" => \$allowance,
@@ -21,9 +22,9 @@ GetOptions (
     "u" => \$update_hi),
 or die("Error in command line arguments\n");
 
-$month = (localtime)[4];
+my ($month) = (localtime)[4];
 $month++;
-$day = (localtime)[3];
+my ($day) = (localtime)[3];
 $year = (1900 + (localtime)[5]);
 
 #
@@ -39,10 +40,6 @@ while (readdir $dh) {
 closedir ($dh);
 
 @golfer_list = sort @golfer_list;
-
-if (@golfer_list == 0) {
-    exit;
-}
 
 while ($fna = shift @golfer_list) {
     gen_hc("golfers/$fna", $year, $allowance);
@@ -82,12 +79,19 @@ gen_hc {
     tie %tnfb_db, 'GDBM_File', $fn, GDBM_WRITER, 0644
         or die "$GDBM_File::gdbm_errno";
 
+    #
+    # Only add a player to the handicap list if they are active.
+    #
+    if ($tnfb_db{'Active'} == 0) {
+        untie $tnfb_db;
+        return;
+    }
+
     ($first, $last) = split(/ /, $tnfb_db{'Player'}, 2);
     $pn = "$last, $first";
     $hc{$pn}{team} = $tnfb_db{'Team'};
 
     $last_year = 0;
-
 
     if ($pn eq "Kittredge, Red") {
         $debug = 1;
@@ -131,18 +135,12 @@ gen_hc {
 
     #
     # If a player hasn't posted a score in 7 years,
-    # invalid their handicap index.
+    # invalidate their handicap index.
     #
     if (($year - $last_year) > 7) {
-        if ($tnfb_db{'Current'} != -100) {
-            print "$pn: hi changing to -100\n";
-            $tnfb_db{'Current'} = -100;
-            untie $tnfb_db;
-            return;
-        } else {
-            untie $tnfb_db;
-            return;
-        }
+        $tnfb_db{'Current'} = -100;
+        untie $tnfb_db;
+        return;
     }
 
     if ($num_scores > 20) {
@@ -167,17 +165,9 @@ gen_hc {
         ($course, $course_rating, $slope, $date, $aa, $bb, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $ni) =
             split(/:/, $s);
 
-        if ($post == 100) {
-            print "Bogus posted score of -> $post, need to fix.\n";
-        }
-
-        print "$course, $course_rating, $slope, $date, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $ni\n", if $debug;
+        print "$course, $course_rating, $slope, $date, $shot, $post\n", if $debug;
 
         $n[$y] = ((113 / $slope) * ($post - $course_rating));
-
-        if ($shot > 75) {
-            $n[$y] /= 2;
-        }
 
         #
         # Round to the nearest tenth.
@@ -234,22 +224,15 @@ gen_hc {
     $nb = (($hi * ($c{NB}->{slope} / 113)) + $nbd);
     $nb = sprintf("%.0f", ($nb * $allowance));
 
-    #
-    # Only add a player to the handicap list if they are active.
-    #
-    if ($tnfb_db{'Active'}) {
-        $hc{$pn}{hi} = $hi;
-        $hc{$pn}{sfhc} = $sf;
-        $hc{$pn}{sbhc} = $sb;
-        $hc{$pn}{nfhc} = $nf;
-        $hc{$pn}{nbhc} = $nb;
-    }
+    $hc{$pn}{hi} = $hi;
+    $hc{$pn}{sfhc} = $sf;
+    $hc{$pn}{sbhc} = $sb;
+    $hc{$pn}{nfhc} = $nf;
+    $hc{$pn}{nbhc} = $nb;
 
     if ($update_hi == 1) {
         $tnfb_db{'Current'} = $hi;
     }
 
     untie $tnfb_db;
-
-    printf ("%-17s - %5.1fN  SF=%-3d SB=%-3d NF=%-3d NB=%-3d\n", $pn, $hi, $sf, $sb, $nf, $nb), if $debug;
 }
