@@ -83,7 +83,7 @@ gen_hc {
     # Only add a player to the handicap list if they are active.
     #
     if ($tnfb_db{'Active'} == 0) {
-        untie $tnfb_db;
+        untie %tnfb_db;
         return;
     }
 
@@ -139,12 +139,12 @@ gen_hc {
     #
     if (($year - $last_year) > 7) {
         $tnfb_db{'Current'} = -100;
-        untie $tnfb_db;
+        untie %tnfb_db;
         return;
     }
 
     if ($num_scores > 20) {
-        untie $tnfb_db;
+        untie %tnfb_db;
         die "$pn: Number of score is more than 20.\n";
     }
 
@@ -155,7 +155,7 @@ gen_hc {
     if (($use = &nscores($num_scores)) == 0) {
         print "$pn: Only $num_scores scores, can not generate handicap\n", if $debug;
         $tnfb_db{'Current'} = -100;
-        untie $tnfb_db;
+        untie %tnfb_db;
         return;
     }
 
@@ -194,7 +194,7 @@ gen_hc {
     }
 
     if ($hi == -100) {
-        untie $tnfb_db;
+        untie %tnfb_db;
         return;
     }
 
@@ -234,5 +234,5 @@ gen_hc {
         $tnfb_db{'Current'} = $hi;
     }
 
-    untie $tnfb_db;
+    untie %tnfb_db;
 }
