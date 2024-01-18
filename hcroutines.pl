@@ -3,6 +3,8 @@
 # Copyright (c) 2018, 2024 Scott O'Connor
 #
 
+require './tnfb_years.pl';
+
 use POSIX;
 use GDBM_File;
 
