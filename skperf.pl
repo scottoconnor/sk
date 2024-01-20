@@ -298,11 +298,11 @@ net_double_bogey {
         print "$pn: using handicap index of -> $hi\n"
     }
 
-    $ccd = ($c{$course}{course_rating} - $c{$course}{par});
-    $ccd = round($ccd, 10);
-    $ch = (($hi * ($c{$course}->{slope} / 113)) + $ccd);
-    $cch = sprintf("%.0f", ($ch * 1.0));
-    $ph = sprintf("%.0f", ($ch * 0.9));
+    $cd = ($c{$course}{course_rating} - $c{$course}{par});
+    $ch = (($hi * ($c{$course}->{slope} / 113)) + $cd);
+    $cch = round($ch, 1);
+    $ph = ($ch * 0.9);
+    $ph = round($ph, 1);
     $ph = abs($ph), if ($ph == 0.0);
 
     $hole = 1; $post = 0;
