@@ -109,19 +109,11 @@ gen_hi {
         }
     }
 
-    $num = @scores;
-
-    die, if ($num != $num_scores);
-
-    if ($num > 20) {
-        die "$tnfb_db{'Player'}: Number of score is more than 20.\n";
-    }
-
     #
     # If the player does not have the required number of scores,
     # a handicap can not be generted for them.
     #
-    if (($use = &nscores($num)) == 0) {
+    if (($use = &nscores($num_scores)) == 0) {
         print "$pn: Only $num scores, can not generate handicap\n", if $debug;
         return (-100);
     }
@@ -129,18 +121,9 @@ gen_hi {
     $y = 0;
     foreach my $s (@scores) {
 
-        ($course, $course_rating, $slope, $date, $aa, $bb, $shot, $post, $o, $t, $th, $f, $fv, $s, $sv, $e, $ni) =
-            split(/:/, $s);
+        @sr = split(/:/, $s);
 
-        if ($post == 100) {
-            print "Bogus posted score of -> $post, need to fix.\n";
-        }
-
-        $n[$y] = ((113 / $slope) * ($post - $course_rating));
-
-        if ($shot > 75) {
-            $n[$y] /= 2;
-        }
+        $n[$y] = ((113 / $sr[2]) * ($sr[7] - $sr[1]));
 
         #
         # Round to the nearest tenth.
