@@ -10,14 +10,11 @@ require './hcroutines.pl';
 use Getopt::Long;
 use GDBM_File;
 
-my ($debug) = 0;
 my ($allowance) = 0.9;
-my ($league, $dh, $fna);
-my (@golfer_list);
+my ($league, $dh);
 
 GetOptions (
-    "a=f" => \$allowance,
-    "d" => \$debug),
+    "a=f" => \$allowance),
 or die("Error in command line arguments\n");
 
 my ($month) = (localtime)[4];
@@ -32,39 +29,29 @@ opendir($dh, "./golfers") || die "Can't open \"golfers\" directory.";
 
 while (readdir $dh) {
     if ($_ =~ /(^1\d{3}$\.gdbm)/) {
-        push @golfer_list, $_;
+        tie %tnfb_db, 'GDBM_File', "golfers/$_", GDBM_READER, 0644
+            or die "$GDBM_File::gdbm_errno";
+
+        #
+        # Only add a player to the handicap list if they are active
+        # and have a valid handicap index.
+        #
+        if ($tnfb_db{'Active'} == 0 || $tnfb_db{'Current'} == -100) {
+            untie %tnfb_db;
+            next;
+        }
+
+        ($first, $last) = split(/ /, $tnfb_db{'Player'}, 2);
+        $pn = "$last, $first";
+
+        $league{$tnfb_db{'Team'}}{$pn}{hi} = $tnfb_db{'Current'};
+
+        untie %tnfb_db;
     }
 }
 closedir ($dh);
 
-@golfer_list = sort @golfer_list;
-
-#
-# Get each players handicap index.
-#
-while ($fna = shift @golfer_list) {
-
-    tie %tnfb_db, 'GDBM_File', "golfers/$fna", GDBM_WRITER, 0644
-        or die "$GDBM_File::gdbm_errno";
-
-    #
-    # Only add a player to the handicap list if they are active
-    # and have a valid handicap index.
-    #
-    if ($tnfb_db{'Active'} == 0 || $tnfb_db{'Current'} == -100) {
-        untie %tnfb_db;
-        next;
-    }
-
-    ($first, $last) = split(/ /, $tnfb_db{'Player'}, 2);
-    $pn = "$last, $first";
-
-    $league{$tnfb_db{'Team'}}{$pn}{hi} = $tnfb_db{'Current'};
-
-    untie %tnfb_db;
-}
-
-print "$month-$day-$year              (sf sb nf nb)\n";
+print "$month-$day-$year               (sf sb nf nb)\n";
 
 #
 # First, print out the league members.
@@ -82,7 +69,7 @@ foreach $team (sort keys(%league)) {
     print "\n";
 }
 
-print "\014\n";
+print "\014";
 
 #
 # Now print out the subs.
