@@ -182,7 +182,7 @@ if ($delete) {
 if ($add) {
 
     my ($db_out, $course_rating, $slope, $gdbm_file, @sr, $pn, $new_hi);
-    my ($date, $fn, @week, $month, $year, $day, $course, $line);
+    my ($date, $fn, @week, $month, $year, $day, $course, $line, $c, $fb);
 
     print "Enter week of play: ";
     chomp($w = <STDIN>);
@@ -208,7 +208,11 @@ if ($add) {
                 $month = abs($month);
                 $day = abs($day);
                 $date = "$year-$month-$day";
-                $course = get_course(@week[3]);
+                #
+                # Get the course and if it was front or back.
+                #
+                ($c, $fb) = $week[3] =~ /(S|N)\w+ (F|B)/;
+                $course = "$c$fb";
                 $course_rating = $c{$course}{course_rating};
                 $slope = $c{$course}{slope};
             } elsif ($line =~ /^(\d{1,2})/) {
@@ -250,24 +254,6 @@ if ($add) {
         }
         close(FD);
     }
-}
-
-sub
-get_course {
-        my ($nine_holes) = @_;
-
-        if ($nine_holes =~ /South Front/) {
-            return ('SF');
-        } elsif ($nine_holes =~ /South Back/) {
-            return ('SB');
-        } elsif ($nine_holes =~ /North Front/) {
-            return ('NF');
-        } elsif ($nine_holes =~ /North Back/) {
-            return ('NB');
-        } else {
-            # non-league or away course.
-            return ('NL');
-        }
 }
 
 #
