@@ -44,14 +44,25 @@ sub round {
     my ($a, $factor) = @_;
     my ($e, $r);
 
-    $r = ($a * $factor);
-    if ($r =~ /\d*\056(\d{1})/) {
-        $e = $1;
-    }
+    undef ($e);
 
-    if (!defined($e)) {
-        return ($a);
-    }
+    $r = ($a * $factor);
+
+    #
+    # After we multiply it by the factor, truncate everything after
+    # the first digit after the decimal point. Not needed.
+    #
+    ($r) = $r =~ /(\055*\d*\056\d{1})/;
+
+    #
+    # See if there is a digit after the decmial point.
+    #
+    ($e) = $r =~ /\d*\056(\d{1})/;
+
+    #
+    # No digit after the decimal point, return the number passed in.
+    #
+    return ($a), if (!defined($e)); 
 
     if ($r < 0) {
         if ($e <= 5) {

@@ -197,8 +197,8 @@ if ($add) {
 
             #
             # The first "if" gets the date, course information. Once we get this information
-            # the next 4 matches will be the scores for that time slot. This will happen
-            # 4 times per sheet, 8 times for both sheets.
+            # the next 4 matches (elsif) will be the scores for that time slot. This will
+            # happen 4 times per sheet, 8 times for both sheets.
             #
             chomp($line);
             if ($line =~ /(4|5)\072\d{2}/) {
