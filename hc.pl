@@ -28,7 +28,7 @@ my ($year) = (1900 + (localtime)[5]);
 opendir($dh, "./golfers") || die "Can't open \"golfers\" directory.";
 
 while (readdir $dh) {
-    if ($_ =~ /(^1\d{3}$\.gdbm)/) {
+    if ($_ =~ /(^1\d{3}\056gdbm)/) {
         tie %tnfb_db, 'GDBM_File', "golfers/$_", GDBM_READER, 0644
             or die "$GDBM_File::gdbm_errno";
 
@@ -68,8 +68,6 @@ foreach $team (sort keys(%league)) {
     }
     print "\n";
 }
-
-print "\014";
 
 #
 # Now print out the subs.
