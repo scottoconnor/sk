@@ -125,7 +125,6 @@ gen_hi {
     # a handicap can not be generted for them.
     #
     if (($use = &nscores($num_scores)) == 0) {
-        print "$pn: Only $num scores, can not generate handicap\n", if $debug;
         return (-100);
     }
 
