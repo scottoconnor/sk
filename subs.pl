@@ -1,12 +1,58 @@
 #
-# Copyright (c) 2022, 2023 Scott O'Connor
-#
-
+# Copyright (c) 2022, 2024 Scott O'Connor
 #
 # These are subs by year/week for the TNFB.
 #
 
 %subs = (
+    2019 => {
+        1 => { "Rick Wood" => "Tony Albertini",
+               "Steve Calvao" => "Jim O'Keefe",
+               "Todd Chapin" => "John Breslouf" },
+        2 => { "Todd Chapin" => "Kevin Cunningham",
+               "Alex Williams" => "Marc Foland",
+               "David Correia" => "Dan Correia",
+               "Joe Graceffa" => "Ray Curley",
+               "Rick Wood" => "Tony Albertini" },
+        3 => { "Rick Wood" => "Tony Albertini",
+               "Steve Calvao" => "Jim O'Keefe" },
+        4 => { "Joe Graceffa" => "Tom Curley",
+               "Rick Wood" => "Tony Albertini" },
+        5 => { "Alex Williams" => "Randy Carter",
+               "Steve Calvao" => "Tony Albertini" },
+        6 => { "Chris DiSilva" => "Charlie Bacon",
+               "Alex Williams" => "Mike Perisho",
+               "Steve Calvao" => "Tony Albertini" },
+        7 => { "Alex Williams" => "Marc Foland",
+               "Steve Calvao" => "Tony Albertini",
+               "Leo Palatino" => "Pat Donahue" },
+        8 => { "Paul Percuoco" => "Scott O'Connor",
+               "Steve Calvao" => "Tony Albertini",
+               "Alex Williams" => "Kevin Kittredge" },
+        9 => { "Steve Calvao" => "Tony Albertini",
+               "Alex Williams" => "Mike Gill",
+               "Carl Humphreys" => "Charlie Weeks" },
+        10 => { "Alex Williams" => "Jim O'Keefe",
+                "Leo Palatino" => "Pat Donahue",
+                "Steve Calvao" => "Tony Albertini" },
+        11 => { "Jeff LaPlante" => "Kevin Cunningham",
+                "Leo Palatino" => "Joe Sullivan",
+                "Steve Calvao" => "Tony Albertini" },
+        12 => { "Alex Williams" => "Tony Albertini",
+                "Leo Palatino" => "Dan Correia",
+                "Paul Percuoco" => "Paul Sirois",
+                "Todd Chapin" => "Bobby Kilgus" },
+        13 => { "Jeff LaPlante" => "Mike Perisho",
+                "Todd Chapin" => "Bobby Kilgus",
+                "Leo Palatino" => "Joe Sullivan",
+                "Steve Calvao" => "Tony Albertini",
+                "Alex Williams" => "Jeff Miller",
+                "Joe Graceffa" => "Tom Curley" },
+        14 => { "Steve Calvao" => "Tony Albertini",
+                "Alex Williams" => "Kevin Kittredge" },
+        15 => { "Leo Palatino" => "Pat Donahue",
+                "Alex Williams" => "Mike Gill" },
+    },
     2020 => {
         1 => { "Carl Humphreys" => "Charlie Weeks",
                "Derek Palatino" => "Paul Correia" },
