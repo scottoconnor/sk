@@ -910,7 +910,7 @@ printf("Total time = %.2f seconds - processed %d scores\n", $total_time, $totals
 sub
 show_most_improved {
 
-    my ($cy, $cw, $file, $mi, @golfer_list);
+    my ($cw, $file, $mi, @golfer_list);
 
     @golfer_list = @global_golfer_list;
     while ($file = shift @golfer_list) {
@@ -918,40 +918,69 @@ show_most_improved {
         tie %tnfb_db, 'GDBM_File', $file, GDBM_READER, 0640
             or die "$GDBM_File::gdbm_errno";
 
-        if ($tnfb_db{'Team'} eq "Sub") {
-            untie %tnfb_db;
-            next;
+        #
+        # If start year is the same as end year, include players
+        # that played that year. Should always find 32 players.
+        #
+        # If we are looking at multiple years,  only include
+        # players that are current TNFB members.
+        #
+        if ($start_year == $end_year) {
+            if ($tnfb_db{"Team_$start_year"} eq "Sub") {
+                untie %tnfb_db;
+                next;
+            }
+        } else {
+            if ($tnfb_db{'Team'} eq "Sub") {
+                untie %tnfb_db;
+                next;
+            }
         }
+
         $pn = $tnfb_db{'Player'};
 
-        $cy = $start_year;
+        #
+        # Get 'A' index from the first score posted in the start_year.
+        #
         for ($cw = $start_week; $cw <= $end_week; $cw++) {
-            $d = $dates{$cy}{$cw};
+            $d = $dates{$start_year}{$cw};
             if (!defined($p{$pn}{A}) && exists($tnfb_db{$d})) {
                 @score = split(/:/, $tnfb_db{$d});
                 if (@score[4] != NA) {
                     $p{$pn}{A} = (@score[4] + 6);
-                    print "$pn: A: $p{$pn}{A}, date -> $d\n", if 0;
+                    $p{$pn}{Adate} = $d;
                     last;
                 }
             }
         }
-        $cy = $end_year;
-        for ($cw = $end_week; $cw >= $start_week; $cw--) {
-            $d = $dates{$cy}{$cw};
-            if (exists($tnfb_db{$d}) && defined($p{$pn}{A})) {
+
+        #
+        # Now get 'B' index from (end_year + 1) first posted score.
+        #
+        for ($cw = 1; $cw <= $end_week; $cw++) {
+            $d = $dates{($end_year+1)}{$cw};
+            if (!defined($p{$pn}{B}) && exists($tnfb_db{$d})) {
                 @score = split(/:/, $tnfb_db{$d});
                 if (@score[4] != NA) {
                     $p{$pn}{B} = (@score[4] + 6);
-                    print "$pn: B: $p{$pn}{B}, date -> $d\n", if 0;;
-                    last;
+                    $p{$pn}{Bdate} = $d;
                 }
             }
         }
-        if (!defined($p{$pn}{B}) && defined($p{$pn}{A})) {
+
+        #
+        # If we haven't found 'B' yet, grab the current index.
+        #
+        if (!defined($p{$pn}{B})) {
             $p{$pn}{B} = ($tnfb_db{'Current'} + 6);
-            print "$pn: B: $p{$pn}{B}, date -> Current\n", if 0;
+            $p{$pn}{Bdate} = "Current";
         }
+
+        if (defined($p{$pn}{A}) && defined($p{$pn}{B})) {
+            print "$pn: A: $p{$pn}{Adate} $p{$pn}{A} ",
+                "B: $p{$pn}{Bdate} $p{$pn}{B}\n", if 0;
+        }
+
         untie %tnfb_db;
     }
 
@@ -959,13 +988,9 @@ show_most_improved {
         if (defined($p{$pn}{A}) && defined($p{$pn}{B})) {
             $mi{$pn}{mi} = ($p{$pn}{A} / $p{$pn}{B});
             $mi{$pn}{mi} = round($mi{$pn}{mi}, 1000);
-            $mi{$pn}{team} = $p{$pn}{team};
         }
     }
     foreach $pn (reverse sort { $mi{$a}{mi} <=> $mi{$b}{mi} } (keys(%mi))) {
-        if ($mi{$pn}{team} eq "Sub") {
-            next;
-        }
         printf("%-17s %.3f\n", $pn, $mi{$pn}{mi});
     }
 }
