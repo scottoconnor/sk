@@ -3,6 +3,7 @@
 # Copyright (c) 2018, 2024 Scott O'Connor
 #
 
+use strict;
 require './courses.pl';
 require './tnfb_years.pl';
 require './hcroutines.pl';
@@ -11,7 +12,9 @@ use Getopt::Long;
 use GDBM_File;
 
 my ($allowance) = 0.9;
-my ($league, $dh);
+my (%tnfb_db, %league, $dh);
+my ($sf, $sb, $nf, $nb);
+our (%c);
 
 GetOptions (
     "a=f" => \$allowance),
@@ -41,8 +44,8 @@ while (readdir $dh) {
             next;
         }
 
-        ($first, $last) = split(/ /, $tnfb_db{'Player'}, 2);
-        $pn = "$last, $first";
+        (my $first, my $last) = split(/ /, $tnfb_db{'Player'}, 2);
+        my $pn = "$last, $first";
 
         $league{$tnfb_db{'Team'}}{$pn}{hi} = $tnfb_db{'Current'};
 
@@ -56,15 +59,15 @@ print "$month-$day-$year               (sf sb nf nb)\n";
 #
 # First, print out the league members.
 #
-foreach $team (sort keys(%league)) {
+foreach my $team (sort keys(%league)) {
     if ($team eq "Sub") {
         next;
     }
     print "$team\n";
-    %tnfb = %{$league{$team}};
-    foreach my $key (sort keys %tnfb) {
-        ($sf, $sb, $nf, $nb) = gen_handicap($tnfb{$key}{hi});
-        printf("%-17s %4.1fN /%2d %2d %2d %2d\n", $key, $tnfb{$key}{hi}, $sf, $sb, $nf, $nb);
+    my %tnfb = %{$league{$team}};
+    foreach my $pn (sort keys %tnfb) {
+        ($sf, $sb, $nf, $nb) = gen_handicap($tnfb{$pn}{hi});
+        printf("%-17s %4.1fN /%2d %2d %2d %2d\n", $pn, $tnfb{$pn}{hi}, $sf, $sb, $nf, $nb);
     }
     print "\n";
 }
@@ -72,15 +75,15 @@ foreach $team (sort keys(%league)) {
 #
 # Now print out the subs.
 #
-foreach $team (sort keys(%league)) {
+foreach my $team (sort keys(%league)) {
     if ($team ne "Sub") {
         next;
     }
     print "$team\n";
-    %tnfb = %{$league{$team}};
-    foreach my $key (sort keys %tnfb) {
-        ($sf, $sb, $nf, $nb) = gen_handicap($tnfb{$key}{hi});
-        printf("%-17s %4.1fN /%2d %2d %2d %2d\n", $key, $tnfb{$key}{hi}, $sf, $sb, $nf, $nb);
+    my %tnfb = %{$league{$team}};
+    foreach my $pn (sort keys %tnfb) {
+        ($sf, $sb, $nf, $nb) = gen_handicap($tnfb{$pn}{hi});
+        printf("%-17s %4.1fN /%2d %2d %2d %2d\n", $pn, $tnfb{$pn}{hi}, $sf, $sb, $nf, $nb);
     }
 }
 
@@ -88,23 +91,23 @@ sub
 gen_handicap {
     my ($hi) = @_;
 
-    $sfd = ($c{SF}{course_rating} - $c{SF}{par});
-    $sf = (($hi * ($c{SF}->{slope} / 113)) + $sfd);
+    my $sfd = ($c{SF}{course_rating} - $c{SF}{par});
+    my $sf = (($hi * ($c{SF}->{slope} / 113)) + $sfd);
     $sf *= $allowance;
     $sf = round($sf, 1);
 
-    $sbd = ($c{SB}{course_rating} - $c{SB}{par});
-    $sb = (($hi * ($c{SB}->{slope} / 113)) + $sbd);
+    my $sbd = ($c{SB}{course_rating} - $c{SB}{par});
+    my $sb = (($hi * ($c{SB}->{slope} / 113)) + $sbd);
     $sb *= $allowance;
     $sb = round($sb, 1);
 
-    $nfd = ($c{NF}{course_rating} - $c{NF}{par});
-    $nf = (($hi * ($c{NF}->{slope} / 113)) + $nfd);
+    my $nfd = ($c{NF}{course_rating} - $c{NF}{par});
+    my $nf = (($hi * ($c{NF}->{slope} / 113)) + $nfd);
     $nf *= $allowance;
     $nf = round($nf, 1);
 
-    $nbd = ($c{NB}{course_rating} - $c{NB}{par});
-    $nb = (($hi * ($c{NB}->{slope} / 113)) + $nbd);
+    my $nbd = ($c{NB}{course_rating} - $c{NB}{par});
+    my $nb = (($hi * ($c{NB}->{slope} / 113)) + $nbd);
     $nb *= $allowance;
     $nb = round($nb, 1);
 
