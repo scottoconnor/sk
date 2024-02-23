@@ -3,6 +3,7 @@
 # Copyright (c) 2018, 2024, Scott O'Connor
 #
 
+use strict;
 require './tnfb_years.pl';
 require './courses.pl';
 require './subs.pl';
@@ -13,36 +14,51 @@ use GDBM_File;
 use Getopt::Long;
 
 #
-# Default to running stats on current year.
+# Global variables.
 #
-$all_time = 0;
-$birdies_per_hole = 0;
-$birdies_per_player = 0;
-$cur_month = (localtime)[4];
-$cur_day = (localtime)[3];
-$start_year = $end_year = (1900 + (localtime)[5]);
-$only_year = 0;
-$start_week = 1;
-$end_week = 15;
-$only_week = 0;
-$vhc = 0;
-$top_gun = 0;
-$stats = 0;
-$include_subs = 0;
-$player_stats = 0;
-$tables = 0;
-$output = 0;
-$html = 0;
-$others = 0;
-$hires = 0;
-$hardest = 0;
-$course_stats = 0;
-$most_improved = 0;
-$league = "golfers";
-$delete = 0;
-$add = 0;
-$perf = 1;
-$total_time = 0;
+my ($all_time) = 0;
+my ($birdies_per_hole) = 0;
+my ($birdies_per_player) = 0;
+my ($cur_month) = (localtime)[4];
+my ($cur_day) = (localtime)[3];
+my ($start_year) = (1900 + (localtime)[5]);
+my ($end_year) = $start_year;
+my ($only_year) = 0;
+my ($start_week) = 1;
+my ($end_week) = 15;
+my ($only_week) = 0;
+my ($vhc) = 0;
+my ($top_gun) = 0;
+my ($stats) = 0;
+my ($include_subs) = 0;
+my ($player_stats) = 0;
+my ($tables) = 0;
+my ($output) = 0;
+my ($html) = 0;
+my ($others) = 0;
+my ($hires) = 0;
+my ($hardest) = 0;
+my ($course_stats) = 0;
+my ($most_improved) = 0;
+my ($league) = "golfers";
+my ($delete) = 0;
+my ($add) = 0;
+my ($perf) = 1;
+my ($total_time) = 0;
+my (undef(%totals));
+my (undef(%y));
+my (undef(%p));
+my ($dh, %golfers_gdbm);
+my (%tnfb_db);
+my ($cy, $cw, $t0, $t1, $fna, $total_time);
+my (%bt, %et, %difficult, %bph, %bpp, %to);
+
+#
+# These are hash variable from included files. see 'require' above.
+#
+our (%c);
+our (%dates);
+our (%subs);
 
 if ($#ARGV < 0) {
     exit;
@@ -51,7 +67,7 @@ if ($#ARGV < 0) {
 #
 # If the league hasn't started this year, give stats from the previous year.
 #
-$year_day = ((localtime)[7] + 1);
+my ($year_day) = ((localtime)[7] + 1);
 if ($year_day < 116) {
     $start_year = $end_year = ((1900 + (localtime)[5]) - 1);
 }
@@ -107,9 +123,6 @@ if ($only_week) {
     $start_week = $end_week = $only_week;
 }
 
-undef(%y);
-undef(%p);
-
 #
 # Open the league directory and only read the Gnu database files.
 #
@@ -117,7 +130,6 @@ opendir($dh, "./$league") || die "Can't open \"$league\" directory.";
 
 while (readdir $dh) {
     if ($_ =~ /(^1\d{3}$\.gdbm)/) {
-        push @global_golfer_list, "$league/$_";
         tie %tnfb_db, 'GDBM_File', "$league/$_", GDBM_READER, 0644
             or die "$GDBM_File::gdbm_errno";
         $golfers_gdbm{$tnfb_db{'Player'}} = "$league/$_";
@@ -125,8 +137,6 @@ while (readdir $dh) {
     }
 }
 closedir ($dh);
-
-@global_golfer_list = sort @global_golfer_list;
 
 #
 # First get all the players scores/stats for the requested years/weeks.
@@ -137,10 +147,10 @@ closedir ($dh);
 # After we get that, the other routines can use that data to generate stats.
 #
 for ($cy = $start_year; $cy <= $end_year && $perf; $cy++) {
-    @golfer_list = @global_golfer_list;
     $t0 = gettimeofday(), if $hires;
-    while ($fna = shift @golfer_list) {
-        get_player_scores($fna, $cy);
+    foreach my $pn (sort keys %golfers_gdbm) {
+        my $file = $golfers_gdbm{$pn};
+        get_player_scores($file, $pn, $cy);
     }
     $t1 = gettimeofday(), if $hires;
     $total_time += ($t1 - $t0), if $hires;
@@ -161,8 +171,9 @@ if ($delete) {
     chomp(my $key = <STDIN>);
 
     $count = 0;
-    while ($fna = shift @global_golfer_list) {
-        tie %tnfb_db, 'GDBM_File', $fna, GDBM_WRITER, 0640
+    foreach my $pn (sort keys %golfers_gdbm) {
+        my $file = $golfers_gdbm{$pn};
+        tie %tnfb_db, 'GDBM_File', $file, GDBM_WRITER, 0640
             or die "$GDBM_File::gdbm_errno";
 
         if (defined($tnfb_db{$key})) {
@@ -182,10 +193,11 @@ if ($delete) {
 if ($add) {
 
     my ($db_out, $course_rating, $slope, $gdbm_file, @sr, $pn, $new_hi);
-    my ($date, $fn, @week, $month, $year, $day, $course, $line, $c, $fb);
+    my ($date, $fn, @week, $month, $day, $year, $course, $line, $c, $fb);
+    my ($hi, $ph, $post, $cph, $shot, @swings, $swing, $team);
 
     print "Enter week of play: ";
-    chomp($w = <STDIN>);
+    chomp(my $w = <STDIN>);
 
     my @files = ("../golf/week$w-1.csv", "../golf/week$w-2.csv");
 
@@ -205,8 +217,8 @@ if ($add) {
                 @week = split (/,/, $line);
                 $date = @week[0];
                 ($year, $month, $day) = split /-/, $date;
-                $month = abs($month);
-                $day = abs($day);
+                my $month = abs($month);
+                my $day = abs($day);
                 $date = "$year-$month-$day";
                 #
                 # Get the course and if it was front or back.
@@ -263,7 +275,7 @@ if ($add) {
 sub
 net_double_bogey {
     my ($pn, $file, $course, @s) = @_;
-    my ($v, $hole, $post, $hi);
+    my ($v, $hole, $post, $hi, $cd, $ch, $cch, $ph, $add_stroke);
 
     tie %tnfb_db, 'GDBM_File', $file, GDBM_READER, 0644
         or die "$GDBM_File::gdbm_errno";
@@ -302,7 +314,7 @@ net_double_bogey {
         # hole is one of the player's handicap hole, they are allowed
         # one or more strokes.
         #
-        $max_score = ($c{$course}{$hole}[0] + 2);
+        my $max_score = ($c{$course}{$hole}[0] + 2);
 
         $add_stroke = ($cch - $c{$course}{$hole}[1]);
         if ($add_stroke >= 0 && $add_stroke < 9) {
@@ -352,10 +364,10 @@ create_tnfb_db() {
 #
 if ($vhc) {
 
-    my ($d);
-    $num_years = values(%y);
+    my (%te, $tt);
+    my $num_years = values(%y);
 
-    foreach $pn (sort keys %p) {
+    foreach my $pn (sort keys %p) {
         if (($p{$pn}{total_strokes} == 0) || ($p{$pn}{total_rounds} == 0)) {
             next;
         }
@@ -363,9 +375,9 @@ if ($vhc) {
             next;
         }
 
-        foreach $yp (sort keys %y) {
-            foreach $w ($start_week..$end_week) {
-                $d = $dates{$yp}{$w};
+        foreach my $yp (sort keys %y) {
+            foreach my $w ($start_week..$end_week) {
+                my $d = $dates{$yp}{$w};
                 if ($p{$pn}{$d}{shot} && defined($p{$pn}{$d}{hc})) {
 
                     #
@@ -395,7 +407,7 @@ if ($vhc) {
         print "\n", if ($p{$pn}{total_rounds} > 0);
     }
 
-    foreach $pn (sort { $p{$a}{avediff} <=> $p{$b}{avediff} } (keys(%p))) {
+    foreach my $pn (sort { $p{$a}{avediff} <=> $p{$b}{avediff} } (keys(%p))) {
         if ($p{$pn}{total_rounds} == 0 ||
             (($p{$pn}{team} eq "Sub") && ($include_subs == 0))) {
                 next;
@@ -418,7 +430,7 @@ if ($vhc) {
 #
 # The years are printed in descending order.
 #
-foreach $yp (reverse sort keys %y) {
+foreach my $yp (reverse sort keys %y) {
     if ($stats) {
         print_stats($yp);
     }
@@ -429,15 +441,14 @@ foreach $yp (reverse sort keys %y) {
 
 if ($top_gun) {
 
-    my ($thirty);
-    $thirty = 0;
+    my (%thirty, %ty);
 
     #
     # First check to see if anyone shot in the 30's, if not just exit.
     #
-    foreach $pn (keys %p) {
-        foreach $yp (sort keys %y) {
-            foreach $w ($start_week..$end_week) {
+    foreach my $pn (keys %p) {
+        foreach my $yp (sort keys %y) {
+            foreach my $w ($start_week..$end_week) {
                 if ($p{$pn}{$yp}{$w} != 0 && $p{$pn}{$yp}{$w} < 40) {
                     $thirty{$yp}{$w}{$pn} = $p{$pn}{$yp}{$w};
                 }
@@ -461,10 +472,10 @@ if ($top_gun) {
     print "  <tr>\n    <th style=\"text-align:left\">Name</th>\n", if $html;
     print "    <th style=\"text-align:center\">Score</th>\n  </tr>\n", if $html;
 
-    foreach $yp (sort keys %y) {
-        foreach $w ($start_week..$end_week) {
+    foreach my $yp (sort keys %y) {
+        foreach my $w ($start_week..$end_week) {
             %ty = %{$thirty{$yp}{$w}};
-            $has_rounds = 0;
+            my $has_rounds = 0;
             foreach my $pn (sort { $ty{$a} <=> $ty{$b} } keys %ty) {
                 print "  <tr>\n", if $html;
                 printf("    <td>%s</td>\n", $pn), if $html;
@@ -480,6 +491,7 @@ if ($top_gun) {
 }
 
 if ($others) {
+    my ($par, $score);
 
     for ($par = 3; $par < 6; $par++) {
         print "On par $par\'s:\n";
@@ -505,6 +517,8 @@ if ($player_stats) {
 }
 
 if ($all_time) {
+    my ($key);
+
     print "<b>All Time Eagles Table:</b></br>\n", if $html;
     print "<head>\n<style>\n", if $html;
     print "table, th, td {\n    border: 1px solid black;\n    border-collapse: collapse;\n}\n", if $html;
@@ -674,8 +688,9 @@ print_stats {
 }
 
 if ($course_stats) {
-    @courses = ("SF", "SB", "NF", "NB");
-    while ($sc = shift @courses) {
+
+    my @courses = ("SF", "SB", "NF", "NB");
+    while (my $sc = shift @courses) {
         if ($c{$sc}{total_strokes} == 0) {
             next;
         }
@@ -693,6 +708,7 @@ sub
 print_tables {
 
     my($yp) = @_;
+    my(%birds, %eagles, $size);
 
     if ($bt{$yp}) {
         %birds = %{$bt{$yp}};
@@ -761,9 +777,9 @@ print_tables {
 sub
 print_player_stats {
 
-    foreach $x (sort keys %p) {
+    foreach my $pn (sort keys %p) {
 
-        $out_filename = "/tmp/$x";
+        my $out_filename = "/tmp/$pn", if ($output);
         if ($output) {
             open (PS, ">", $out_filename);
             select PS;
@@ -776,31 +792,31 @@ print_player_stats {
         #
         # Not all players play each year, so skip those that don't have posted scores.
         #
-        if ($p{$x}{total_strokes} == 0) {
+        if ($p{$pn}{total_strokes} == 0) {
             next;
         }
 
-        print "$x\n\n";
+        print "$pn\n\n";
 
         my $total_player_rounds = 0;
-        while ($sc = shift @courses) {
-            if ($p{$x}{$sc}{xplayed} == 0) {
+        while (my $sc = shift @courses) {
+            if ($p{$pn}{$sc}{xplayed} == 0) {
                 next;
             }
-            printf("Played %-11s: %d times.\n", $c{$sc}->{name}, $p{$x}{$sc}{xplayed});
-            $total_player_rounds += $p{$x}{$sc}{xplayed};
+            printf("Played %-11s: %d times.\n", $c{$sc}->{name}, $p{$pn}{$sc}{xplayed});
+            $total_player_rounds += $p{$pn}{$sc}{xplayed};
         }
-        print "\nTotal Strokes = $p{$x}{total_strokes}\n";
-        printf("Average Score = %.2f\n", ($p{$x}{total_strokes} / $total_player_rounds));
-        printf("Total Eagles = %d\n", $p{$x}{te});
-        printf("Total Birdies = %d\n", $p{$x}{tb});
+        print "\nTotal Strokes = $p{$pn}{total_strokes}\n";
+        printf("Average Score = %.2f\n", ($p{$pn}{total_strokes} / $total_player_rounds));
+        printf("Total Eagles = %d\n", $p{$pn}{te});
+        printf("Total Birdies = %d\n", $p{$pn}{tb});
 
         print "\n";
 
         @courses = ("SF", "SB", "NF", "NB");
-        while ($sc = shift @courses) {
+        while (my $sc = shift @courses) {
 
-            if ($p{$x}{$sc}{xplayed} == 0) {
+            if ($p{$pn}{$sc}{xplayed} == 0) {
                 next;
             }
 
@@ -811,19 +827,19 @@ print_player_stats {
                 $offset = 9;
             }
 
-            for ($h = 1; $h < 10; $h++) {
+            for (my $h = 1; $h < 10; $h++) {
 
-                printf("Hole %d (par %d): Total shots: %3d  ", ($h + $offset), $c{$sc}{$h}[0], $p{$x}{$sc}{$h}[0]{shots});
+                printf("Hole %d (par %d): Total shots: %3d  ", ($h + $offset), $c{$sc}{$h}[0], $p{$pn}{$sc}{$h}[0]{shots});
 
                 if ($c{$sc}{$h}[0] > 3) {
-                    printf("ave = %.2f\n  Eagles=%d, ", ($p{$x}{$sc}{$h}[0]{shots} / $p{$x}{$sc}{xplayed}),
-                        $p{$x}{$sc}{$h}[0]{e} ? $p{$x}{$sc}{$h}[0]{e} : 0);
+                    printf("ave = %.2f\n  Eagles=%d, ", ($p{$pn}{$sc}{$h}[0]{shots} / $p{$pn}{$sc}{xplayed}),
+                        $p{$pn}{$sc}{$h}[0]{e} ? $p{$pn}{$sc}{$h}[0]{e} : 0);
                 } elsif ($c{$sc}{$h}[0] == 3) {
-                    printf("ave = %.2f\n  Hole-in-Ones=%d, ", ($p{$x}{$sc}{$h}[0]{shots} / $p{$x}{$sc}{xplayed}),
-                        $p{$x}{$sc}{$h}[0]{e} ? $p{$x}{$sc}{$h}[0]{e} : 0);
+                    printf("ave = %.2f\n  Hole-in-Ones=%d, ", ($p{$pn}{$sc}{$h}[0]{shots} / $p{$pn}{$sc}{xplayed}),
+                        $p{$pn}{$sc}{$h}[0]{e} ? $p{$pn}{$sc}{$h}[0]{e} : 0);
                 }
-                printf("Birdies=%d, Pars=%d, Bogies=%d, Double Bogies=%d, Others=%d\n\n", $p{$x}{$sc}{$h}[0]{b},
-                    $p{$x}{$sc}{$h}[0]{p}, $p{$x}{$sc}{$h}[0]{bo}, $p{$x}{$sc}{$h}[0]{db}, $p{$x}{$sc}{$h}[0]{o});
+                printf("Birdies=%d, Pars=%d, Bogies=%d, Double Bogies=%d, Others=%d\n\n", $p{$pn}{$sc}{$h}[0]{b},
+                    $p{$pn}{$sc}{$h}[0]{p}, $p{$pn}{$sc}{$h}[0]{bo}, $p{$pn}{$sc}{$h}[0]{db}, $p{$pn}{$sc}{$h}[0]{o});
             }
             print "\n";
         }
@@ -832,6 +848,7 @@ print_player_stats {
 }
 
 if ($hardest) {
+    my ($course, $index, $ph, $hp, $offset);
 
     foreach $hp (keys %difficult) {
         $difficult{$hp}{ave} = ($difficult{$hp}{score} / $difficult{$hp}{xplayed});
@@ -879,8 +896,9 @@ if ($hardest) {
 }
 
 if ($birdies_per_hole) {
+    my ($course, $offset, $ph);
 
-    foreach $hp (reverse sort { $bph{$a}{b} <=> $bph{$b}{b} } (keys(%bph))) {
+    foreach my $hp (reverse sort { $bph{$a}{b} <=> $bph{$b}{b} } (keys(%bph))) {
 
         $offset = 0;
 
@@ -910,10 +928,10 @@ printf("Total time = %.2f seconds - processed %d scores\n", $total_time, $totals
 sub
 show_most_improved {
 
-    my ($cw, $file, $mi, @golfer_list);
+    my ($cw, $mi, $d, %p, @score, %mi);
 
-    @golfer_list = @global_golfer_list;
-    while ($file = shift @golfer_list) {
+    foreach my $pn (sort keys %golfers_gdbm) {
+        my $file = $golfers_gdbm{$pn};
 
         tie %tnfb_db, 'GDBM_File', $file, GDBM_READER, 0640
             or die "$GDBM_File::gdbm_errno";
@@ -937,7 +955,6 @@ show_most_improved {
             }
         }
 
-        $pn = $tnfb_db{'Player'};
 
         #
         # Get 'A' index from the first score posted in the start_year.
@@ -946,7 +963,7 @@ show_most_improved {
             $d = $dates{$start_year}{$cw};
             if (!defined($p{$pn}{A}) && exists($tnfb_db{$d})) {
                 @score = split(/:/, $tnfb_db{$d});
-                if (@score[4] != NA) {
+                if (@score[4] ne "NA") {
                     $p{$pn}{A} = (@score[4] + 6);
                     $p{$pn}{Adate} = $d;
                     last;
@@ -961,7 +978,7 @@ show_most_improved {
             $d = $dates{($end_year+1)}{$cw};
             if (!defined($p{$pn}{B}) && exists($tnfb_db{$d})) {
                 @score = split(/:/, $tnfb_db{$d});
-                if (@score[4] != NA) {
+                if (@score[4] ne "NA") {
                     $p{$pn}{B} = (@score[4] + 6);
                     $p{$pn}{Bdate} = $d;
                 }
@@ -984,25 +1001,25 @@ show_most_improved {
         untie %tnfb_db;
     }
 
-    foreach $pn (keys %p) {
+    foreach my $pn (keys %p) {
         if (defined($p{$pn}{A}) && defined($p{$pn}{B})) {
             $mi{$pn}{mi} = ($p{$pn}{A} / $p{$pn}{B});
             $mi{$pn}{mi} = round($mi{$pn}{mi}, 1000);
         }
     }
-    foreach $pn (reverse sort { $mi{$a}{mi} <=> $mi{$b}{mi} } (keys(%mi))) {
+    foreach my $pn (reverse sort { $mi{$a}{mi} <=> $mi{$b}{mi} } (keys(%mi))) {
         printf("%-17s %.3f\n", $pn, $mi{$pn}{mi});
     }
 }
 
 if ($birdies_per_player) {
-    foreach $cc (reverse sort keys %bpp) {
-        %holes = %{$bpp{$cc}};
-        foreach $hn (sort keys(%holes)) {
+    foreach my $cc (reverse sort keys %bpp) {
+        my %holes = %{$bpp{$cc}};
+        foreach my $hn (sort keys(%holes)) {
             print "$c{$cc}{name}: \#$hn\n";
             print "-----------\n";
-            %players = %{$bpp{$cc}{$hn}};
-            foreach $pn (reverse sort { $players{$a} <=> $players{$b} } (keys(%players))) {
+            my %players = %{$bpp{$cc}{$hn}};
+            foreach my $pn (reverse sort { $players{$a} <=> $players{$b} } (keys(%players))) {
                 print "$pn: $players{$pn}\n";
             }
             print "\n\n";
@@ -1013,20 +1030,17 @@ if ($birdies_per_player) {
 sub
 get_player_scores {
 
-    my($fn, $cy) = @_;
-    my($cw, $date, $h, $d, $hi, $hc);
+    my($fn, $pn, $cy) = @_;
+
+    my($cw, $date, $h, $hi, $hc, %tnfb_db);
+    my($course, $par, $slope, $date, $hi, $hc, $shot, $post, $md);
 
     tie %tnfb_db, 'GDBM_File', $fn, GDBM_READER, 0640
         or die "$GDBM_File::gdbm_errno";
 
-    $pn = $tnfb_db{'Player'};
-
-    $p{$pn}{team} = $tnfb_db{'Team'};
-    $p{$pn}{current} = $tnfb_db{'Current'};
-
     for ($cw = $start_week; $cw <= $end_week; $cw++) {
 
-        $d = $dates{$cy}{$cw};
+        my $d = $dates{$cy}{$cw};
 
         #
         # If no score on this week, push on.
@@ -1035,18 +1049,23 @@ get_player_scores {
             next;
         }
 
-        $num = @score_record = split(/:/, $tnfb_db{$d});
+        my @score_record = split(/:/, $tnfb_db{$d});
 
         #
         # Only provide stats with hole-by-hole data.
         #
-        if ($num < 17) {
+        if (scalar(@score_record) < 17) {
             untie %tnfb_db;
             die "Bogus score for $pn on $d\n";
         }
 
+        $p{$pn}{team} = $tnfb_db{'Team'}, if (!defined($p{$pn}{team}));
+
+        my $team_cy = "Team_$cy";
+        $p{$pn}{$cw}{team_week} = $tnfb_db{$team_cy}, if (!defined($p{$pn}{$team_cy}));
+
         ($course, $par, $slope, $date, $hi, $hc, $shot, $post) = @score_record[0..7];
-        @score = @score_record[8..16];
+        my @score = @score_record[8..16];
 
         if (defined($p{$pn}{$cy}{$cw})) {
             print "Possible double score: $pn: Week=$cw, Date=$d\n";
@@ -1076,9 +1095,9 @@ get_player_scores {
         }
 
         for ($h = 1; $h < 10; $h++) {
-            $hole = abs(shift @score);
+            my $hole = abs(shift @score);
 
-            $bh = $h;
+            my $bh = $h;
             if (($course eq 'SB') || ($course eq 'NB')) {
                 $bh += 9;
             }
