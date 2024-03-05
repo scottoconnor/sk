@@ -288,7 +288,7 @@ net_double_bogey {
     # If the player does not have enough scores for a stable index,
     # input here what they player played at that night.
     #
-    if ($hi == -100) { 
+    if ($hi == -100) {
         #
         # Enter the player's index determined before the round.
         #
@@ -371,9 +371,6 @@ if ($vhc) {
         if (($p{$pn}{total_strokes} == 0) || ($p{$pn}{total_rounds} == 0)) {
             next;
         }
-        if ($p{$pn}{team} eq "Sub" && ($include_subs == 0)) {
-            next;
-        }
 
         foreach my $yp (sort keys %y) {
             foreach my $w ($start_week..$end_week) {
@@ -388,14 +385,6 @@ if ($vhc) {
                         next;
                     }
 
-                    #
-                    # Check Sub. If this player is a sub, change their team to
-                    # the team they are subbing for.
-                    #
-                    if ($p{$pn}{team} eq "Sub") {
-                        die "$pn is not a valid sub?\n", if !defined($subs{$yp}{$w}{$pn});
-                        $p{$pn}{team} = $p{$subs{$yp}{$w}{$pn}}{team};
-                    }
                     $p{$pn}{diff} += $p{$pn}{$d}{diff};
                     printf("%-17s: year %-4d week %-2s shot %d, hc %2d, net %d, diff %d\n", $pn, $yp, $w,
                         $p{$pn}{$d}{shot}, $p{$pn}{$d}{hc}, $p{$pn}{$d}{net}, $p{$pn}{$d}{diff});
@@ -1059,10 +1048,36 @@ get_player_scores {
             die "Bogus score for $pn on $d\n";
         }
 
-        $p{$pn}{team} = $tnfb_db{'Team'}, if (!defined($p{$pn}{team}));
+        #
+        # Get the team the player played on this year.
+        #
+        $p{$pn}{team} = $tnfb_db{"Team_$cy"};
+        print "$pn was a $p{$pn}{team} in $cy week $cw\n", if 0;
 
-        my $team_cy = "Team_$cy";
-        $p{$pn}{$cw}{team_week} = $tnfb_db{$team_cy}, if (!defined($p{$pn}{$team_cy}));
+        #
+        # If the player is a subs, find who they were subbing for.
+        #
+        if ($p{$pn}{team} eq "Sub") {
+            if (!defined($subs{$cy}{$cw}{$pn})) {
+                untie %tnfb_db;
+                die "$pn is not a valid sub?\n";
+            }
+            my $league_fn = $golfers_gdbm{$subs{$cy}{$cw}{$pn}};
+
+            tie my %sub_db, 'GDBM_File', $league_fn, GDBM_READER, 0640
+                or die "$GDBM_File::gdbm_errno";
+
+            $p{$pn}{team} = $sub_db{"Team_$cy"};
+
+            untie %sub_db;
+            print "$pn Subbed for $subs{$cy}{$cw}{$pn} ($p{$pn}{team}) in $cy week $cw\n", if 0;
+        }
+
+        #
+        # Set the player's team for this date (year/week).
+        # Currently not used.
+        #
+        $p{$pn}{$d}{team} = $p{$pn}{team};
 
         ($course, $par, $slope, $date, $hi, $hc, $shot, $post) = @score_record[0..7];
         my @score = @score_record[8..16];
