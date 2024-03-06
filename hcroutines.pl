@@ -62,7 +62,7 @@ sub round {
     #
     # No digit after the decimal point, return the number passed in.
     #
-    return ($a), if (!defined($e)); 
+    return ($a), if (!defined($e));
 
     if ($r < 0) {
         if ($e <= 5) {
