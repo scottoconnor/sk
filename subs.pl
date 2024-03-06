@@ -37,6 +37,7 @@
                 "Steve Calvao" => "Tony Albertini" },
         11 => { "Jeff LaPlante" => "Kevin Cunningham",
                 "Leo Palatino" => "Joe Sullivan",
+                "Todd Chapin" => "Derek Jodoin",
                 "Steve Calvao" => "Tony Albertini" },
         12 => { "Alex Williams" => "Tony Albertini",
                 "Leo Palatino" => "Dan Correia",
