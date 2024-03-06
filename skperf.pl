@@ -1055,12 +1055,13 @@ get_player_scores {
         print "$pn was a $p{$pn}{team} in $cy week $cw\n", if 0;
 
         #
+        # If subs have not been defined for that year, skip.
         # If the player is a subs, find who they were subbing for.
         #
-        if ($p{$pn}{team} eq "Sub") {
+        if (defined($subs{$cy}) && $p{$pn}{team} eq "Sub") {
             if (!defined($subs{$cy}{$cw}{$pn})) {
                 untie %tnfb_db;
-                die "$pn is not a valid sub?\n";
+                die "$pn is not a valid sub? year $cy, week $cw\n";
             }
             my $league_fn = $golfers_gdbm{$subs{$cy}{$cw}{$pn}};
 
