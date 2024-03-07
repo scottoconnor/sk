@@ -22,7 +22,6 @@ my ($birdies_per_player) = 0;
 my ($cur_month) = (localtime)[4];
 my ($cur_day) = (localtime)[3];
 my ($start_year) = (1900 + (localtime)[5]);
-my ($end_year) = $start_year;
 my ($only_year) = 0;
 my ($start_week) = 1;
 my ($end_week) = 15;
@@ -30,7 +29,6 @@ my ($only_week) = 0;
 my ($vhc) = 0;
 my ($top_gun) = 0;
 my ($stats) = 0;
-my ($include_subs) = 0;
 my ($player_stats) = 0;
 my ($tables) = 0;
 my ($output) = 0;
@@ -65,12 +63,32 @@ if ($#ARGV < 0) {
 }
 
 #
-# If the league hasn't started this year, give stats from the previous year.
+# Open the league directory and only read the Gnu database files.
 #
-my ($year_day) = ((localtime)[7] + 1);
-if ($year_day < 116) {
-    $start_year = $end_year = ((1900 + (localtime)[5]) - 1);
+# Check to see if any player has their "Team_<$start_year>" set. If not,
+# then the current league year has not started yet - subtract 1
+# from $start_year;
+#
+opendir($dh, "./$league") || die "Can't open \"$league\" directory.";
+
+my $valid_year = 0;
+while (readdir $dh) {
+    if ($_ =~ /(^1\d{3}$\.gdbm)/) {
+        tie %tnfb_db, 'GDBM_File', "$league/$_", GDBM_READER, 0644
+            or die "$GDBM_File::gdbm_errno";
+        $golfers_gdbm{$tnfb_db{'Player'}} = "$league/$_";
+        if (exists($tnfb_db{"Team_$start_year"})) {
+            $valid_year = 1;
+        }
+        untie %tnfb_db;
+    }
 }
+closedir ($dh);
+
+if (!$valid_year) {
+    $start_year--;
+}
+my ($end_year) = $start_year;
 
 GetOptions (
     "sy=i" => \$start_year,
@@ -79,7 +97,6 @@ GetOptions (
     "sw=i" => \$start_week,
     "ew=i" => \$end_week,
     "w=i" => \$only_week,
-    "is" => \$include_subs,
     "vhc" => \$vhc,
     "at" => \$all_time,
     "c" => \$course_stats,
@@ -110,11 +127,6 @@ if ($all_time || ($start_year < 1997)) {
     $start_year = 1997;
 }
 
-if ($all_time || $stats || $tables || $top_gun || $vhc || $others || $hardest ||
-    $course_stats || $birdies_per_hole || $birdies_per_player) {
-        $include_subs = 1;
-}
-
 if ($only_year) {
     $start_year = $end_year = $only_year;
 }
@@ -122,21 +134,6 @@ if ($only_year) {
 if ($only_week) {
     $start_week = $end_week = $only_week;
 }
-
-#
-# Open the league directory and only read the Gnu database files.
-#
-opendir($dh, "./$league") || die "Can't open \"$league\" directory.";
-
-while (readdir $dh) {
-    if ($_ =~ /(^1\d{3}$\.gdbm)/) {
-        tie %tnfb_db, 'GDBM_File', "$league/$_", GDBM_READER, 0644
-            or die "$GDBM_File::gdbm_errno";
-        $golfers_gdbm{$tnfb_db{'Player'}} = "$league/$_";
-        untie %tnfb_db;
-    }
-}
-closedir ($dh);
 
 #
 # First get all the players scores/stats for the requested years/weeks.
@@ -397,8 +394,7 @@ if ($vhc) {
     }
 
     foreach my $pn (sort { $p{$a}{avediff} <=> $p{$b}{avediff} } (keys(%p))) {
-        if ($p{$pn}{total_rounds} == 0 ||
-            (($p{$pn}{team} eq "Sub") && ($include_subs == 0))) {
+        if ($p{$pn}{total_rounds} == 0) {
                 next;
         }
         printf("%-25s %-17s: Ave = %.2f \(total rounds %d\)\n", $p{$pn}{team},
