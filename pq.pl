@@ -5,10 +5,11 @@
 # This is a random generator for the week 16 (blind draw) point quota tournament.
 #
 
+use strict;
 use Crypt::Random::Seed;
 use Time::HiRes qw(gettimeofday);
 
-%golfers = (
+my %golfers = (
     1 =>  { name => "Dan Correia", taken => 0 , partner => 2 },
     2 =>  { name => "Paul Correia", taken => 0, partner => 1 },
     3 =>  { name => "Chet Czapkowski", taken => 0, partner =>  4 },
@@ -46,22 +47,23 @@ use Time::HiRes qw(gettimeofday);
 my $source = new Crypt::Random::Seed;
 die "No strong sources exist" unless defined $source;
 
-$lastx = 0;
-$filename = "week16";
+my ($lastx) = 0;
+my ($filename) = "week16";
+my (undef(%team));
 
 unlink $filename, if (-e $filename);
 
-$y = 1;
+my $y = 1;
 
 while ($y < 33) {
-    $which_num = (int(rand(4)));
-    @seed_values = $source->random_values(4); 
+    my $which_num = (int(rand(4)));
+    my @seed_values = $source->random_values(4); 
     print "@seed_values\n", if 0;
-    $seed = $seed_values[$which_num];
+    my $seed = $seed_values[$which_num];
     print STDOUT "seed -> $seed - which_num = $which_num\n", if 0;
     srand($seed);
 
-    $x = int(rand(32));
+    my $x = int(rand(32));
     $x += 1;
 
     next, if ($golfers{$x}{taken});
@@ -72,7 +74,7 @@ while ($y < 33) {
         # with their league partner. Start over.
         #
         if ($y == 32) {
-            foreach $p (sort keys %golfers) {
+            foreach my $p (sort keys %golfers) {
                 $golfers{$p}{taken} = 0;
             }
             $y = 1;
