@@ -361,17 +361,18 @@ create_tnfb_db() {
 #
 if ($vhc) {
 
-    my (%te, $tt);
+    my (%league, $pn, $w, $d);
     my $num_years = values(%y);
+    my $rounds = (($end_week - $start_week) + 1);
 
-    foreach my $pn (sort keys %p) {
-        if (($p{$pn}{total_strokes} == 0) || ($p{$pn}{total_rounds} == 0)) {
-            next;
-        }
+    foreach my $yp (sort keys %y) {
+        foreach $w ($start_week..$end_week) {
+            foreach $pn (sort keys %p) {
+                if (($p{$pn}{total_strokes} == 0) || ($p{$pn}{total_rounds} == 0)) {
+                    next;
+                }
 
-        foreach my $yp (sort keys %y) {
-            foreach my $w ($start_week..$end_week) {
-                my $d = $dates{$yp}{$w};
+                $d = $dates{$yp}{$w};
                 if ($p{$pn}{$d}{shot} && defined($p{$pn}{$d}{hc})) {
 
                     #
@@ -383,30 +384,46 @@ if ($vhc) {
                     }
 
                     $p{$pn}{diff} += $p{$pn}{$d}{diff};
-                    printf("%-17s: year %-4d week %-2s shot %d, hc %2d, net %d, diff %d\n", $pn, $yp, $w,
-                        $p{$pn}{$d}{shot}, $p{$pn}{$d}{hc}, $p{$pn}{$d}{net}, $p{$pn}{$d}{diff});
+                    $p{$pn}{rounds}++;
+                    $league{$p{$pn}{$d}{team}} += $p{$pn}{$d}{diff};
+                    printf("%-17s: (%-4d:%s) shot %d, hc %2d, net %d, diff %d (%s)\n", $pn, $yp, $w,
+                        $p{$pn}{$d}{shot}, $p{$pn}{$d}{hc}, $p{$pn}{$d}{net}, $p{$pn}{$d}{diff}, $p{$pn}{team});
                 }
             }
+            print "\n";
         }
-        $p{$pn}{avediff} = ($p{$pn}{diff} / $p{$pn}{total_rounds}), if ($p{$pn}{total_rounds} > 0);
-        $te{$p{$pn}{team}} += $p{$pn}{avediff};
-        print "\n", if ($p{$pn}{total_rounds} > 0);
     }
 
+    #
+    # Calculate each player's average differential.
+    #
+    foreach $pn (sort keys %p) {
+        if ($p{$pn}{rounds}) {
+            $p{$pn}{avediff} = ($p{$pn}{diff}/$p{$pn}{rounds});
+        }
+    }
+
+    #
+    # Print each player's average differential lowest to highest.
+    #
     foreach my $pn (sort { $p{$a}{avediff} <=> $p{$b}{avediff} } (keys(%p))) {
-        if ($p{$pn}{total_rounds} == 0) {
-                next;
+        if ($p{$pn}{$d}{shot}) {
+            if ($p{$pn}{team} ne "Sub") {
+                printf("%-25s: %.2f\n", $pn, $p{$pn}{avediff});
+                    #($p{$pn}{diff}/$p{$pn}{rounds}));
+            }
         }
-        printf("%-25s %-17s: Ave = %.2f \(total rounds %d\)\n", $p{$pn}{team},
-            $pn, $p{$pn}{avediff}, $p{$pn}{total_rounds});
-    }
-
+    } 
     print "\n";
-    foreach $tt (sort { $te{$a} <=> $te{$b} } (keys (%te))) {
-        if ($tt eq "Sub") {
+
+    #
+    # Print each team's average differential lowest to highest.
+    #
+    foreach my $team (sort { $league{$a} <=> $league{$b} } (keys(%league))) {
+        if ($team eq "Sub") {
             next;
         }
-        printf("%-25s: %.2f\n", $tt, ($te{$tt}/$num_years));
+        printf("%-25s: %.2f\n", $team, ($league{$team}/$rounds));
     }
 }
 
@@ -1048,7 +1065,7 @@ get_player_scores {
         # Get the team the player played on this year.
         #
         $p{$pn}{team} = $tnfb_db{"Team_$cy"};
-        print "$pn was a $p{$pn}{team} in $cy week $cw\n", if 0;
+        $p{$pn}{$d}{team} = $p{$pn}{team};
 
         #
         # If subs have not been defined for that year, skip.
@@ -1064,7 +1081,7 @@ get_player_scores {
             tie my %sub_db, 'GDBM_File', $league_fn, GDBM_READER, 0640
                 or die "$GDBM_File::gdbm_errno";
 
-            $p{$pn}{team} = $sub_db{"Team_$cy"};
+            $p{$pn}{$d}{team} = $sub_db{"Team_$cy"};
 
             untie %sub_db;
             print "$pn Subbed for $subs{$cy}{$cw}{$pn} ($p{$pn}{team}) in $cy week $cw\n", if 0;
@@ -1074,7 +1091,7 @@ get_player_scores {
         # Set the player's team for this date (year/week).
         # Currently not used.
         #
-        $p{$pn}{$d}{team} = $p{$pn}{team};
+        #$p{$pn}{$d}{team} = $p{$pn}{team};
 
         ($course, $par, $slope, $date, $hi, $hc, $shot, $post) = @score_record[0..7];
         my @score = @score_record[8..16];
