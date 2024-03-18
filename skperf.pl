@@ -364,6 +364,7 @@ if ($vhc) {
     my (%league, $pn, $w, $d);
     my $num_years = values(%y);
     my $rounds = (($end_week - $start_week) + 1);
+    $rounds *= $num_years;
 
     foreach my $yp (sort keys %y) {
         foreach $w ($start_week..$end_week) {
@@ -386,8 +387,13 @@ if ($vhc) {
                     $p{$pn}{diff} += $p{$pn}{$d}{diff};
                     $p{$pn}{rounds}++;
                     $league{$p{$pn}{$d}{team}} += $p{$pn}{$d}{diff};
-                    printf("%-17s: (%-4d:%s) shot %d, hc %2d, net %d, diff %d (%s)\n", $pn, $yp, $w,
-                        $p{$pn}{$d}{shot}, $p{$pn}{$d}{hc}, $p{$pn}{$d}{net}, $p{$pn}{$d}{diff}, $p{$pn}{team});
+                    if ($p{$pn}{team} eq "Sub") {
+                        printf("%-17s: (%-4d:%s) shot %d, hc %2d, net %d, diff %d (%s)\n", $pn, $yp, $w,
+                            $p{$pn}{$d}{shot}, $p{$pn}{$d}{hc}, $p{$pn}{$d}{net}, $p{$pn}{$d}{diff}, $p{$pn}{$d}{team});
+                    } else {
+                        printf("%-17s: (%-4d:%s) shot %d, hc %2d, net %d, diff %d\n", $pn, $yp, $w,
+                            $p{$pn}{$d}{shot}, $p{$pn}{$d}{hc}, $p{$pn}{$d}{net}, $p{$pn}{$d}{diff});
+                    }
                 }
             }
             print "\n";
@@ -407,11 +413,9 @@ if ($vhc) {
     # Print each player's average differential lowest to highest.
     #
     foreach my $pn (sort { $p{$a}{avediff} <=> $p{$b}{avediff} } (keys(%p))) {
-        if ($p{$pn}{$d}{shot}) {
-            if ($p{$pn}{team} ne "Sub") {
-                printf("%-25s: %.2f\n", $pn, $p{$pn}{avediff});
-                    #($p{$pn}{diff}/$p{$pn}{rounds}));
-            }
+        if ($p{$pn}{diff} && ($p{$pn}{team} ne "Sub")) {
+            printf("%-19s: Ave = %.2f (total rounds %d)\n", $pn,
+                $p{$pn}{avediff}, $p{$pn}{rounds});
         }
     } 
     print "\n";

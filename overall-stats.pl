@@ -70,18 +70,18 @@ print "\n\n";
 print "$year player net average scoring vs. par\n";
 print "---------------------------------------\n";
 @line = `./skperf.pl -vhc -y $year`;
-@nline = grep(/TNFB/, @line);
-@nline = grep(/Ave = /, @nline);
+@nline = grep(/Ave = /, @line);
 print @nline;
 
 print "\n\n";
 
 print "$year Player week by week stats\n";
 print "------------------------------\n";
-@nline = grep(!/Sub/, @line);
-@nline = grep(!/TNFB/, @nline);
+@line = `./skperf.pl -vhc -y $year`;
+@nline = grep(/net /, @line);
 print @nline;
 
+print "\n\n";
 
 print "$year Course Stats\n";
 print "-----------------\n";
@@ -132,7 +132,7 @@ print "(need at least 10 rounds to qualify)\n";
 print "---------------------------------------------------\n";
 for ($y = 2003; $y <= $year; $y++) {
     print "$y\n";
-    @line = `./skperf.pl -vhc -y $y | grep TNFB | grep "Ave = "`;
+    @line = `./skperf.pl -vhc -y $y grep "net = "`;
     $cnt = 0;
     while (($temp_line = shift @line) && ($cnt < 5)) {
         chomp($temp_line);
