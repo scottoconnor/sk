@@ -1081,6 +1081,7 @@ get_player_scores {
                 die "$pn is not a valid sub? year $cy, week $cw\n";
             }
             my $league_fn = $golfers_gdbm{$subs{$cy}{$cw}{$pn}};
+            print "$subs{$cy}{$cw}{$pn}, $league_fn\n", if 0;
 
             tie my %sub_db, 'GDBM_File', $league_fn, GDBM_READER, 0640
                 or die "$GDBM_File::gdbm_errno";
