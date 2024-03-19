@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2018, 2023 Scott O'Connor
+# Copyright (c) 2018, 2024 Scott O'Connor
 #
 # Par rating, slope and par for each course.
 #
@@ -10,7 +10,7 @@
     SF => {
         name => "South Front",
         #
-        # Par and handicap hole or each hole.
+        # Par and handicap hole for each hole.
         #
         1 => [ 4, 7 ],
         2 => [ 4, 1 ],
@@ -29,7 +29,7 @@
     SB => {
         name => "South Back",
         #
-        # Par and handicap hole or each hole.
+        # Par and handicap hole for each hole.
         #
         1 => [ 5, 2 ],
         2 => [ 3, 9 ],
@@ -48,7 +48,7 @@
     NF => {
         name => "North Front",
         #
-        # Par and handicap hole or each hole.
+        # Par and handicap hole for each hole.
         #
         1 => [ 5, 3 ],
         2 => [ 4, 6 ],
@@ -67,7 +67,7 @@
     NB => {
         name => "North Back",
         #
-        # Par and handicap hole or each hole.
+        # Par and handicap hole for each hole.
         #
         1 => [ 4, 2 ],
         2 => [ 4, 3 ],
@@ -81,10 +81,5 @@
         #
         # USGA
         course_rating => 35.1, slope => 130, par => 36,
-    },
-    # To Be Determined
-    TBD => {
-        name => "TBD",
-        course_rating => 36, slope => 113, par => 36,
     },
 );
