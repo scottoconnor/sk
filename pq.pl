@@ -17,7 +17,7 @@ my %golfers = (
     5 =>  { name => "Scott O'Connor", taken => 0, partner => 6 },
     6 =>  { name => "Paul Percuoco", taken => 0, partner => 5 },
     7 =>  { name => "Pat Donahue", taken => 0, partner => 8 },
-    8 =>  { name => "Joe Sullivan", taken => 0, partner => 7 },
+    8 =>  { name => "Bob Donahue", taken => 0, partner => 7 },
     9 =>  { name => "Mike Rogers", taken => 0, partner => 10 },
     10 => { name => "John Maley", taken => 0, partner =>  9 },
     11 => { name => "Tom Curley", taken => 0, partner =>  12 },
