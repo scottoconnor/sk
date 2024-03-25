@@ -480,6 +480,12 @@ if ($top_gun) {
 
     foreach my $yp (sort keys %y) {
         foreach my $w ($start_week..$end_week) {
+            #
+            # if there are no top guns this week, go to the next week.
+            #
+            if (keys %{$thirty{$yp}{$w}} == 0) {
+                next;
+            }
             %ty = %{$thirty{$yp}{$w}};
             my $has_rounds = 0;
             foreach my $pn (sort { $ty{$a} <=> $ty{$b} } keys %ty) {
