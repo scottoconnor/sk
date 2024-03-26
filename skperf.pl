@@ -22,6 +22,8 @@ my ($birdies_per_player) = 0;
 my ($cur_month) = (localtime)[4];
 my ($cur_day) = (localtime)[3];
 my ($start_year) = (1900 + (localtime)[5]);
+my ($end_year) = $start_year;
+my ($cur_year) = $start_year;
 my ($only_year) = 0;
 my ($start_week) = 1;
 my ($end_week) = 15;
@@ -38,7 +40,7 @@ my ($hires) = 0;
 my ($hardest) = 0;
 my ($course_stats) = 0;
 my ($most_improved) = 0;
-my ($league) = "golfers";
+my ($league) = "./golfers";
 my ($delete) = 0;
 my ($add) = 0;
 my ($perf) = 1;
@@ -62,33 +64,6 @@ if ($#ARGV < 0) {
     exit;
 }
 
-#
-# Open the league directory and only read the Gnu database files.
-#
-# Check to see if any player has their "Team_<$start_year>" set. If not,
-# then the current league year has not started yet - subtract 1
-# from $start_year;
-#
-opendir($dh, "./$league") || die "Can't open \"$league\" directory.";
-
-my $valid_year = 0;
-while (readdir $dh) {
-    if ($_ =~ /(^1\d{3}$\.gdbm)/) {
-        tie %tnfb_db, 'GDBM_File', "$league/$_", GDBM_READER, 0644
-            or die "$GDBM_File::gdbm_errno";
-        $golfers_gdbm{$tnfb_db{'Player'}} = "$league/$_";
-        if (exists($tnfb_db{"Team_$start_year"})) {
-            $valid_year = 1;
-        }
-        untie %tnfb_db;
-    }
-}
-closedir ($dh);
-
-if (!$valid_year) {
-    $start_year--;
-}
-my ($end_year) = $start_year;
 
 GetOptions (
     "sy=i" => \$start_year,
@@ -117,6 +92,37 @@ GetOptions (
 or die("Error in command line arguments\n");
 
 #
+# Open the league directory and only read the Gnu database files.
+#
+# Check to see if any player has their "Team_<$cur_year>" set. If not,
+# then the current league year has not started yet - subtract 1
+# from $start_year and $end_year as needed below.
+#
+opendir($dh, "$league") || die "Can't open \"$league\" directory.";
+
+my $valid_year = 0;
+while (readdir $dh) {
+    if ($_ =~ /(^1\d{3}$\.gdbm)/) {
+        tie %tnfb_db, 'GDBM_File', "$league/$_", GDBM_READER, 0644
+            or die "$GDBM_File::gdbm_errno";
+        $golfers_gdbm{$tnfb_db{'Player'}} = "$league/$_";
+        if (exists($tnfb_db{"Team_$cur_year"})) {
+            $valid_year = 1;
+        }
+        untie %tnfb_db;
+    }
+}
+closedir ($dh);
+
+if ($start_year >= $cur_year && !$valid_year) {
+    $start_year = ($cur_year - 1);
+}
+
+if ($end_year >= $cur_year && !$valid_year) {
+    $end_year = ($cur_year - 1);
+}
+
+#
 # If we are adding or deleting scores, we don't need to get data for stats.
 #
 if ($add || $delete) {
@@ -125,6 +131,10 @@ if ($add || $delete) {
 
 if ($all_time || ($start_year < 1997)) {
     $start_year = 1997;
+}
+
+if ($only_year > $start_year) {
+    die "only year of \"$only_year\" is beyond last year of play.\n";
 }
 
 if ($only_year) {
