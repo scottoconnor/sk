@@ -229,7 +229,7 @@
     2017 => {
         3 => { "Dave Sherman" => "Charlie Bacon" },
         4 => { "Rick Wood" => "Paul Sirois",
-               "Steve Calvao" => "Randy Carter" },
+               "Steve Calvao" => "Jim O'Keefe" },
         6 => { "Leo Palatino" => "Dan Correia",
                "Cliff Calvao" => "Jim Marotta" },
         7 => { "Leo Palatino" => "Pat Donahue",
