@@ -18,6 +18,8 @@ sub
 nscores {
     my ($x) = @_;
 
+    if ($x < 10) { return 0; }
+
     #if ($x < 3) { return 0; }
     #if ($x >= 3 && $x <= 5) { return 1; }
     #if ($x == 6) { return 2; }
