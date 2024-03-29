@@ -371,13 +371,14 @@ create_tnfb_db() {
 #
 if ($vhc) {
 
-    my (%league, $pn, $w, $d);
+    my (%league, $pn, $w, $d, $num_players, %na);
     my $num_years = values(%y);
     my $rounds = (($end_week - $start_week) + 1);
     $rounds *= $num_years;
 
     foreach my $yp (sort keys %y) {
         foreach $w ($start_week..$end_week) {
+            $num_players = 0;
             foreach $pn (sort keys %p) {
                 if (($p{$pn}{total_strokes} == 0) || ($p{$pn}{total_rounds} == 0)) {
                     next;
@@ -391,6 +392,7 @@ if ($vhc) {
                     # handicap index or handicap.
                     #
                     if ($p{$pn}{$d}{hc} eq "NA") {
+                        $na{$pn} = $d;
                         next;
                     }
 
@@ -405,6 +407,10 @@ if ($vhc) {
                             $p{$pn}{$d}{shot}, $p{$pn}{$d}{hc}, $p{$pn}{$d}{net}, $p{$pn}{$d}{diff});
                     }
                 }
+                $num_players++;
+            }
+            if ($num_players != 32) {
+                print "Missing player(s): $num_players\n";
             }
             print "\n";
         }
@@ -438,6 +444,13 @@ if ($vhc) {
             next;
         }
         printf("%-25s: %.2f\n", $team, ($league{$team}/$rounds));
+    }
+
+    #
+    # If a player has NA for handicap index or handicap, print here.
+    #
+    foreach my $player (sort keys %na) {
+        print "\nNA for \"$player\": $na{$player}\n";
     }
 }
 
