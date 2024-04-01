@@ -429,7 +429,7 @@ if ($vhc) {
     # Print each player's average differential lowest to highest.
     #
     foreach my $pn (sort { $p{$a}{avediff} <=> $p{$b}{avediff} } (keys(%p))) {
-        if ($p{$pn}{diff} && ($p{$pn}{team} ne "Sub")) {
+        if ($p{$pn}{rounds} && ($p{$pn}{team} ne "Sub")) {
             printf("%-19s: Ave = %.2f (total rounds %d)\n", $pn,
                 $p{$pn}{avediff}, $p{$pn}{rounds});
         }
