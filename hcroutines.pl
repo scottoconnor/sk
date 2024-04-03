@@ -85,15 +85,18 @@ sub round {
 
 sub
 gen_hi {
-    my ($year);
-    my (@scores, $y, $hi, $use, @n, $num_scores, $d);
+    my (@scores, $y, $use, @n);
 
-    $year = (1900 + (localtime)[5]);
+    #
+    # Only look back 10 years of scores.
+    #
+    my $year = (1900 + (localtime)[5]);
+    my $start_year = ($year - 10);
 
-    $num_scores = 0;
-    foreach $y (reverse (1997..$year)) {
+    my $num_scores = 0;
+    foreach $y (reverse ($start_year..$year)) {
         foreach $w (reverse (1..15)) {
-            $d = $dates{$y}{$w};
+            my $d = $dates{$y}{$w};
             if (exists($tnfb_db{$d})) {
                 push (@scores, $tnfb_db{$d});
                 $num_scores++;
@@ -101,25 +104,6 @@ gen_hi {
             last, if ($num_scores == 20);
         }
         last, if ($num_scores == 20);
-    }
-
-    if ($num_scores < 20) {
-        undef @scores;
-        $num_scores = 0;
-        foreach $y (reverse (1997..$year)) {
-            foreach $m (reverse (1..12)) {
-                foreach $d (reverse (1..31)) {
-                    my $d = "$y-$m-$d";
-                    if (exists($tnfb_db{$d})) {
-                        push (@scores, $tnfb_db{$d});
-                        $num_scores++;
-                    }
-                    last, if ($num_scores == 20);
-                }
-                last, if ($num_scores == 20);
-            }
-            last, if ($num_scores == 20);
-        }
     }
 
     #
@@ -130,27 +114,23 @@ gen_hi {
         return (-100);
     }
 
-    $y = 0;
     foreach my $s (@scores) {
-
         @sr = split(/:/, $s);
 
-        $n[$y] = ((113 / $sr[2]) * ($sr[7] - $sr[1]));
-
         #
-        # Round to the nearest tenth.
+        # Score Differential rounded to nearest tenth.
         #
-        $n[$y] = round($n[$y], 10);
+        my $sd = round(((113 / $sr[2]) * ($sr[7] - $sr[1])),  10);
 
-        $y++;
+        push (@n, $sd);
     }
 
     @n = sort {$a <=> $b} @n;
 
-    $hi = 0;
+    my $hi = 0;
 
     for ($y = 0; $y < $use; $y++) {
-        $hi += $n[$y];
+        $hi += shift (@n);
     }
 
     $hi /= $use;
