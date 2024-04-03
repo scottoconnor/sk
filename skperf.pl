@@ -371,7 +371,7 @@ create_tnfb_db() {
 #
 if ($vhc) {
 
-    my (%league, $pn, $w, $d, $num_players, %na);
+    my (%league, $pn, $w, $d, $num_players, %na, $num_subs);
     my $num_years = values(%y);
     my $rounds = (($end_week - $start_week) + 1);
     $rounds *= $num_years;
@@ -379,6 +379,7 @@ if ($vhc) {
     foreach my $yp (sort keys %y) {
         foreach $w ($start_week..$end_week) {
             $num_players = 0;
+            $num_subs = 0;
             foreach $pn (sort keys %p) {
                 if (($p{$pn}{total_strokes} == 0) || ($p{$pn}{total_rounds} == 0)) {
                     next;
@@ -402,15 +403,17 @@ if ($vhc) {
                     if ($p{$pn}{team} eq "Sub") {
                         printf("%-17s: (%-4d:%s) shot %d, hc %2d, net %d, diff %d (%s)\n", $pn, $yp, $w,
                             $p{$pn}{$d}{shot}, $p{$pn}{$d}{hc}, $p{$pn}{$d}{net}, $p{$pn}{$d}{diff}, $p{$pn}{$d}{team});
+                        $num_subs++;
                     } else {
                         printf("%-17s: (%-4d:%s) shot %d, hc %2d, net %d, diff %d\n", $pn, $yp, $w,
                             $p{$pn}{$d}{shot}, $p{$pn}{$d}{hc}, $p{$pn}{$d}{net}, $p{$pn}{$d}{diff});
+                        $num_players++;
                     }
                 }
-                $num_players++;
             }
-            if ($num_players != 32) {
-                print "Missing player(s): $num_players\n";
+            if (($num_players + $num_subs) != 32) {
+                printf("Missing player(s): players: %d, subs: %d, total: %d\n",
+                    $num_players, $num_subs, ($num_players + $num_subs));
             }
             print "\n";
         }
