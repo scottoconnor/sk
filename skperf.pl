@@ -1118,6 +1118,15 @@ get_player_scores {
             tie my %sub_db, 'GDBM_File', $league_fn, GDBM_READER, 0640
                 or die "$GDBM_File::gdbm_errno";
 
+            #
+            # If this player has a sub and they have a score, something is wrong.
+            #
+            if (exists($sub_db{$d})) {
+                print "$sub_db{'Player'} has a score on $d, week ($cw)\n";
+                untie %sub_db;
+                untie %tnfb_db;
+                die "Stopping...\n";
+            }
             $p{$pn}{$d}{team} = $sub_db{"Team_$cy"};
 
             untie %sub_db;
