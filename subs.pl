@@ -112,7 +112,7 @@
         14 => { "Buddy Cuozzo" => "Paul LeBlanc",
                 "Dave Maruska" => "Mark McAleese",
                 "Steve Calvao" => "Vic Billings",
-                "Alex W" => "Tom Curley",
+                "Alex Wz" => "Tom Curley",
                 "Dan Correia" => "Dave O'Donnell" },
         15 => { "Dan Correia" => "Tom Rothfuss",
                 "Steve Calvao" => "Vic Billings",
