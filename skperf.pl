@@ -381,6 +381,12 @@ if ($vhc) {
             $num_players = 0;
             $num_subs = 0;
             foreach $pn (sort keys %p) {
+                my $fn = $golfers_gdbm{$pn};
+                tie my %tnfb_db, 'GDBM_File', $fn, GDBM_READER, 0640
+                    or die "$GDBM_File::gdbm_errno";
+                $p{$pn}{team} = $tnfb_db{"Team_$yp"};
+                untie %tnfb_db;
+
                 if (($p{$pn}{total_strokes} == 0) || ($p{$pn}{total_rounds} == 0)) {
                     next;
                 }
@@ -1130,14 +1136,8 @@ get_player_scores {
             $p{$pn}{$d}{team} = $sub_db{"Team_$cy"};
 
             untie %sub_db;
-            print "$pn Subbed for $subs{$cy}{$cw}{$pn} ($p{$pn}{team}) in $cy week $cw\n", if 0;
+            print "$pn Subbed for $subs{$cy}{$cw}{$pn} ($p{$pn}{$d}{team}) in $cy week $cw\n", if 0;
         }
-
-        #
-        # Set the player's team for this date (year/week).
-        # Currently not used.
-        #
-        #$p{$pn}{$d}{team} = $p{$pn}{team};
 
         ($course, $par, $slope, $date, $hi, $hc, $shot, $post) = @score_record[0..7];
         my @score = @score_record[8..16];
