@@ -371,10 +371,19 @@ create_tnfb_db() {
 #
 if ($vhc) {
 
-    my (%league, $pn, $w, $d, $num_players, %na, $num_subs);
-    my $num_years = values(%y);
-    my $rounds = (($end_week - $start_week) + 1);
-    $rounds *= $num_years;
+    my (%league, $pn, $w, $d, $num_players, %na, $num_subs, $min_scores);
+    my $num_years = keys(%y);
+    my $college_rounds = (($end_week - $start_week) + 1);
+    $college_rounds *= $num_years;
+
+    #
+    # If we are calculating more than one year, only include subs
+    # that have played more than 15 times.
+    #
+    $min_scores = 1;
+    if ($num_years > 1) {
+        $min_scores = 15;
+    }
 
     foreach my $yp (sort keys %y) {
         foreach $w ($start_week..$end_week) {
@@ -384,7 +393,11 @@ if ($vhc) {
                 my $fn = $golfers_gdbm{$pn};
                 tie my %tnfb_db, 'GDBM_File', $fn, GDBM_READER, 0640
                     or die "$GDBM_File::gdbm_errno";
-                $p{$pn}{team} = $tnfb_db{"Team_$yp"};
+                if (exists($tnfb_db{"Team_$yp"})) {
+                    $p{$pn}{team} = $tnfb_db{"Team_$yp"};
+                } else {
+                    $p{$pn}{team} = $tnfb_db{"Team"};
+                }
                 untie %tnfb_db;
 
                 if (($p{$pn}{total_strokes} == 0) || ($p{$pn}{total_rounds} == 0)) {
@@ -405,7 +418,7 @@ if ($vhc) {
 
                     $p{$pn}{diff} += $p{$pn}{$d}{diff};
                     $p{$pn}{rounds}++;
-                    $league{$p{$pn}{$d}{team}} += $p{$pn}{$d}{diff};
+                    $league{$p{$pn}{$d}{team}}{diff} += $p{$pn}{$d}{diff};
                     if ($p{$pn}{team} eq "Sub") {
                         printf("%-17s: (%-4d:%s) shot %d, hc %2d, net %d, diff %d (%s)\n", $pn, $yp, $w,
                             $p{$pn}{$d}{shot}, $p{$pn}{$d}{hc}, $p{$pn}{$d}{net}, $p{$pn}{$d}{diff}, $p{$pn}{$d}{team});
@@ -426,11 +439,32 @@ if ($vhc) {
     }
 
     #
-    # Calculate each player's average differential.
+    # Calculate each player and team's average differential.
     #
-    foreach $pn (sort keys %p) {
+    foreach $pn (keys %p) {
         if ($p{$pn}{rounds}) {
             $p{$pn}{avediff} = ($p{$pn}{diff}/$p{$pn}{rounds});
+        }
+    }
+
+    #
+    # For years 2003 and 2004, we had different team names, so
+    # need to adjust number of years played.
+    #
+    my $nhl_rounds = 0;
+    if (exists($y{"2003"})) {
+        $nhl_rounds = (($end_week - $start_week) + 1);
+    }
+    if (exists($y{"2004"})) {
+        $nhl_rounds += (($end_week - $start_week) + 1);
+    }
+    $college_rounds -= $nhl_rounds;
+
+    foreach my $team (keys %league) {
+        if ($team =~ /TNFB/) {
+            $league{$team}{avediff} = ($league{$team}{diff} / $college_rounds);
+        } else {
+            $league{$team}{avediff} = ($league{$team}{diff} / $nhl_rounds);
         }
     }
 
@@ -438,7 +472,7 @@ if ($vhc) {
     # Print each player's average differential lowest to highest.
     #
     foreach my $pn (sort { $p{$a}{avediff} <=> $p{$b}{avediff} } (keys(%p))) {
-        if ($p{$pn}{rounds} && ($p{$pn}{team} ne "Sub")) {
+        if ($p{$pn}{rounds} >= $min_scores || $p{$pn}{team} ne "Sub") {
             printf("%-19s: Ave = %.2f (total rounds %d)\n", $pn,
                 $p{$pn}{avediff}, $p{$pn}{rounds});
         }
@@ -448,11 +482,19 @@ if ($vhc) {
     #
     # Print each team's average differential lowest to highest.
     #
-    foreach my $team (sort { $league{$a} <=> $league{$b} } (keys(%league))) {
-        if ($team eq "Sub") {
+    foreach my $team (sort { $league{$a}{avediff} <=> $league{$b}{avediff} } (keys(%league))) {
+        if ($team =~ /TNFB/) {
             next;
         }
-        printf("%-25s: %.2f\n", $team, ($league{$team}/$rounds));
+        printf("%-25s: %.2f\n", $team, $league{$team}{avediff});
+    }
+    print "\n";
+
+    foreach my $team (sort { $league{$a}{avediff} <=> $league{$b}{avediff} } (keys(%league))) {
+        if ($team !~ /TNFB/) {
+            next;
+        }
+        printf("%-25s: %.2f\n", $team, $league{$team}{avediff});
     }
 
     #
