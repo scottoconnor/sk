@@ -371,7 +371,7 @@ create_tnfb_db() {
 #
 if ($vhc) {
 
-    my (%league, $pn, $w, $d, $num_players, %na, $num_subs, $min_scores);
+    my (%league, %temp, $pn, $w, $d, $num_players, %na, $num_subs, $min_scores);
     my $num_years = keys(%y);
     my $college_rounds = (($end_week - $start_week) + 1);
     $college_rounds *= $num_years;
@@ -418,7 +418,9 @@ if ($vhc) {
 
                     $p{$pn}{diff} += $p{$pn}{$d}{diff};
                     $p{$pn}{rounds}++;
-                    $league{$p{$pn}{$d}{team}}{diff} += $p{$pn}{$d}{diff};
+                    $temp{$p{$pn}{$d}{team}}{diff} += $p{$pn}{$d}{diff};
+                    $temp{$p{$pn}{$d}{team}}{rounds}++;
+                    #$league{$p{$pn}{$d}{team}}{diff} += $p{$pn}{$d}{diff};
                     if ($p{$pn}{team} eq "Sub") {
                         printf("%-17s: (%-4d:%s) shot %d, hc %2d, net %d, diff %d (%s)\n", $pn, $yp, $w,
                             $p{$pn}{$d}{shot}, $p{$pn}{$d}{hc}, $p{$pn}{$d}{net}, $p{$pn}{$d}{diff}, $p{$pn}{$d}{team});
@@ -430,11 +432,28 @@ if ($vhc) {
                     }
                 }
             }
+            foreach my $team (keys %temp) {
+                if ($temp{$team}{rounds} == 2) {
+                    #print "$team has $temp{$team}{rounds} scores\n";
+                    $league{$team}{diff} += $temp{$team}{diff};
+                    $league{$team}{missed_rounds} += 0;
+                } else {
+                    $league{$team}{missed_rounds}++;
+                    #print "$team has $temp{$team}{rounds} scores\n";
+                }
+                $temp{$team}{rounds} = 0;
+                $temp{$team}{diff} = 0;
+            }
             if (($num_players + $num_subs) != 32) {
                 printf("Missing player(s): players: %d, subs: %d, total: %d\n",
                     $num_players, $num_subs, ($num_players + $num_subs));
             }
             print "\n";
+        }
+    }
+    foreach my $team (keys %league) {
+        if ($league{$team}{missed_rounds}) {
+            #print "$team has $league{$team}{missed_rounds} missed rounds.\n";
         }
     }
 
@@ -462,9 +481,17 @@ if ($vhc) {
 
     foreach my $team (keys %league) {
         if ($team =~ /TNFB/) {
-            $league{$team}{avediff} = ($league{$team}{diff} / $college_rounds);
+            my $rounds = ($college_rounds - $league{$team}{missed_rounds});
+            #print "$team: $league{$team}{missed_rounds} rounds: $rounds\n";
+            #printf("rounds for %s: %d\n", $team, $rounds);
+            $league{$team}{avediff} =
+                ($league{$team}{diff} / ($college_rounds - $league{$team}{missed_rounds}));
         } else {
-            $league{$team}{avediff} = ($league{$team}{diff} / $nhl_rounds);
+            my $rounds = ($nhl_rounds - $league{$team}{missed_rounds});
+            #print "$team: $league{$team}{missed_rounds} rounds: $rounds\n";
+            #printf("rounds for %s: %d\n", $team, $rounds);
+            $league{$team}{avediff} =
+                ($league{$team}{diff} / ($nhl_rounds - $league{$team}{missed_rounds}));
         }
     }
 
