@@ -373,8 +373,6 @@ if ($vhc) {
 
     my (%league, %temp, $pn, $w, $d, $num_players, %na, $num_subs, $min_scores);
     my $num_years = keys(%y);
-    my $college_rounds = (($end_week - $start_week) + 1);
-    $college_rounds *= $num_years;
 
     #
     # If we are calculating more than one year, only include subs
@@ -420,7 +418,7 @@ if ($vhc) {
                     $p{$pn}{rounds}++;
                     $temp{$p{$pn}{$d}{team}}{diff} += $p{$pn}{$d}{diff};
                     $temp{$p{$pn}{$d}{team}}{rounds}++;
-                    $temp{$p{$pn}{$d}{team}}{date} = "$yp:$w", if 1;
+                    $temp{$p{$pn}{$d}{team}}{date} = "$yp:$w", if 0;
                     if ($p{$pn}{team} eq "Sub") {
                         printf("%-17s: (%-4d:%s) shot %d, hc %2d, net %d, diff %d (%s)\n", $pn, $yp, $w,
                             $p{$pn}{$d}{shot}, $p{$pn}{$d}{hc}, $p{$pn}{$d}{net}, $p{$pn}{$d}{diff}, $p{$pn}{$d}{team});
