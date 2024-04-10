@@ -420,7 +420,7 @@ if ($vhc) {
                     $p{$pn}{rounds}++;
                     $temp{$p{$pn}{$d}{team}}{diff} += $p{$pn}{$d}{diff};
                     $temp{$p{$pn}{$d}{team}}{rounds}++;
-                    #$league{$p{$pn}{$d}{team}}{diff} += $p{$pn}{$d}{diff};
+                    $temp{$p{$pn}{$d}{team}}{date} = "$yp:$w", if 1;
                     if ($p{$pn}{team} eq "Sub") {
                         printf("%-17s: (%-4d:%s) shot %d, hc %2d, net %d, diff %d (%s)\n", $pn, $yp, $w,
                             $p{$pn}{$d}{shot}, $p{$pn}{$d}{hc}, $p{$pn}{$d}{net}, $p{$pn}{$d}{diff}, $p{$pn}{$d}{team});
@@ -434,26 +434,21 @@ if ($vhc) {
             }
             foreach my $team (keys %temp) {
                 if ($temp{$team}{rounds} == 2) {
-                    #print "$team has $temp{$team}{rounds} scores\n";
                     $league{$team}{diff} += $temp{$team}{diff};
-                    $league{$team}{missed_rounds} += 0;
+                    $league{$team}{rounds}++;
                 } else {
-                    $league{$team}{missed_rounds}++;
-                    #print "$team has $temp{$team}{rounds} scores\n";
+                    print "$team missing score (only $temp{$team}{rounds}): $temp{$team}{date}\n", if 0;
                 }
                 $temp{$team}{rounds} = 0;
                 $temp{$team}{diff} = 0;
+                delete($temp{$team});
             }
+
             if (($num_players + $num_subs) != 32) {
                 printf("Missing player(s): players: %d, subs: %d, total: %d\n",
-                    $num_players, $num_subs, ($num_players + $num_subs));
+                    $num_players, $num_subs, ($num_players + $num_subs)), if 1;
             }
             print "\n";
-        }
-    }
-    foreach my $team (keys %league) {
-        if ($league{$team}{missed_rounds}) {
-            #print "$team has $league{$team}{missed_rounds} missed rounds.\n";
         }
     }
 
@@ -466,32 +461,13 @@ if ($vhc) {
         }
     }
 
-    #
-    # For years 2003 and 2004, we had different team names, so
-    # need to adjust number of years played.
-    #
-    my $nhl_rounds = 0;
-    if (exists($y{"2003"})) {
-        $nhl_rounds = (($end_week - $start_week) + 1);
-    }
-    if (exists($y{"2004"})) {
-        $nhl_rounds += (($end_week - $start_week) + 1);
-    }
-    $college_rounds -= $nhl_rounds;
-
     foreach my $team (keys %league) {
         if ($team =~ /TNFB/) {
-            my $rounds = ($college_rounds - $league{$team}{missed_rounds});
-            #print "$team: $league{$team}{missed_rounds} rounds: $rounds\n";
-            #printf("rounds for %s: %d\n", $team, $rounds);
-            $league{$team}{avediff} =
-                ($league{$team}{diff} / ($college_rounds - $league{$team}{missed_rounds}));
+            printf("rounds for %s: %d\n", $team, $league{$team}{rounds}), if 0;
+            $league{$team}{avediff} = ($league{$team}{diff} / $league{$team}{rounds});
         } else {
-            my $rounds = ($nhl_rounds - $league{$team}{missed_rounds});
-            #print "$team: $league{$team}{missed_rounds} rounds: $rounds\n";
-            #printf("rounds for %s: %d\n", $team, $rounds);
-            $league{$team}{avediff} =
-                ($league{$team}{diff} / ($nhl_rounds - $league{$team}{missed_rounds}));
+            printf("rounds for %s: %d\n", $team, $league{$team}{rounds}), if 0;
+            $league{$team}{avediff} = ($league{$team}{diff} / $league{$team}{rounds});
         }
     }
 
