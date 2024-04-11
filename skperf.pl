@@ -1130,9 +1130,13 @@ get_player_scores {
         my $d = $dates{$cy}{$cw};
 
         #
-        # If no score on this week, push on.
+        # If no score on this week, push on. Check to see if
+        # a sub was defined for this week and has no score.
         #
         if (!exists($tnfb_db{$d})) {
+            if (defined($subs{$cy}{$cw}{$pn})) {
+                print "$pn: bad sub year:week ($cy:$cw)\n";
+            }
             next;
         }
 
