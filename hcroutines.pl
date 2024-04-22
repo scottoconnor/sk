@@ -108,7 +108,7 @@ gen_hi {
 
     #
     # If the player does not have the required number of scores,
-    # a handicap can not be generted for them.
+    # a handicap can not be generated for them.
     #
     if (($use = &nscores($num_scores)) == 0) {
         return (-100);
