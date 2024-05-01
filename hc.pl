@@ -76,7 +76,7 @@ foreach my $team (sort keys(%league)) {
     my %tnfb = %{$league{$team}};
     foreach my $pn (sort keys %tnfb) {
         ($sf, $sb, $nf, $nb) = gen_handicap($tnfb{$pn}{hi});
-        printf("%-17s %4.1fN /%2d %2d %2d %2d\n", $pn, $tnfb{$pn}{hi}, $sf, $sb, $nf, $nb);
+        printf("%-18s %4.1fN /%2d %2d %2d %2d\n", $pn, $tnfb{$pn}{hi}, $sf, $sb, $nf, $nb);
     }
     print "\n";
 }
@@ -92,7 +92,7 @@ foreach my $team (sort keys(%league)) {
     my %tnfb = %{$league{$team}};
     foreach my $pn (sort keys %tnfb) {
         ($sf, $sb, $nf, $nb) = gen_handicap($tnfb{$pn}{hi});
-        printf("%-17s %4.1fN /%2d %2d %2d %2d\n", $pn, $tnfb{$pn}{hi}, $sf, $sb, $nf, $nb);
+        printf("%-18s %4.1fN /%2d %2d %2d %2d\n", $pn, $tnfb{$pn}{hi}, $sf, $sb, $nf, $nb);
     }
 }
 
