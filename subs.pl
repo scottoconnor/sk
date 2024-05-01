@@ -1107,4 +1107,15 @@
                 "Jeff LaPlante" => "Mike Perisho",
                 "Todd Chapin" => "Bobby Kilgus" },
     },
+    2024 => {
+        1 => { "Benjamin Palatino" => "Paul Correia",
+               "Brian Sargent" => "Marc Foland",
+               "Joe Graceffa" => "Bob Donahue",
+               "Alex Williams" => "Paul Percuoco",
+               "Jeff LaPlante" => "Mike Perisho" },
+        #2 => { "Leo Palatino" => "Paul Percuoco",
+               #"Jeff LaPlante" => "Mike Perisho" },
+        #3 => { "Jeff LaPlante" => "Mike Perisho",
+               #"Leo Palatino" => "Chet Czapkowski" },
+    },
 );
