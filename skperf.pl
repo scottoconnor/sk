@@ -172,7 +172,7 @@ if ($most_improved) {
 #
 if ($delete) {
 
-    my ($count, $new_hi, $key);
+    my ($count, $key);
 
     print "Enter date of scores to delete: ";
     chomp(my $key = <STDIN>);
@@ -185,11 +185,12 @@ if ($delete) {
 
         if (defined($tnfb_db{$key})) {
             delete($tnfb_db{$key});
-            $new_hi = gen_hi();
-            $tnfb_db{'Current'} = $new_hi;
+            untie %tnfb_db;
+            gen_hi($file);
             $count++;
+        } else {
+            untie %tnfb_db;
         }
-        untie %tnfb_db;
     }
     print "$key: Deleted $count scores.\n";
 }
@@ -199,7 +200,7 @@ if ($delete) {
 #
 if ($add) {
 
-    my ($db_out, $course_rating, $slope, $gdbm_file, @sr, $pn, $new_hi);
+    my ($db_out, $course_rating, $slope, $gdbm_file, @sr, $pn);
     my ($date, $fn, @week, $month, $day, $year, $course, $line, $c, $fb);
     my ($hi, $ph, $post, $cph, $shot, @swings, $swing, $team);
 
@@ -237,7 +238,12 @@ if ($add) {
             } elsif ($line =~ /^(\d{1,2})/) {
                 @sr = split (/,/, $line);
                 $pn = $sr[3];
-                $cph = $sr[2];
+                #
+                # If a player did not play, move on. Usually a 2v1 match.
+                #
+                if ($pn eq "") {
+                    next;
+                }
                 #
                 # If the player doesn't exit, create their db file.
                 #
@@ -245,6 +251,19 @@ if ($add) {
                     create_tnfb_db($pn);
                 }
                 $gdbm_file = $golfers_gdbm{$pn};
+
+                tie %tnfb_db, 'GDBM_File', $gdbm_file, GDBM_READER, 0644
+                    or die "$GDBM_File::gdbm_errno";
+
+                if (defined($tnfb_db{$date})) {
+                    print "$pn: Score already exists.\n";
+                    untie %tnfb_db;
+                    next;
+                } else {
+                    untie %tnfb_db;
+                }
+
+                $cph = $sr[2];
                 $shot = abs(@sr[13]);
                 @swings = @sr[4..12];
                 ($hi, $ph, $post) = net_double_bogey($pn, $gdbm_file, $course, @swings);
@@ -253,22 +272,23 @@ if ($add) {
                 while (my $swing = shift @swings) {
                     $db_out = $db_out . ":$swing";
                 }
+
                 tie %tnfb_db, 'GDBM_File', $gdbm_file, GDBM_WRITER, 0644
                     or die "$GDBM_File::gdbm_errno";
-                        if (!defined($tnfb_db{$date})) {
-                            $team = "Team_$year";
-                            if ($year >= 2022 && !exists($tnfb_db{$team})) {
-                                $tnfb_db{$team} = $tnfb_db{'Team'};
-                                $tnfb_db{'Active'} = 1;
-                            }
-                            print "$pn $date: $db_out\n";
-                            $tnfb_db{$date} = $db_out;
-                            $new_hi = gen_hi();
-                            $tnfb_db{'Current'} = $new_hi;
-                        } else {
-                            print "$pn: Score already exists.\n";
-                        }
-                untie %tnfb_db;
+
+                if (!defined($tnfb_db{$date})) {
+                    $team = "Team_$year";
+                    if ($year >= 2022 && !exists($tnfb_db{$team})) {
+                        $tnfb_db{$team} = $tnfb_db{'Team'};
+                        $tnfb_db{'Active'} = 1;
+                    }
+                    print "$pn $date: $db_out\n";
+                    $tnfb_db{$date} = $db_out;
+                    untie %tnfb_db;
+                    gen_hi($gdbm_file);
+                } else {
+                    untie %tnfb_db;
+                }
             }
         }
         close(FD);
