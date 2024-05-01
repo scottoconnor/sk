@@ -464,7 +464,7 @@ if ($vhc) {
 
             if (($num_players + $num_subs) != 32) {
                 printf("Missing player(s): players: %d, subs: %d, total: %d\n",
-                    $num_players, $num_subs, ($num_players + $num_subs)), if 1;
+                    $num_players, $num_subs, ($num_players + $num_subs)), if 0;
             }
             print "\n";
         }
@@ -1200,7 +1200,12 @@ get_player_scores {
                 untie %tnfb_db;
                 die "Stopping...\n";
             }
-            $p{$pn}{$d}{team} = $sub_db{"Team_$cy"};
+
+            if (exists($sub_db{"Team_$cy"})) {
+                $p{$pn}{$d}{team} = $sub_db{"Team_$cy"};
+            } else {
+                $p{$pn}{$d}{team} = $sub_db{'Team'};
+            }
 
             untie %sub_db;
             print "$pn Subbed for $subs{$cy}{$cw}{$pn} ($p{$pn}{$d}{team}) in $cy week $cw\n", if 0;
