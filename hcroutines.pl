@@ -5,8 +5,11 @@
 
 require './tnfb_years.pl';
 
+use strict;
 use POSIX;
 use GDBM_File;
+
+our (%dates);
 
 #
 # Determine how many scores to use.
@@ -85,7 +88,11 @@ sub round {
 
 sub
 gen_hi {
-    my (@scores, $y, $use, @n);
+    my ($db_file) = @_;
+    my (@scores, $y, $use, @n, @sr, %tnfb_db);
+
+    tie %tnfb_db, 'GDBM_File', $db_file, GDBM_WRITER, 0644
+        or die "$GDBM_File::gdbm_errno";
 
     #
     # Only look back 10 years of scores.
@@ -95,7 +102,7 @@ gen_hi {
 
     my $num_scores = 0;
     foreach $y (reverse ($start_year..$year)) {
-        foreach $w (reverse (1..15)) {
+        foreach my $w (reverse (1..15)) {
             my $d = $dates{$y}{$w};
             if (exists($tnfb_db{$d})) {
                 push (@scores, $tnfb_db{$d});
@@ -111,7 +118,9 @@ gen_hi {
     # a handicap can not be generated for them.
     #
     if (($use = &nscores($num_scores)) == 0) {
-        return (-100);
+        $tnfb_db{'Current'} = -100;
+        untie %tnfb_db;
+        return;
     }
 
     foreach my $s (@scores) {
@@ -136,6 +145,8 @@ gen_hi {
     $hi /= $use;
     $hi = round($hi, 10);
 
-    return ($hi);
+    $tnfb_db{'Current'} = $hi;
+
+    untie %tnfb_db;
 }
 1;
