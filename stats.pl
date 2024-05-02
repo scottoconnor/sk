@@ -407,7 +407,7 @@ if ($weekly_stats) {
   }
     print "\nBogies on week $week.\n", if !$html;
     $cnt = 1;
-    foreach $xx (sort { $y{$a}{twbo} <=> $y{$b}{twbo} } (keys(%y))) {
+    foreach $xx (reverse sort { $y{$a}{twbo} <=> $y{$b}{twbo} } (keys(%y))) {
         if ($xx == $year) {
             printf("    <tr>\n      <td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
             printf("      <td><b><font color=\"red\">%d</font></b></td>\n", $xx), if $html;
@@ -840,7 +840,7 @@ if ($cumulative_stats) {
   }
     print "\nBogies. Week 1 through $week\n", if !$html;
     $cnt = 1;
-    foreach $xx (sort { $y{$a}{ctbo} <=> $y{$b}{ctbo} } (keys(%y))) {
+    foreach $xx (reverse sort { $y{$a}{ctbo} <=> $y{$b}{ctbo} } (keys(%y))) {
         if ($xx == $year) {
             printf("    <tr>\n      <td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
             printf("      <td><b><font color=\"red\">%d</font></b></td>\n", $xx), if $html;
