@@ -33,6 +33,7 @@ my ($top_gun) = 0;
 my ($stats) = 0;
 my ($player_stats) = 0;
 my ($tables) = 0;
+my ($thirties) = 0;
 my ($output) = 0;
 my ($html) = 0;
 my ($others) = 0;
@@ -64,7 +65,6 @@ if ($#ARGV < 0) {
     exit;
 }
 
-
 GetOptions (
     "sy=i" => \$start_year,
     "ey=i" => \$end_year,
@@ -79,6 +79,7 @@ GetOptions (
     "p" =>  \$player_stats,
     "m" =>  \$most_improved,
     "t" =>  \$tables,
+    "th" =>  \$thirties,
     "g" =>  \$top_gun,
     "l=s" => \$league,
     "o" => \$others,
@@ -1119,6 +1120,23 @@ show_most_improved {
     }
 }
 
+if ($thirties) {
+    foreach my $ppn (reverse sort { $p{$a}{thirty} <=> $p{$b}{thirty} } (keys(%p))) {
+        my $fn = $golfers_gdbm{$ppn};
+        tie my %tnfb_db, 'GDBM_File', $fn, GDBM_READER, 0640
+            or die "$GDBM_File::gdbm_errno";
+        $p{$ppn}{team} = $tnfb_db{'Team'};
+        untie %tnfb_db;
+        if ($p{$ppn}{team} eq "Sub" && $p{$ppn}{thirty} < 20) {
+            next;
+        }
+
+        if ($p{$ppn}{thirty}) {
+            printf "%-18s: %d\n", $ppn, $p{$ppn}{thirty};
+        }
+    }
+}
+
 if ($birdies_per_player) {
     foreach my $cc (reverse sort keys %bpp) {
         my %holes = %{$bpp{$cc}};
@@ -1238,6 +1256,7 @@ get_player_scores {
             $y{$cy}{fifty_plus}++;
         }
         if ($shot < 40) {
+            $p{$pn}{thirty}++;
             $y{$cy}{thirties}++;
         }
 
