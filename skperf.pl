@@ -366,10 +366,10 @@ create_tnfb_db() {
 
     for ($x = 1; $x < 300; $x++) {
         $y = 1000 + $x;
-        $new_file = "golfers/" . $y . ".gdbm";
+        $new_file = "golfers/$y.gdbm";
         if (! -e $new_file) {
-            print "$new_pn new db file is: $new_file\n";
-            $x = 1000;
+            print "$new_pn: new db file is: $new_file\n";
+            last;
         }
     }
     tie %tnfb_db, 'GDBM_File', $new_file, GDBM_WRCREAT, 0644
