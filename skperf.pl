@@ -212,6 +212,11 @@ if ($add) {
 
     foreach $fn (@files) {
 
+        if (!-e $fn) {
+            print "$fn does not exist.\n";
+            next;
+        }
+
         open(FD, $fn);
 
         while ($line = <FD>) {
