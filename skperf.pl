@@ -1178,7 +1178,7 @@ get_player_scores {
         #
         if (!exists($tnfb_db{$d})) {
             if (defined($subs{$cy}{$cw}{$pn})) {
-                print "$pn: bad sub year:week ($cy:$cw)\n";
+                print "$pn: bad sub ($cy:$cw)\n";
             }
             next;
         }
