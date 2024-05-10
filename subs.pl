@@ -1124,7 +1124,9 @@
                "Jeff LaPlante" => "Mike Perisho" },
         2 => { "Leo Palatino" => "Paul Percuoco",
                "Jeff LaPlante" => "Mike Perisho" },
-        #3 => { "Jeff LaPlante" => "Mike Perisho",
-               #"Leo Palatino" => "Chet Czapkowski" },
+        3 => { "Jeff LaPlante" => "Mike Perisho",
+               "Todd Chapin" => "Paul Percuoco",
+               "Ryan Tuttle" => "Jeff Miller",
+               "Leo Palatino" => "Chet Czapkowski" },
     },
 );
