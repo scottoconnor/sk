@@ -367,7 +367,7 @@ net_double_bogey {
 sub
 create_tnfb_db() {
     my ($new_pn) = @_;
-    my ($new_file, $x, $y);
+    my ($new_file, $x, $y, $hi);
 
     for ($x = 1; $x < 300; $x++) {
         $y = 1000 + $x;
@@ -382,7 +382,9 @@ create_tnfb_db() {
     $tnfb_db{'Player'} = $new_pn;
     $tnfb_db{'Team'} = "Sub";
     $tnfb_db{'Active'} = 1;
-    $tnfb_db{'Current'} = -100;
+    print "Enter $new_pn\'s Handicap Index: ";
+    chomp($hi = <STDIN>);
+    $tnfb_db{'Current'} = $hi;
     untie %tnfb_db;
 
     #
