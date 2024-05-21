@@ -11,7 +11,7 @@ require './hcroutines.pl';
 
 use Time::HiRes qw(gettimeofday);
 use GDBM_File;
-use Getopt::Long;
+use Getopt::Long qw(:config no_ignore_case);
 
 #
 # Global variables.
