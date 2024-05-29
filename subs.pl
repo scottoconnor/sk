@@ -1134,6 +1134,10 @@
                "Alex Williams" => "Tom Curley",
                "Buddy Cuozzo" => "Paul Sirois",
                "Todd Chapin" => "Paul Percuoco" },
+        5 => { "Leo Palatino" => "Randy Carter",
+               "Joe Graceffa" => "Tom Curley",
+               "Paul Rotker" => "Mike Schmidt",
+               "Jeff LaPlante" => "Mike Perisho" },
         #6 => { "Ben Palatino" => "Mike Gill" },
     },
 );
