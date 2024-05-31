@@ -596,7 +596,7 @@ if ($top_gun) {
                 printf("    <td>%s</td>\n", $pn), if $html;
                 printf("    <td style=\"text-align:center\">%d</td>\n", $ty{$pn}), if $html;
                 print "  </tr>\n", if $html;
-                printf("%-17s: shot %d (week %d, year %d)\n", $pn, $ty{$pn}, $w, $yp), if !$html;
+                printf("%-17s: shot %d (%d:%d)\n", $pn, $ty{$pn}, $yp, $w), if !$html;
                 $has_rounds = 1;
             }
             print "\n", if (!$html && ($start_week != $end_week) && ($has_rounds));
@@ -905,7 +905,7 @@ print_player_stats {
         my @courses = ("SF", "SB", "NF", "NB");
 
         #
-        # Not all players play each year, so skip those that don't have posted scores.
+        # Skip those that don't have a posted scores.
         #
         if ($p{$pn}{total_strokes} == 0) {
             next;
