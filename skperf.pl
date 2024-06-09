@@ -1280,6 +1280,14 @@ get_player_scores {
             $difficult{$md}{score} += $hole, if $hardest;
             $difficult{$md}{xplayed}++, if $hardest;
 
+            #
+            # If we are getting birdies per hole and a hole doesn't have a birdie,
+            # be sure to initialize it as 0 so it shows up in the list.
+            #
+            if (!defined($bph{$md}{b})) {
+                $bph{$md}{b} = 0;
+            }
+
             $p{$pn}{$course}{$h}[0]{shots} += $hole;
 
             if (($c{$course}{$h}[0] - $hole) < -2) {
