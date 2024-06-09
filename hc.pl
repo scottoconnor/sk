@@ -156,28 +156,28 @@ expected_diff {
         }
     }
 
-    my $adjust = 0.0;
+    my $adjust = 0.9;
     if ($pc{'SF'}{xplayed}) {
         $pd{'SF'} = ($pc{'SF'}{swings} / $pc{'SF'}{xplayed});
-        $pd{'SF'} += $adjust;
+        $pd{'SF'} *= $adjust;
         printf("%s: pd[SF] = %.1f\n", $pn, $pd{'SF'}), if 0;
     }
 
     if ($pc{'SB'}{xplayed}) {
         $pd{'SB'} = ($pc{'SB'}{swings} / $pc{'SB'}{xplayed});
-        $pd{'SB'} += $adjust;
+        $pd{'SB'} *= $adjust;
         printf("%s: pd[SB] = %.1f\n", $pn, $pd{'SB'}), if 0;
     }
 
     if ($pc{'NF'}{xplayed}) {
         $pd{'NF'} = ($pc{'NF'}{swings} / $pc{'NF'}{xplayed});
-        $pd{'NF'} += $adjust;
+        $pd{'NF'} *= $adjust;
         printf("%s: pd[NF] = %.1f\n", $pn, $pd{'NF'}), if 0;
     }
 
     if ($pc{'NB'}{xplayed}) {
         $pd{'NB'} = ($pc{'NB'}{swings} / $pc{'NB'}{xplayed});
-        $pd{'NB'} += $adjust;
+        $pd{'NB'} *= $adjust;
         printf("%s: pd[NB] = %.1f\n", $pn, $pd{'NB'}), if 0;
     }
 
