@@ -1146,5 +1146,9 @@
                "Trent Albers" => "John Breslouf",
                "Leo Palatino" => "Ray Curley",
                "Paul Rotker" => "Charlie Weeks" },
+        8 => { "Derek Palatino" => "Jim O'Keefe",
+               "Trent Albers" => "Paul Correia",
+               "Jeff Aucoin" => "Bob Tuttle",
+               "Dave Sherman" => "Charlie Bacon" },
     },
 );
