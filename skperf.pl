@@ -156,7 +156,7 @@ if ($only_week) {
 #
 for ($cy = $start_year; $cy <= $end_year && $perf; $cy++) {
     $t0 = gettimeofday(), if $hires;
-    foreach my $pn (sort keys %golfers_gdbm) {
+    foreach my $pn (keys %golfers_gdbm) {
         my $file = $golfers_gdbm{$pn};
         get_player_scores($file, $pn, $cy);
     }
@@ -179,7 +179,7 @@ if ($delete) {
     chomp(my $key = <STDIN>);
 
     $count = 0;
-    foreach my $pn (sort keys %golfers_gdbm) {
+    foreach my $pn (keys %golfers_gdbm) {
         my $file = $golfers_gdbm{$pn};
         tie %tnfb_db, 'GDBM_File', $file, GDBM_WRITER, 0640
             or die "$GDBM_File::gdbm_errno";
@@ -1049,7 +1049,7 @@ show_most_improved {
 
     my ($cw, $mi, $d, %p, @score, %mi);
 
-    foreach my $pn (sort keys %golfers_gdbm) {
+    foreach my $pn (keys %golfers_gdbm) {
         my $file = $golfers_gdbm{$pn};
 
         tie %tnfb_db, 'GDBM_File', $file, GDBM_READER, 0640
@@ -1073,7 +1073,6 @@ show_most_improved {
                 next;
             }
         }
-
 
         #
         # Get 'A' index from the first score posted in the start_year.
