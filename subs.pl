@@ -1150,5 +1150,8 @@
                "Trent Albers" => "Paul Correia",
                "Jeff Aucoin" => "Bob Tuttle",
                "Dave Sherman" => "Charlie Bacon" },
+        9 => { "Ben Palatino" => "Bob Donahue",
+               "Leo Palatino" => "Pat Donahue",
+               "Trent Albers" => "Derek Jodoin" },
     },
 );
