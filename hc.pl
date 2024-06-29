@@ -13,6 +13,7 @@ use GDBM_File;
 
 my ($allowance) = 0.9;
 my ($expected_diff) = 0;
+my (undef($name));
 my (%tnfb_db, %league, $dh);
 my ($max_scores) = 20;
 my ($sf, $sb, $nf, $nb);
@@ -21,6 +22,7 @@ our (%dates);
 
 GetOptions (
     "x" => \$expected_diff,
+    "n=s" => \$name,
     "a=f" => \$allowance),
 or die("Error in command line arguments\n");
 
@@ -63,7 +65,7 @@ while (readdir $dh) {
 }
 closedir ($dh);
 
-print "$month-$day-$year               (sf sb nf nb)\n";
+print "$month-$day-$year               (sf sb nf nb)\n", if !defined($name);
 
 #
 # First, print out the league members.
@@ -72,13 +74,14 @@ foreach my $team (sort keys(%league)) {
     if ($team eq "Sub") {
         next;
     }
-    print "$team\n";
+    print "$team\n", if !defined($name);
     my %tnfb = %{$league{$team}};
     foreach my $pn (sort keys %tnfb) {
         ($sf, $sb, $nf, $nb) = gen_handicap($tnfb{$pn}{hi});
-        printf("%-18s %4.1fN /%2d %2d %2d %2d\n", $pn, $tnfb{$pn}{hi}, $sf, $sb, $nf, $nb);
+        printf("%-18s %4.1fN /%2d %2d %2d %2d\n", $pn, $tnfb{$pn}{hi}, $sf, $sb, $nf, $nb),
+            if !defined($name);
     }
-    print "\n";
+    print "\n", if !defined($name);
 }
 
 #
@@ -88,11 +91,12 @@ foreach my $team (sort keys(%league)) {
     if ($team ne "Sub") {
         next;
     }
-    print "$team\n";
+    print "$team\n", if !defined($name);
     my %tnfb = %{$league{$team}};
     foreach my $pn (sort keys %tnfb) {
         ($sf, $sb, $nf, $nb) = gen_handicap($tnfb{$pn}{hi});
-        printf("%-18s %4.1fN /%2d %2d %2d %2d\n", $pn, $tnfb{$pn}{hi}, $sf, $sb, $nf, $nb);
+        printf("%-18s %4.1fN /%2d %2d %2d %2d\n", $pn, $tnfb{$pn}{hi}, $sf, $sb, $nf, $nb),
+            if !defined($name);
     }
 }
 
@@ -141,9 +145,14 @@ expected_diff {
 
     my $pn = "$last, $first";
     my $team = $tnfb_db{'Team'};
+    my $cur_hi = $tnfb_db{'Current'};
 
     my $num_scores = 0;
 
+    $pc{'SF'}{xplayed} = 0;
+    $pc{'SB'}{xplayed} = 0;
+    $pc{'NF'}{xplayed} = 0;
+    $pc{'NB'}{xplayed} = 0;
     foreach my $y ($by..$year) {
         foreach my $w (1..15) {
             if (exists($tnfb_db{$dates{$y}{$w}})) {
@@ -157,28 +166,36 @@ expected_diff {
     }
 
     my $adjust = 0.9;
-    if ($pc{'SF'}{xplayed}) {
+    if ($pc{'SF'}{xplayed} > 9) {
         $pd{'SF'} = ($pc{'SF'}{swings} / $pc{'SF'}{xplayed});
         $pd{'SF'} *= $adjust;
-        printf("%s: pd[SF] = %.1f\n", $pn, $pd{'SF'}), if 0;
+        printf("%s: pd[SF] = %.1f\n", $pn, $pd{'SF'}), if ($pn =~ /$name/);
+    } else {
+        $pd{'SF'} = $cur_hi;
     }
 
-    if ($pc{'SB'}{xplayed}) {
+    if ($pc{'SB'}{xplayed} > 9) {
         $pd{'SB'} = ($pc{'SB'}{swings} / $pc{'SB'}{xplayed});
         $pd{'SB'} *= $adjust;
-        printf("%s: pd[SB] = %.1f\n", $pn, $pd{'SB'}), if 0;
+        printf("%s: pd[SB] = %.1f\n", $pn, $pd{'SB'}), if ($pn =~ /$name/);
+    } else {
+        $pd{'SB'} = $cur_hi;
     }
 
-    if ($pc{'NF'}{xplayed}) {
+    if ($pc{'NF'}{xplayed} > 9) {
         $pd{'NF'} = ($pc{'NF'}{swings} / $pc{'NF'}{xplayed});
         $pd{'NF'} *= $adjust;
-        printf("%s: pd[NF] = %.1f\n", $pn, $pd{'NF'}), if 0;
+        printf("%s: pd[NF] = %.1f\n", $pn, $pd{'NF'}), if ($pn =~ /$name/);
+    } else {
+        $pd{'NF'} = $cur_hi;
     }
 
-    if ($pc{'NB'}{xplayed}) {
+    if ($pc{'NB'}{xplayed} > 9) {
         $pd{'NB'} = ($pc{'NB'}{swings} / $pc{'NB'}{xplayed});
         $pd{'NB'} *= $adjust;
-        printf("%s: pd[NB] = %.1f\n", $pn, $pd{'NB'}), if 0;
+        printf("%s: pd[NB] = %.1f\n", $pn, $pd{'NB'}), if ($pn =~ /$name/);
+    } else {
+        $pd{'NB'} = $cur_hi;
     }
 
     $diff = 0;
