@@ -1159,5 +1159,7 @@
                 "Jeff LaPlante" => "Kevin Cunningham" },
         11 => { "Leo Palatino" => "Marc Foland",
                 "Dave Sherman" => "Charlie Bacon" },
+        12 => { "Trent Albers" => "Pete Linstrom",
+                "Paul Rotker" => "Steve Bulawka" },
     },
 );
