@@ -275,7 +275,7 @@ if ($add) {
                 $shot = abs(@sr[13]);
                 @swings = @sr[4..12];
                 ($hi, $ph, $post) = net_double_bogey($pn, $gdbm_file, $course, @swings);
-                print "cph = $cph, ph = $ph\n", if ($cph != $ph);
+                print "$pn: cph = $cph, ph = $ph\n", if ($cph != $ph);
                 $db_out = "$course:$course_rating:$slope:$date:$hi:$ph:$shot:$post";
                 while (my $swing = shift @swings) {
                     $db_out = $db_out . ":$swing";
