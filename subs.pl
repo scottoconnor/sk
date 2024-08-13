@@ -1172,7 +1172,7 @@
                 "Joe Graceffa" => "Bob Tuttle",
                 "Trent Albers" => "Dan Correia" },
         15 => { "Trent Albers" => "Dan Correia",
-                "Steven Bevacqua" => "Bobby Kilgus",
+                "Steve Bevacqua" => "Bobby Kilgus",
                 "Jeff Aucoin" => "Bob Tuttle",
                 "Chris DiSilva" => "Charlie Bacon",
                 "Dave Sherman" => "Larry Fryatt" },
