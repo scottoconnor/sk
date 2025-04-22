@@ -14,6 +14,7 @@ use GDBM_File;
 my ($allowance) = 0.9;
 my ($expected_diff) = 0;
 my (undef($name));
+my ($debug) = 0;
 my (%tnfb_db, %league, $dh);
 my ($max_scores) = 20;
 my ($sf, $sb, $nf, $nb);
@@ -22,6 +23,7 @@ our (%dates);
 
 GetOptions (
     "x" => \$expected_diff,
+    "d" => \$debug,
     "n=s" => \$name,
     "a=f" => \$allowance),
 or die("Error in command line arguments\n");
@@ -30,7 +32,6 @@ my ($month) = (localtime)[4];
 $month++;
 my ($day) = (localtime)[3];
 my ($year) = (1900 + (localtime)[5]);
-my ($back_year) = ($year - 5);
 
 #
 # Read the Gnu database files.
@@ -78,8 +79,8 @@ foreach my $team (sort keys(%league)) {
     my %tnfb = %{$league{$team}};
     foreach my $pn (sort keys %tnfb) {
         ($sf, $sb, $nf, $nb) = gen_handicap($tnfb{$pn}{hi});
-        printf("%-18s %4.1fN /%2d %2d %2d %2d\n", $pn, $tnfb{$pn}{hi}, $sf, $sb, $nf, $nb),
-            if !defined($name);
+        printf("%-18s %4.1fN /%2d %2d %2d %2d%s\n", $pn, $tnfb{$pn}{hi}, $sf, $sb, $nf, $nb,
+            $tnfb{$pn}{aging}), if !defined($name);
     }
     print "\n", if !defined($name);
 }
@@ -95,8 +96,8 @@ foreach my $team (sort keys(%league)) {
     my %tnfb = %{$league{$team}};
     foreach my $pn (sort keys %tnfb) {
         ($sf, $sb, $nf, $nb) = gen_handicap($tnfb{$pn}{hi});
-        printf("%-18s %4.1fN /%2d %2d %2d %2d\n", $pn, $tnfb{$pn}{hi}, $sf, $sb, $nf, $nb),
-            if !defined($name);
+        printf("%-18s %4.1fN /%2d %2d %2d %2d%s\n", $pn, $tnfb{$pn}{hi}, $sf, $sb, $nf, $nb,
+            $tnfb{$pn}{aging}), if !defined($name);
     }
 }
 
@@ -131,82 +132,29 @@ sub
 expected_diff {
     my ($fn) = @_;
 
-    my (%tnfb_db, $use, @sr, $diff, %pc, $hi, %pd);
+    my (%tnfb_db, $use, @sr, $diff, %pc, $hi, %pd, $by, $id, $nd);
 
     tie %tnfb_db, 'GDBM_File', $fn, GDBM_READER, 0644
         or die "$GDBM_File::gdbm_errno";
-
-    my $by = $back_year;
-    if ($tnfb_db{'Team'} eq "Sub") {
-        $by = 2010;
-    }
 
     my ($first, $last) = split(/ /, $tnfb_db{'Player'}, 2);
 
     my $pn = "$last, $first";
     my $team = $tnfb_db{'Team'};
-    my $cur_hi = $tnfb_db{'Current'};
+    my $hi = $tnfb_db{'Current'};
 
-    my $num_scores = 0;
-
-    $pc{'SF'}{xplayed} = 0;
-    $pc{'SB'}{xplayed} = 0;
-    $pc{'NF'}{xplayed} = 0;
-    $pc{'NB'}{xplayed} = 0;
-    foreach my $y ($by..$year) {
-        foreach my $w (1..15) {
-            if (exists($tnfb_db{$dates{$y}{$w}})) {
-                @sr = split(/:/, $tnfb_db{$dates{$y}{$w}});
-                $diff = ((113 / $sr[2]) * ($sr[7] - $sr[1]));
-                $diff = round($diff, 10);
-                $pc{$sr[0]}{swings} += $diff;
-                $pc{$sr[0]}{xplayed}++;
-            }
-        }
-    }
-
-    my $adjust = 0.9;
-    if ($pc{'SF'}{xplayed} > 9) {
-        $pd{'SF'} = ($pc{'SF'}{swings} / $pc{'SF'}{xplayed});
-        $pd{'SF'} *= $adjust;
-        printf("%s: pd[SF] = %.1f\n", $pn, $pd{'SF'}), if ($pn =~ /$name/);
-    } else {
-        $pd{'SF'} = $cur_hi;
-    }
-
-    if ($pc{'SB'}{xplayed} > 9) {
-        $pd{'SB'} = ($pc{'SB'}{swings} / $pc{'SB'}{xplayed});
-        $pd{'SB'} *= $adjust;
-        printf("%s: pd[SB] = %.1f\n", $pn, $pd{'SB'}), if ($pn =~ /$name/);
-    } else {
-        $pd{'SB'} = $cur_hi;
-    }
-
-    if ($pc{'NF'}{xplayed} > 9) {
-        $pd{'NF'} = ($pc{'NF'}{swings} / $pc{'NF'}{xplayed});
-        $pd{'NF'} *= $adjust;
-        printf("%s: pd[NF] = %.1f\n", $pn, $pd{'NF'}), if ($pn =~ /$name/);
-    } else {
-        $pd{'NF'} = $cur_hi;
-    }
-
-    if ($pc{'NB'}{xplayed} > 9) {
-        $pd{'NB'} = ($pc{'NB'}{swings} / $pc{'NB'}{xplayed});
-        $pd{'NB'} *= $adjust;
-        printf("%s: pd[NB] = %.1f\n", $pn, $pd{'NB'}), if ($pn =~ /$name/);
-    } else {
-        $pd{'NB'} = $cur_hi;
-    }
-
-    $diff = 0;
-    $num_scores = 0;
     undef(my @scores);
+    my $num_scores = 0;
+    $by = ($year - 5);
+
     foreach my $y (reverse ($by..$year)) {
         foreach my $w (reverse (1..15)) {
             if (exists($tnfb_db{$dates{$y}{$w}})) {
                 @sr = split(/:/, $tnfb_db{$dates{$y}{$w}});
-                $diff = ((113 / $sr[2]) * ($sr[7] - $sr[1]));
-                $diff += $pd{$sr[0]};
+                $diff = round(((113 / $sr[2]) * ($sr[7] - $sr[1])),  10);
+                my $index_diff = ($diff - $hi);
+                $diff = calc_xd($pn, $index_diff, $diff, $hi);
+                $diff = round($diff,  10);
                 push (@scores, $diff);
                 $num_scores++;
             }
@@ -220,24 +168,92 @@ expected_diff {
     # a handicap can not be generted for them.
     #
     if (($use = &nscores($num_scores)) == 0) {
+        delete($league{$team}{$pn});
         untie %tnfb_db;
         return;
     }
+
+    $league{$team}{$pn}{aging} = "";
+    #if ($use < 5) {
+        #printf("%s : use -> %d\n", $pn, $use), if ($pn =~ /$name/);
+        #$league{$team}{$pn}{aging} = "*";
+    #}
 
     @scores = sort {$a <=> $b} @scores;
 
     $hi = 0;
 
     for (my $y = 0; $y < $use; $y++) {
-        printf("%d: %.1f\n", $y, $scores[$y]), if 0;
+        printf("score diff -> %.2f\n", $scores[$y]), if ($pn =~ /$name/);
         $hi += $scores[$y];
     }
     $hi /= $use;
 
     $hi /= 2;
     $hi = round($hi, 10);
+    $hi = abs($hi), if ($hi == 0.0);
 
     $league{$team}{$pn}{hi} = $hi;
 
     untie %tnfb_db;
+}
+
+sub
+calc_xd {
+    my ($pn, $id, $diff, $hi) = @_;
+    my ($nd, $hid, $d, $new_diff);
+
+    $d = 1.0;
+    if ($id <= -5) {
+        $nd = ($hi * $d);
+        $nd += 2.0;
+    }
+    $d = 1.1;
+    if ($id <= -4 && $id > -5) {
+        $nd = ($hi * $d);
+        $nd += 1.75;
+    }
+    $d = 1.2;
+    if ($id <= -3 && $id > -4) {
+        $nd = ($hi * $d);
+        $nd += 1.5;
+    }
+    $d = 1.3;
+    if ($id <= -2 && $id > -3) {
+        $nd = ($hi * $d);
+        $nd += 1.0;
+    }
+    $d = 1.4;
+    if ($id <= -1.5 && $id > -2) {
+        $nd = ($hi * $d);
+        $nd += 0.5;
+    }
+
+    if ($id > -1.5 && $id < 1.5) {
+        $nd = $hi;
+    }
+
+    my $d = 1.4;
+    if ($id >= 1.5 && $id < 2) {
+        $nd = ($hi * $d);
+    }
+    my $d = 1.5;
+    if ($id >= 2 && $id < 3) {
+        $nd = ($hi * $d);
+    }
+    my $d = 1.6;
+    if ($id >= 3 && $id < 4) {
+        $nd = ($hi * $d);
+    }
+    my $d = 1.7;
+    if ($id >= 4 && $id < 5) {
+        $nd = ($hi * $d);
+    }
+    my $d = 1.8;
+    if ($id >= 5) {
+        $nd = ($hi * $d);
+    }
+
+    $new_diff = ($diff + $nd);
+    return ($new_diff);
 }
