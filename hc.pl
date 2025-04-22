@@ -134,7 +134,7 @@ expected_diff {
 
     my (%tnfb_db, $use, @sr, $diff, %pc, $hi, %pd, $by, $id, $nd);
 
-    tie %tnfb_db, 'GDBM_File', $fn, GDBM_READER, 0644
+    tie %tnfb_db, 'GDBM_File', $fn, GDBM_WRITER, 0644
         or die "$GDBM_File::gdbm_errno";
 
     my ($first, $last) = split(/ /, $tnfb_db{'Player'}, 2);
@@ -194,6 +194,7 @@ expected_diff {
     $hi = abs($hi), if ($hi == 0.0);
 
     $league{$team}{$pn}{hi} = $hi;
+    $tnfb_db{'Current'} = $hi;
 
     untie %tnfb_db;
 }
