@@ -1,7 +1,7 @@
 #
 # Years and weekly dates
 #
-# Copyright (c) 2018, 2023 Scott O'Connor
+# Copyright (c) 2018, 2025 Scott O'Connor
 #
 
 %dates = (
