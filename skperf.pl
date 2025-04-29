@@ -187,7 +187,7 @@ if ($delete) {
         if (defined($tnfb_db{$key})) {
             delete($tnfb_db{$key});
             untie %tnfb_db;
-            gen_hi($file);
+            #gen_hi($file);
             $count++;
         } else {
             untie %tnfb_db;
