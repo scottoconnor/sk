@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2022, 2024 Scott O'Connor
+# Copyright (c) 2022, 2025 Scott O'Connor
 #
 # These are subs by year/week for the TNFB.
 #
@@ -1176,5 +1176,19 @@
                 "Jeff Aucoin" => "Bob Tuttle",
                 "Chris DiSilva" => "Charlie Bacon",
                 "Dave Sherman" => "Larry Fryatt" },
+    },
+    2025 => {
+        1 => { "Mark Donahue" => "Bob Donahue",
+               "Buddy Cuozzo" => "Jeff Miller",
+               "Joe Graceffa" => "Ray Curley",
+               "Leo Palatino" => "Paul Correia",
+               "Bill Andon" => "Dan Correia",
+               "Jeff LaPlante" => "Mike Perisho",
+               "Carl Humphreys" => "Charlie Weeks" },
+        2 => { "Dave Sherman" => "Charlie Bacon",
+               "Todd Chapin" => "Paul Correia",
+               "Jeff Aucoin" => "Bob Tuttle",
+               "Joe Graceffa" => "Mike Perisho",
+               "Buddy Cuozzo" => "Jeff Miller" },
     },
 );
