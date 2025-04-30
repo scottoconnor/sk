@@ -194,7 +194,7 @@ expected_diff {
     $hi = abs($hi), if ($hi == 0.0);
 
     $league{$team}{$pn}{hi} = $hi;
-    $tnfb_db{'Current'} = $hi;
+    #$tnfb_db{'Current'} = $hi;
 
     untie %tnfb_db;
 }
@@ -204,27 +204,27 @@ calc_xd {
     my ($pn, $id, $diff, $hi) = @_;
     my ($nd, $hid, $d, $new_diff);
 
-    $d = 1.0;
+    $d = 1.1;
     if ($id <= -5) {
         $nd = ($hi * $d);
         $nd += 2.0;
     }
-    $d = 1.1;
+    $d = 1.2;
     if ($id <= -4 && $id > -5) {
         $nd = ($hi * $d);
         $nd += 1.75;
     }
-    $d = 1.2;
+    $d = 1.3;
     if ($id <= -3 && $id > -4) {
         $nd = ($hi * $d);
         $nd += 1.5;
     }
-    $d = 1.3;
+    $d = 1.4;
     if ($id <= -2 && $id > -3) {
         $nd = ($hi * $d);
         $nd += 1.0;
     }
-    $d = 1.4;
+    $d = 1.5;
     if ($id <= -1.5 && $id > -2) {
         $nd = ($hi * $d);
         $nd += 0.5;
