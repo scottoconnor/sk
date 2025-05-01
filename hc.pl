@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 #
-# Copyright (c) 2018, 2024 Scott O'Connor
+# Copyright (c) 2018, 2025 Scott O'Connor
 #
 
 use strict;
