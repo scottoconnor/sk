@@ -1190,5 +1190,9 @@
                "Bill Percuoco" => "Steve Cormey",
                "Joe Graceffa" => "Ray Curley",
                "Buddy Cuozzo" => "Jeff Miller" },
+        3 => { "Bill Percuoco" => "Dan Correia",
+               "Joe Graceffa" => "Ray Curley",
+               "Jeff Aucoin" => "Bob Tuttle",
+               "Carl Humphreys" => "Charlie Weeks" },
     },
 );
