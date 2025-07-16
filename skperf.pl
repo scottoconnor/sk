@@ -1261,7 +1261,7 @@ get_player_scores {
         $p{$pn}{$d}{hc} = $hc;
         $p{$pn}{$d}{hi} = $hi;
         $p{$pn}{$d}{net} = ($shot - $hc);
-        $p{$pn}{$d}{diff} = (($shot - $hc) - 36);
+        $p{$pn}{$d}{diff} = (($shot - $hc) - $c{$course}{par});
         if ($shot >= 50) {
             $y{$cy}{fifty_plus}++;
         }
