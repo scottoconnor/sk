@@ -1234,7 +1234,10 @@
                 "Dan Gale" => "Pete Linstrom",
                 "Bill Percuoco" => "Kevin Cunningham",
                 "Paul Rotker" => "Charlie Weeks" },
-        12 => { "Leo Palatino" => "Jim Marotta",
+        12 => { "Derek Palatino" => "Jim Marotta",
+                "Brian Kinnucane" => "Pat Donahue",
+                "Bill Percuoco" => "Dan Correia",
+                "Joe Graceffa" => "Steve Bulawka",
                 "Paul Rotker" => "Charlie Weeks" },
     },
 );
