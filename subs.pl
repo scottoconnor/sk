@@ -1242,7 +1242,6 @@
         13 => { "Buddy Cuozzo" => "Pete Linstrom",
                 "Bill Percuoco" => "Paul Sirois",
                 "Leo Palatino" => "Jim Marotta",
-                "Jeff Aucoin" => "Jeff Miller",
                 "Ken Ineson" => "Bob Tuttle",
                 "Rick Wood" => "Bob Donahue",
                 "Joe Graceffa" => "Pat Donahue",
