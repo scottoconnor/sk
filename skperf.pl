@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 #
-# Copyright (c) 2018, 2024, Scott O'Connor
+# Copyright (c) 2018, 2026, Scott O'Connor
 #
 
 use strict;
@@ -523,7 +523,7 @@ if ($vhc) {
             printf("%-19s: Ave = %.2f (total rounds %d)\n", $pn,
                 $p{$pn}{avediff}, $p{$pn}{rounds});
         }
-    } 
+    }
     print "\n";
 
     #
