@@ -1112,11 +1112,9 @@ show_most_improved {
                 untie %tnfb_db;
                 next;
             }
-        } else {
-            if ($tnfb_db{'Team'} eq "Sub") {
+        } elsif ($tnfb_db{'Team'} eq "Sub") {
                 untie %tnfb_db;
                 next;
-            }
         }
 
         #
@@ -1350,8 +1348,8 @@ get_player_scores {
                 $p{$pn}{to}++;
                 $p{$pn}{$course}{$h}{o}++;
                 $y{$cy}{total_other}++;
-                $to{$c{$course}{$h}[0]}{$hole}++;
-            };
+                $to{$pph}{$hole}++;
+            }
             if (($pph - $hole) == -2) {
                 $p{$pn}{tdb}++;
                 $p{$pn}{$course}{$h}{db}++;
