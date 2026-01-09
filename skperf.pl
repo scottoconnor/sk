@@ -135,7 +135,7 @@ if ($all_time || ($start_year < 1997)) {
 }
 
 if ($only_year > $start_year) {
-    print "only year of \"$only_year\" is beyond last year of play.\n";
+    print "only_year of \"$only_year\" is beyond last year of play.\n";
     exit;
 }
 
@@ -187,12 +187,10 @@ if ($delete) {
 
         if (defined($tnfb_db{$key})) {
             delete($tnfb_db{$key});
-            untie %tnfb_db;
             #gen_hi($file);
             $count++;
-        } else {
-            untie %tnfb_db;
         }
+        untie %tnfb_db;
     }
     print "$key: Deleted $count scores.\n";
 }
