@@ -52,7 +52,7 @@ my (undef(%p));
 my ($dh, %golfers_gdbm);
 my (%tnfb_db);
 my ($cy, $cw, $t0, $t1, $fna, $total_time);
-my (%bt, %et, %difficult, %bph, %bpp, %to);
+my (%bt, %et, %difficult, %bph, %bpp, %to, %ht);
 
 #
 # These are hash variable from included files. see 'require' above.
@@ -135,7 +135,8 @@ if ($all_time || ($start_year < 1997)) {
 }
 
 if ($only_year > $start_year) {
-    die "only year of \"$only_year\" is beyond last year of play.\n";
+    print "only year of \"$only_year\" is beyond last year of play.\n";
+    exit;
 }
 
 if ($only_year) {
@@ -274,7 +275,7 @@ if ($add) {
                 $cph = $sr[2];
                 $shot = abs(@sr[13]);
                 @swings = @sr[4..12];
-                ($hi, $ph, $post) = net_double_bogey($pn, $gdbm_file, $course, @swings);
+                ($hi, $ph, $post) = net_double_bogey($pn, $year, $gdbm_file, $course, @swings);
                 print "$pn: cph = $cph, ph = $ph\n", if ($cph != $ph);
                 $db_out = "$course:$course_rating:$slope:$date:$hi:$ph:$shot:$post";
                 while (my $swing = shift @swings) {
@@ -311,8 +312,9 @@ if ($add) {
 #
 sub
 net_double_bogey {
-    my ($pn, $file, $course, @s) = @_;
+    my ($pn, $year, $file, $course, @s) = @_;
     my ($v, $hole, $post, $hi, $cd, $ch, $cch, $ph, $add_stroke);
+    my ($course_data, @par_per_hole, @handicap_hole, $pph, $hh);
 
     tie %tnfb_db, 'GDBM_File', $file, GDBM_READER, 0644
         or die "$GDBM_File::gdbm_errno";
@@ -320,6 +322,17 @@ net_double_bogey {
     $hi = $tnfb_db{'Current'};
 
     untie %tnfb_db;
+
+    $course_data = get_course_data($year, $course);
+    print "course data $course_data\n", if (0);
+
+    @par_per_hole = split(/:/, $course_data);
+    @par_per_hole = @par_per_hole[4..12];
+    print "@par_per_hole\n", if (0);
+
+    @handicap_hole = split(/:/, $course_data);
+    @handicap_hole = @handicap_hole[13..21];
+    print "@handicap_hole\n", if (0);
 
     #
     # If the player does not have enough scores for a stable index,
@@ -345,22 +358,23 @@ net_double_bogey {
     $hole = 1; $post = 0;
     while (defined($v = shift(@s))) {
         $v = abs($v);
+        $pph = abs(shift @par_per_hole);
+        $hh = abs(shift @handicap_hole);
 
         #
         # Each player is allowed double bogey on each hole.  If the
         # hole is one of the player's handicap hole, they are allowed
         # one or more strokes.
         #
-        my $max_score = ($c{$course}{$hole}[0] + 2);
+        my $max_score = ($pph + 2);
 
-        $add_stroke = ($cch - $c{$course}{$hole}[1]);
+        $add_stroke = ($cch - $hh);
         if ($add_stroke >= 0 && $add_stroke < 9) {
             $max_score++;
         }
         if ($add_stroke >= 9) {
             $max_score += 2;
         }
-        #if ($c{$course}{$hole}[1] <= $cch) { $max_score++ };
 
         $post += ($v > $max_score) ? $max_score : $v;
         $hole++;
@@ -827,7 +841,7 @@ sub
 print_tables {
 
     my($yp) = @_;
-    my(%birds, %eagles, $size);
+    my(%birds, %eagles, %holeinone, $size);
 
     if ($bt{$yp}) {
         %birds = %{$bt{$yp}};
@@ -891,6 +905,37 @@ print_tables {
         print "</table></br>\n", if $html;
         print "\n", if !$html;
     }
+
+    if ($ht{$yp}) {
+        %holeinone = %{$ht{$yp}};
+        print "Hole-In-One Table $yp", if !$html;
+        print " - Weeks $start_week through $end_week",
+            if ((($end_week - $start_week) < 14) && ($end_week - $start_week) > 0) && !$html;
+        print " - Week $start_week", if ($start_week == $end_week) && !$html;
+        print ":\n", if !$html;
+        print "<b>Hole-In-One Table $yp</b>\n", if $html;
+        print "<b> - Weeks $start_week through $end_week:</b>",
+            if ((($end_week - $start_week) < 14) && ($end_week - $start_week) > 0) && $html;
+        print "<b> - Week $start_week:</b>", if ($start_week == $end_week) && $html;
+        print "\n<head>\n", if $html;
+        print "<style>\n", if $html;
+        print " table {\n  border-collapse: collapse;\n }\n", if $html;
+        print " table, td, th {\n  border: 1px solid black;\n }\n", if $html;
+        print "</style>\n", if $html;
+        print "</head>\n", if $html;
+        #print "<table style=\"width:25\%\"></br>\n", if $html;
+        print "<table border=\"1\" width = \"300\">\n", if $html;
+        print "  <tr>\n    <th style=\"text-align:left\">Name</th>\n", if $html;
+        print "    <th style=\"text-align:center\">Hole-In-Ones</th>\n  </tr>\n", if $html;
+        foreach my $key (sort { $holeinone{$b} <=> $holeinone{$a} } keys %holeinone) {
+            printf "%-20s %4d\n", $key, $holeinone{$key}, if !$html;
+            print "  <tr>\n", if $html;
+            printf "    <td>%s</td>\n    <td style=\"text-align:center\">%d</td>", $key, $holeinone{$key}, if $html;
+            print "  </tr>\n", if $html;
+        }
+        print "</table></br>\n", if $html;
+        print "\n", if !$html;
+    }
 }
 
 sub
@@ -948,17 +993,17 @@ print_player_stats {
 
             for (my $h = 1; $h < 10; $h++) {
 
-                printf("Hole %d (par %d): Total shots: %3d  ", ($h + $offset), $c{$sc}{$h}[0], $p{$pn}{$sc}{$h}[0]{shots});
+                printf("Hole %d (par %d): Total shots: %3d  ", ($h + $offset), $c{$sc}{$h}[0], $p{$pn}{$sc}{$h}{shots});
 
                 if ($c{$sc}{$h}[0] > 3) {
-                    printf("ave = %.2f\n  Eagles=%d, ", ($p{$pn}{$sc}{$h}[0]{shots} / $p{$pn}{$sc}{xplayed}),
-                        $p{$pn}{$sc}{$h}[0]{e} ? $p{$pn}{$sc}{$h}[0]{e} : 0);
+                    printf("ave = %.2f\n  Eagles=%d, ", ($p{$pn}{$sc}{$h}{shots} / $p{$pn}{$sc}{xplayed}),
+                        $p{$pn}{$sc}{$h}{e} ? $p{$pn}{$sc}{$h}{e} : 0);
                 } elsif ($c{$sc}{$h}[0] == 3) {
-                    printf("ave = %.2f\n  Hole-in-Ones=%d, ", ($p{$pn}{$sc}{$h}[0]{shots} / $p{$pn}{$sc}{xplayed}),
-                        $p{$pn}{$sc}{$h}[0]{e} ? $p{$pn}{$sc}{$h}[0]{e} : 0);
+                    printf("ave = %.2f\n  Hole-in-Ones=%d, ", ($p{$pn}{$sc}{$h}{shots} / $p{$pn}{$sc}{xplayed}),
+                        $p{$pn}{$sc}{$h}{e} ? $p{$pn}{$sc}{$h}{e} : 0);
                 }
-                printf("Birdies=%d, Pars=%d, Bogies=%d, Double Bogies=%d, Others=%d\n\n", $p{$pn}{$sc}{$h}[0]{b},
-                    $p{$pn}{$sc}{$h}[0]{p}, $p{$pn}{$sc}{$h}[0]{bo}, $p{$pn}{$sc}{$h}[0]{db}, $p{$pn}{$sc}{$h}[0]{o});
+                printf("Birdies=%d, Pars=%d, Bogies=%d, Double Bogies=%d, Others=%d\n\n", $p{$pn}{$sc}{$h}{b},
+                    $p{$pn}{$sc}{$h}{p}, $p{$pn}{$sc}{$h}{bo}, $p{$pn}{$sc}{$h}{db}, $p{$pn}{$sc}{$h}{o});
             }
             print "\n";
         }
@@ -1167,8 +1212,9 @@ get_player_scores {
 
     my($fn, $pn, $cy) = @_;
 
-    my($cw, $date, $h, $hi, $hc, %tnfb_db);
+    my($cw, $date, $h, $hi, $hc, %tnfb_db, $course_data);
     my($course, $par, $slope, $date, $hi, $hc, $shot, $post, $md);
+    my(@par_per_hole);
 
     tie %tnfb_db, 'GDBM_File', $fn, GDBM_READER, 0640
         or die "$GDBM_File::gdbm_errno";
@@ -1242,6 +1288,12 @@ get_player_scores {
         ($course, $par, $slope, $date, $hi, $hc, $shot, $post) = @score_record[0..7];
         my @score = @score_record[8..16];
 
+        $course_data = get_course_data($cy, $course);
+        print "course data $course_data\n", if (0);
+        @par_per_hole = split(/:/, $course_data);
+        @par_per_hole = @par_per_hole[4..12];
+        print "@par_per_hole\n", if (0);
+
         if (defined($p{$pn}{$cy}{$cw})) {
             print "Possible double score: $pn: Week=$cw, Date=$d\n";
             next;
@@ -1272,6 +1324,7 @@ get_player_scores {
 
         for ($h = 1; $h < 10; $h++) {
             my $hole = abs(shift @score);
+            my $pph = abs(shift @par_per_hole);
 
             my $bh = $h;
             if (($course eq 'SB') || ($course eq 'NB')) {
@@ -1291,44 +1344,84 @@ get_player_scores {
                 $bph{$md}{b} = 0;
             }
 
-            $p{$pn}{$course}{$h}[0]{shots} += $hole;
+            $p{$pn}{$course}{$h}{shots} += $hole;
 
-            if (($c{$course}{$h}[0] - $hole) < -2) {
+            if (($pph - $hole) < -2) {
                 $p{$pn}{to}++;
-                $p{$pn}{$course}{$h}[0]{o}++;
+                $p{$pn}{$course}{$h}{o}++;
                 $y{$cy}{total_other}++;
                 $to{$c{$course}{$h}[0]}{$hole}++;
             };
-            if (($c{$course}{$h}[0] - $hole) == -2) {
+            if (($pph - $hole) == -2) {
                 $p{$pn}{tdb}++;
-                $p{$pn}{$course}{$h}[0]{db}++;
+                $p{$pn}{$course}{$h}{db}++;
                 $y{$cy}{total_db}++;
             }
-            if (($c{$course}{$h}[0] - $hole) == -1) {
+            if (($pph - $hole) == -1) {
                 $p{$pn}{bo}++;
-                $p{$pn}{$course}{$h}[0]{bo}++;
+                $p{$pn}{$course}{$h}{bo}++;
                 $y{$cy}{total_bogies}++;
             }
-            if (($c{$course}{$h}[0] - $hole) == 0) {
+            if (($pph - $hole) == 0) {
                 $p{$pn}{tp}++;
-                $p{$pn}{$course}{$h}[0]{p}++;
+                $p{$pn}{$course}{$h}{p}++;
                 $y{$cy}{total_pars}++;
             }
-            if (($c{$course}{$h}[0] - $hole) == 1) {
-                $p{$pn}{$course}{$h}[0]{b}++;
+            if (($pph - $hole) == 1) {
+                $p{$pn}{$course}{$h}{b}++;
                 $p{$pn}{tb}++;
                 $y{$cy}{total_birdies}++;
                 $bt{$cy}{$pn} += 1;
                 $bph{$md}{b}++;
                 $bpp{$course}{$bh}{$pn}++;
             }
-            if (($c{$course}{$h}[0] - $hole) == 2) {
-                $p{$pn}{$course}{$h}[0]{e}++;
+            if (($pph > 3) && ($pph - $hole) == 2) {
+                $p{$pn}{$course}{$h}{e}++;
                 $p{$pn}{te}++;
                 $y{$cy}{total_eagles}++;
                 $et{$cy}{$pn} += 1;
             }
+            if (($pph == 3) && ($pph - $hole) == 2) {
+                # print "Hold in one by: $pn on $course $h\n";
+                $p{$pn}{$course}{$h}{h}++;
+                $p{$pn}{th}++;
+                $y{$cy}{total_holeinone}++;
+                $ht{$cy}{$pn} += 1;
+            }
         }
     }
     untie %tnfb_db;
+}
+
+sub
+get_course_data {
+    my ($year, $course) = @_;
+
+    if ($year >= 1995 and $year <= 2024) {
+        #
+        # Par and handicap hole for each hole.
+        #
+        if ($course eq "SF") {
+            return("South Front:34.8:127:36:4:4:3:4:5:5:3:4:4:7:1:9:5:3:4:2:8:6");
+        }
+        if ($course eq "SB") {
+            return("South Back:34.7:121:36:5:3:4:4:5:3:4:3:5:2:9:5:7:8:6:1:4:3");
+        }
+    } elsif ($year >= 2025) {
+        #
+        # Par and handicap hole for each hole.
+        #
+        if ($course eq "SF") {
+            return("South Front:35.0:119:36:4:4:3:4:4:4:5:5:3:7:1:9:5:6:8:3:4:2");
+        }
+        if ($course eq "SB") {
+            return("South Back:34.2:129:35:4:3:4:4:5:3:4:3:5:7:1:9:5:6:8:3:4:2");
+        }
+    }
+    if ($course eq "NF") {
+        return("North Front:35.6:124:36:5:4:4:4:5:3:4:3:4:3:6:7:2:4:5:8:9:1");
+    }
+    if ($course eq "NB") {
+        return("North Back:35.1:130:36:4:4:5:3:4:4:3:4:5:2:3:9:8:7:4:6:5:1");
+    }
 }
