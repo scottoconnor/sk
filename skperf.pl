@@ -92,6 +92,14 @@ GetOptions (
     "a" => \$add)
 or die("Error in command line arguments\n");
 
+if ($only_year) {
+    $cur_year = $start_year = $end_year = $only_year;
+}
+
+if ($only_week) {
+    $start_week = $end_week = $only_week;
+}
+
 #
 # Open the league directory and only read the Gnu database files.
 #
@@ -137,14 +145,6 @@ if ($all_time || ($start_year < 1997)) {
 if ($only_year > $start_year) {
     print "only_year of \"$only_year\" is beyond last year of play.\n";
     exit;
-}
-
-if ($only_year) {
-    $start_year = $end_year = $only_year;
-}
-
-if ($only_week) {
-    $start_week = $end_week = $only_week;
 }
 
 #
