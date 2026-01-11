@@ -203,6 +203,7 @@ if ($add) {
     my ($db_out, $course_rating, $slope, $gdbm_file, @sr, $pn);
     my ($date, $fn, @week, $month, $day, $year, $course, $line, $c, $fb);
     my ($hi, $ph, $post, $cph, $shot, @swings, $swing, $team, $count);
+    my ($course_data, @course_elements);
 
     $count = 0;
 
@@ -240,8 +241,10 @@ if ($add) {
                 #
                 ($c, $fb) = $week[3] =~ /(S|N)\w+ (F|B)/;
                 $course = "$c$fb";
-                $course_rating = $c{$course}{course_rating};
-                $slope = $c{$course}{slope};
+                $course_data = get_course_data($year, $course);
+                @course_elements = split(/:/, $course_data);
+                ($course_rating, $slope) = @course_elements[1..2];
+                print "$course: $course_rating, $slope\n", if (0);
             } elsif ($line =~ /^(\d{1,2})/) {
                 @sr = split (/,/, $line);
                 $pn = $sr[3];
@@ -312,7 +315,8 @@ sub
 net_double_bogey {
     my ($pn, $year, $file, $course, @s) = @_;
     my ($v, $hole, $post, $hi, $cd, $ch, $cch, $ph, $add_stroke);
-    my ($course_data, @par_per_hole, @handicap_hole, $pph, $hh);
+    my ($course_data, @course_elements, @par_per_hole, @handicap_hole, $pph, $hh);
+    my ($course_rating, $slope, $par);
 
     tie %tnfb_db, 'GDBM_File', $file, GDBM_READER, 0644
         or die "$GDBM_File::gdbm_errno";
@@ -324,12 +328,13 @@ net_double_bogey {
     $course_data = get_course_data($year, $course);
     print "course data $course_data\n", if (0);
 
-    @par_per_hole = split(/:/, $course_data);
-    @par_per_hole = @par_per_hole[4..12];
-    print "@par_per_hole\n", if (0);
+    @course_elements = split(/:/, $course_data);
 
-    @handicap_hole = split(/:/, $course_data);
-    @handicap_hole = @handicap_hole[13..21];
+    ($course_rating, $slope, $par) = @course_elements[1..3];
+    print "$course: $course_rating, $slope\n", if (0);
+    @par_per_hole = @course_elements[4..12];
+    print "@par_per_hole\n", if (0);
+    @handicap_hole = @course_elements[13..21];
     print "@handicap_hole\n", if (0);
 
     #
@@ -346,8 +351,8 @@ net_double_bogey {
         print "$pn: using handicap index of -> $hi\n"
     }
 
-    $cd = ($c{$course}{course_rating} - $c{$course}{par});
-    $ch = (($hi * ($c{$course}->{slope} / 113)) + $cd);
+    $cd = ($course_rating - $par);
+    $ch = (($hi * ($slope / 113)) + $cd);
     $cch = round($ch, 1);
     $ph = ($ch * 0.9);
     $ph = round($ph, 1);
