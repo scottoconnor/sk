@@ -944,6 +944,10 @@ print_tables {
 sub
 print_player_stats {
 
+    die "$start_year != $end_year, only 1 year at a time.\n", if ($start_year != $end_year);
+
+    my ($par, $course_data, @course_elements, @par_per_hole);
+
     foreach my $pn (sort keys %p) {
 
         my $out_filename = "/tmp/$pn", if ($output);
@@ -987,7 +991,12 @@ print_player_stats {
                 next;
             }
 
-            print "$c{$sc}->{name}\n";
+            $course_data = get_course_data($start_year, $sc);
+            print "course data $course_data\n", if (0);
+            @course_elements = split(/:/, $course_data);
+            @par_per_hole = @course_elements[4..12];
+
+            print "$course_elements[0]\n";
 
             my $offset = 0;
             if ($sc eq "NB" || $sc eq "SB") {
@@ -996,12 +1005,14 @@ print_player_stats {
 
             for (my $h = 1; $h < 10; $h++) {
 
-                printf("Hole %d (par %d): Total shots: %3d  ", ($h + $offset), $c{$sc}{$h}[0], $p{$pn}{$sc}{$h}{shots});
+                my $par = abs(shift @par_per_hole);
 
-                if ($c{$sc}{$h}[0] > 3) {
+                printf("Hole %d (par %d): Total shots: %3d  ", ($h + $offset), $par, $p{$pn}{$sc}{$h}{shots});
+
+                if ($par > 3) {
                     printf("ave = %.2f\n  Eagles=%d, ", ($p{$pn}{$sc}{$h}{shots} / $p{$pn}{$sc}{xplayed}),
                         $p{$pn}{$sc}{$h}{e} ? $p{$pn}{$sc}{$h}{e} : 0);
-                } elsif ($c{$sc}{$h}[0] == 3) {
+                } elsif ($par == 3) {
                     printf("ave = %.2f\n  Hole-in-Ones=%d, ", ($p{$pn}{$sc}{$h}{shots} / $p{$pn}{$sc}{xplayed}),
                         $p{$pn}{$sc}{$h}{e} ? $p{$pn}{$sc}{$h}{e} : 0);
                 }
