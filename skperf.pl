@@ -974,7 +974,10 @@ print_player_stats {
             if ($p{$pn}{$sc}{xplayed} == 0) {
                 next;
             }
-            printf("Played %-11s: %d times.\n", $c{$sc}->{name}, $p{$pn}{$sc}{xplayed});
+
+            $course_data = get_course_data($start_year, $sc);
+            @course_elements = split(/:/, $course_data);
+            printf("Played %-11s: %d times.\n", $course_elements[0], $p{$pn}{$sc}{xplayed});
             $total_player_rounds += $p{$pn}{$sc}{xplayed};
         }
         print "\nTotal Strokes = $p{$pn}{total_strokes}\n";
