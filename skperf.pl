@@ -5,7 +5,6 @@
 
 use strict;
 require './tnfb_years.pl';
-require './courses.pl';
 require './subs.pl';
 require './hcroutines.pl';
 
@@ -52,12 +51,11 @@ my (undef(%p));
 my ($dh, %golfers_gdbm);
 my (%tnfb_db);
 my ($cy, $cw, $t0, $t1, $fna, $total_time);
-my (%bt, %et, %difficult, %bph, %bpp, %to, %ht);
+my (%bt, %et, %difficult, %bph, %bpp, %to, %ht, %c);
 
 #
 # These are hash variable from included files. see 'require' above.
 #
-our (%c);
 our (%dates);
 our (%subs);
 
