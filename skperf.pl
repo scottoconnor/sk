@@ -824,19 +824,23 @@ print_stats {
 }
 
 if ($course_stats) {
-
     my @courses = ("SF", "SB", "NF", "NB");
+    my ($course, $course_data, @course_elements);
+
     while (my $sc = shift @courses) {
         if ($c{$sc}{total_strokes} == 0) {
             next;
         }
         $c{$sc}{ave_score} = ($c{$sc}{total_strokes} / $c{$sc}{total_scores});
     }
-    foreach my $key (reverse sort { $c{$b}{ave_score} <=> $c{$a}{ave_score} } keys %c) {
-        if ($c{$key}{total_strokes} == 0) {
+    foreach my $course (reverse sort { $c{$b}{ave_score} <=> $c{$a}{ave_score} } keys %c) {
+        $course_data = get_course_data($start_year, $course);
+        print "course data $course_data\n", if (0);
+        @course_elements = split(/:/, $course_data);
+        if ($c{$course}{total_strokes} == 0) {
             next;
         }
-        printf("%-11s: Stroke Average = %.2f\n", $c{$key}->{name}, ($c{$key}{ave_score}));
+        printf("%-11s: Stroke Average = %.2f\n", $course_elements[0], ($c{$course}{ave_score}));
     }
 }
 
@@ -1179,12 +1183,18 @@ if ($thirties) {
 }
 
 if ($birdies_per_player) {
-    foreach my $cc (reverse sort keys %bpp) {
-        my %holes = %{$bpp{$cc}};
+    my ($course, $course_data, @course_elements);
+
+    foreach my $course (reverse sort keys %bpp) {
+        $course_data = get_course_data($start_year, $course);
+        print "course data $course_data\n", if (0);
+        @course_elements = split(/:/, $course_data);
+
+        my %holes = %{$bpp{$course}};
         foreach my $hn (sort keys(%holes)) {
-            print "$c{$cc}{name}: \#$hn\n";
+            print "$course_elements[0]: \#$hn\n";
             print "-----------\n";
-            my %players = %{$bpp{$cc}{$hn}};
+            my %players = %{$bpp{$course}{$hn}};
             foreach my $pn (reverse sort { $players{$a} <=> $players{$b} } (keys(%players))) {
                 print "$pn: $players{$pn}\n";
             }
@@ -1200,7 +1210,7 @@ get_player_scores {
 
     my($cw, $date, $h, $hi, $hc, %tnfb_db, $course_data);
     my($course, $par, $slope, $date, $hi, $hc, $shot, $post);
-    my(@par_per_hole, $hp);
+    my(@par_per_hole, @course_elements, $hp);
 
     tie %tnfb_db, 'GDBM_File', $fn, GDBM_READER, 0640
         or die "$GDBM_File::gdbm_errno";
@@ -1276,8 +1286,8 @@ get_player_scores {
 
         $course_data = get_course_data($cy, $course);
         print "course data $course_data\n", if (0);
-        @par_per_hole = split(/:/, $course_data);
-        @par_per_hole = @par_per_hole[4..12];
+        @course_elements = split(/:/, $course_data);
+        @par_per_hole = @course_elements[4..12];
         print "@par_per_hole\n", if (0);
 
         if (defined($p{$pn}{$cy}{$cw})) {
@@ -1299,7 +1309,7 @@ get_player_scores {
         $p{$pn}{$d}{hc} = $hc;
         $p{$pn}{$d}{hi} = $hi;
         $p{$pn}{$d}{net} = ($shot - $hc);
-        $p{$pn}{$d}{diff} = (($shot - $hc) - $c{$course}{par});
+        $p{$pn}{$d}{diff} = (($shot - $hc) - $course_elements[3]);
         if ($shot >= 50) {
             $y{$cy}{fifty_plus}++;
         }
