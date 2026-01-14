@@ -1029,78 +1029,49 @@ print_player_stats {
 }
 
 if ($hardest) {
-    my ($course, $index, $ph, $hp, $offset);
+    my ($course, $index, $ph, $hp, $hole, $offset);
+    my ($course_data, @course_elements, @par_per_hole);
 
     foreach $hp (keys %difficult) {
-        $difficult{$hp}{ave} = ($difficult{$hp}{score} / $difficult{$hp}{xplayed});
+        $difficult{$hp}{ave} = ($difficult{$hp}{score} / $difficult{$hp}{xp});
+        ($course, $hole) = $hp =~ /([N|S][F|B])(\d+)/;
+        $course_data = get_course_data($start_year, $course);
+        @course_elements = split(/:/, $course_data);
+        @par_per_hole = @course_elements[4..12];
         $offset = 0;
-        if ($hp > 0 && $hp < 10) {
-            $course = 'SF';
-            $index = $hp;
-        } elsif ($hp > 9 && $hp < 19) {
-            $course = 'SB';
-            $index = ($hp - 9);
-        } elsif ($hp > 18 && $hp < 28) {
-            $course = 'NF';
-            $offset = 18;
-            $index = ($hp - 18);
-        } else {
-            $course = 'NB';
-            $offset = 18;
-            $index = ($hp - 27);
+        if ($hole > 9) {
+            $offset = 9;
         }
-        $ph = ($hp - $offset);
-        $difficult{$hp}{ave} -= $c{$course}->{$index}[0];
+        $difficult{$hp}{ave} -= @par_per_hole[(($hole - 1) - $offset)];
     }
 
     foreach $hp (reverse sort { $difficult{$a}{ave} <=> $difficult{$b}{ave} } (keys(%difficult))) {
+        ($course, $hole) = $hp =~ /([N|S][F|B])(\d+)/;
+        $course_data = get_course_data($start_year, $course);
+        @course_elements = split(/:/, $course_data);
+        @par_per_hole = @course_elements[4..12];
         $offset = 0;
-        if ($hp > 0 && $hp < 10) {
-            $course = 'SF';
-            $index = $hp;
-        } elsif ($hp > 9 && $hp < 19) {
-            $course = 'SB';
-            $index = ($hp - 9);
-        } elsif ($hp > 18 && $hp < 28) {
-            $course = 'NF';
-            $offset = 18;
-            $index = ($hp - 18);
-        } else {
-            $course = 'NB';
-            $offset = 18;
-            $index = ($hp - 27);
+        if ($hole > 9) {
+            $offset = 9;
         }
-        $ph = ($hp - $offset);
-        printf("%-11s hole %2d (par %d) average over par = %.2f (played %d times)\n", $c{$course}->{name}, $ph,
-            $c{$course}->{$index}[0], $difficult{$hp}{ave}, $difficult{$hp}{xplayed});
+        printf("%-11s hole %2d (par %d) average over par = %.2f (played %d times)\n",
+            $course_elements[0], $hole, @par_per_hole[(($hole - 1) - $offset)],
+                $difficult{$hp}{ave}, $difficult{$hp}{xp});
     }
 }
 
 if ($birdies_per_hole) {
-    my ($course, $offset, $ph);
+    my ($course, $hole, $offset, $course_data, @course_elements);
 
     foreach my $hp (reverse sort { $bph{$a}{b} <=> $bph{$b}{b} } (keys(%bph))) {
-
+        ($course, $hole) = $hp =~ /([N|S][F|B])(\d+)/;
+        $course_data = get_course_data($start_year, $course);
+        @course_elements = split(/:/, $course_data);
         $offset = 0;
-
-        if ($hp > 0 && $hp < 10) {
-            $course = 'South Front';
-            #$index = $hp;
-        } elsif ($hp > 9 && $hp < 19) {
-            $course = 'South Back';
-            #$index = ($hp - 9);
-        } elsif ($hp > 18 && $hp < 28) {
-            $course = 'North Front';
-            $offset = 18;
-            #$index = ($hp - 18);
-        } else {
-            $course = 'North Back';
-            $offset = 18;
-            #$index = ($hp - 27);
+        if ($hole > 9) {
+            $offset = 9;
         }
-        $ph = ($hp - $offset);
-
-        print "$course, hole $ph - total birdies -> $bph{$hp}{b}\n";
+        printf("%-11s: hole %2d - total birdies = %d\n", $course_elements[0], $hole, $bph{$hp}{b});
     }
 }
 
@@ -1228,8 +1199,8 @@ get_player_scores {
     my($fn, $pn, $cy) = @_;
 
     my($cw, $date, $h, $hi, $hc, %tnfb_db, $course_data);
-    my($course, $par, $slope, $date, $hi, $hc, $shot, $post, $md);
-    my(@par_per_hole);
+    my($course, $par, $slope, $date, $hi, $hc, $shot, $post);
+    my(@par_per_hole, $hp);
 
     tie %tnfb_db, 'GDBM_File', $fn, GDBM_READER, 0640
         or die "$GDBM_File::gdbm_errno";
@@ -1346,17 +1317,20 @@ get_player_scores {
                 $bh += 9;
             }
 
-            $md = ($h + (($course eq 'SF') ? 0 : ($course eq 'SB') ? 9 :
-                ($course eq 'NF') ? 18 : ($course eq 'NB') ? 27 : 0)), if ($hardest || $birdies_per_hole);
-            $difficult{$md}{score} += $hole, if $hardest;
-            $difficult{$md}{xplayed}++, if $hardest;
+            if ($course =~ /[S|N]B/) {
+                $hp = $course . ($h + 9);
+            } else {
+                $hp = $course . $h;
+            }
+            $difficult{$hp}{score} += $hole, if $hardest;
+            $difficult{$hp}{xp}++, if $hardest;
 
             #
             # If we are getting birdies per hole and a hole doesn't have a birdie,
             # be sure to initialize it as 0 so it shows up in the list.
             #
-            if (!defined($bph{$md}{b})) {
-                $bph{$md}{b} = 0;
+            if (!defined($bph{$hp}{b})) {
+                $bph{$hp}{b} = 0;
             }
 
             $p{$pn}{$course}{$h}{shots} += $hole;
@@ -1387,7 +1361,7 @@ get_player_scores {
                 $p{$pn}{tb}++;
                 $y{$cy}{total_birdies}++;
                 $bt{$cy}{$pn} += 1;
-                $bph{$md}{b}++;
+                $bph{$hp}{b}++;
                 $bpp{$course}{$bh}{$pn}++;
             }
             if (($pph > 3) && ($pph - $hole) == 2) {
