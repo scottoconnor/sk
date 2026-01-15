@@ -4,7 +4,6 @@
 #
 
 use strict;
-require './courses.pl';
 require './tnfb_years.pl';
 require './hcroutines.pl';
 
@@ -104,24 +103,53 @@ foreach my $team (sort keys(%league)) {
 sub
 gen_handicap {
     my ($hi) = @_;
+    my ($course_data, @course_elements, $course_rating, $slope, $par);
 
-    my $sfd = ($c{SF}{course_rating} - $c{SF}{par});
-    my $sf = (($hi * ($c{SF}->{slope} / 113)) + $sfd);
+    $course_data = get_course_data($year, "SF");
+    print "course data $course_data\n", if (0);
+    @course_elements = split(/:/, $course_data);
+    ($course_rating, $slope) = @course_elements[1..2];
+    $par = $course_elements[3];
+    print "SF: $course_rating, $slope\n", if (0);
+
+    my $sfd = ($course_rating - $par);
+    my $sf = (($hi * ($slope / 113)) + $sfd);
     $sf *= $allowance;
     $sf = round($sf, 1);
 
-    my $sbd = ($c{SB}{course_rating} - $c{SB}{par});
-    my $sb = (($hi * ($c{SB}->{slope} / 113)) + $sbd);
+    $course_data = get_course_data($year, "SB");
+    print "course data $course_data\n", if (0);
+    @course_elements = split(/:/, $course_data);
+    ($course_rating, $slope) = @course_elements[1..2];
+    $par = $course_elements[3];
+    print "SB: $course_rating, $slope\n", if (0);
+
+    my $sbd = ($course_rating - $par);
+    my $sb = (($hi * ($slope / 113)) + $sbd);
     $sb *= $allowance;
     $sb = round($sb, 1);
 
-    my $nfd = ($c{NF}{course_rating} - $c{NF}{par});
-    my $nf = (($hi * ($c{NF}->{slope} / 113)) + $nfd);
+    $course_data = get_course_data($year, "NF");
+    print "course data $course_data\n", if (0);
+    @course_elements = split(/:/, $course_data);
+    ($course_rating, $slope) = @course_elements[1..2];
+    $par = $course_elements[3];
+    print "NF: $course_rating, $slope\n", if (0);
+
+    my $nfd = ($course_rating - $par);
+    my $nf = (($hi * ($slope / 113)) + $nfd);
     $nf *= $allowance;
     $nf = round($nf, 1);
 
-    my $nbd = ($c{NB}{course_rating} - $c{NB}{par});
-    my $nb = (($hi * ($c{NB}->{slope} / 113)) + $nbd);
+    $course_data = get_course_data($year, "NB");
+    print "course data $course_data\n", if (0);
+    @course_elements = split(/:/, $course_data);
+    ($course_rating, $slope) = @course_elements[1..2];
+    $par = $course_elements[3];
+    print "NB: $course_rating, $slope\n", if (0);
+
+    my $nbd = ($course_rating - $par);
+    my $nb = (($hi * ($slope / 113)) + $nbd);
     $nb *= $allowance;
     $nb = round($nb, 1);
 

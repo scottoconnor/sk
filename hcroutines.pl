@@ -149,4 +149,37 @@ gen_hi {
 
     untie %tnfb_db;
 }
+
+sub
+get_course_data {
+    my ($year, $course) = @_;
+
+    if ($year >= 1995 and $year <= 2024) {
+        #
+        # Par and handicap hole for each hole.
+        #
+        if ($course eq "SF") {
+            return("South Front:34.8:127:36:4:4:3:4:5:5:3:4:4:7:1:9:5:3:4:2:8:6");
+        }
+        if ($course eq "SB") {
+            return("South Back:34.7:121:36:5:3:4:4:5:3:4:3:5:2:9:5:7:8:6:1:4:3");
+        }
+    } elsif ($year >= 2025) {
+        #
+        # Par and handicap hole for each hole.
+        #
+        if ($course eq "SF") {
+            return("South Front:35.0:119:36:4:4:3:4:4:4:5:5:3:7:1:9:5:6:8:3:4:2");
+        }
+        if ($course eq "SB") {
+            return("South Back:34.2:129:35:4:3:4:4:5:3:4:3:5:7:1:9:5:6:8:3:4:2");
+        }
+    }
+    if ($course eq "NF") {
+        return("North Front:35.6:124:36:5:4:4:4:5:3:4:3:4:3:6:7:2:4:5:8:9:1");
+    }
+    if ($course eq "NB") {
+        return("North Back:35.1:130:36:4:4:5:3:4:4:3:4:5:2:3:9:8:7:4:6:5:1");
+    }
+}
 1;
