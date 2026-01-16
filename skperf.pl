@@ -312,7 +312,7 @@ if ($add) {
 sub
 net_double_bogey {
     my ($pn, $year, $file, $course, @s) = @_;
-    my ($v, $hole, $post, $hi, $cd, $ch, $cch, $ph, $add_stroke);
+    my ($v, $post, $hi, $cd, $ch, $cch, $ph, $add_stroke);
     my ($course_data, @course_elements, @par_per_hole, @handicap_hole, $pph, $hh);
     my ($course_rating, $slope, $par);
 
@@ -356,7 +356,7 @@ net_double_bogey {
     $ph = round($ph, 1);
     $ph = abs($ph), if ($ph == 0.0);
 
-    $hole = 1; $post = 0;
+    $post = 0;
     while (defined($v = shift(@s))) {
         $v = abs($v);
         $pph = abs(shift @par_per_hole);
@@ -378,7 +378,6 @@ net_double_bogey {
         }
 
         $post += ($v > $max_score) ? $max_score : $v;
-        $hole++;
     }
     return ($hi, $ph, $post);
 }
@@ -1063,16 +1062,12 @@ if ($hardest) {
 }
 
 if ($birdies_per_hole) {
-    my ($course, $hole, $offset, $course_data, @course_elements);
+    my ($course, $hole, $course_data, @course_elements);
 
     foreach my $hp (reverse sort { $bph{$a}{b} <=> $bph{$b}{b} } (keys(%bph))) {
         ($course, $hole) = $hp =~ /([N|S][F|B])(\d+)/;
         $course_data = get_course_data($start_year, $course);
         @course_elements = split(/:/, $course_data);
-        $offset = 0;
-        if ($hole > 9) {
-            $offset = 9;
-        }
         printf("%-11s: hole %2d - total birdies = %d\n", $course_elements[0], $hole, $bph{$hp}{b});
     }
 }
@@ -1379,7 +1374,6 @@ get_player_scores {
                 $et{$cy}{$pn} += 1;
             }
             if (($pph == 3) && ($hole - $pph) == -2) {
-                # print "Hold in one by: $pn on $course $h\n";
                 $p{$pn}{$course}{$h}{h}++;
                 $p{$pn}{th}++;
                 $y{$cy}{total_holeinone}++;
