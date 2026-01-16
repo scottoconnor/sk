@@ -1343,28 +1343,28 @@ get_player_scores {
 
             $p{$pn}{$course}{$h}{shots} += $hole;
 
-            if (($pph - $hole) < -2) {
+            if (($hole - $pph) > 2) {
                 $p{$pn}{to}++;
                 $p{$pn}{$course}{$h}{o}++;
                 $y{$cy}{total_other}++;
                 $to{$pph}{$hole}++;
             }
-            if (($pph - $hole) == -2) {
+            if (($hole - $pph) == 2) {
                 $p{$pn}{tdb}++;
                 $p{$pn}{$course}{$h}{db}++;
                 $y{$cy}{total_db}++;
             }
-            if (($pph - $hole) == -1) {
+            if (($hole - $pph) == 1) {
                 $p{$pn}{bo}++;
                 $p{$pn}{$course}{$h}{bo}++;
                 $y{$cy}{total_bogies}++;
             }
-            if (($pph - $hole) == 0) {
+            if (($hole - $pph) == 0) {
                 $p{$pn}{tp}++;
                 $p{$pn}{$course}{$h}{p}++;
                 $y{$cy}{total_pars}++;
             }
-            if (($pph - $hole) == 1) {
+            if (($hole - $pph) == -1) {
                 $p{$pn}{$course}{$h}{b}++;
                 $p{$pn}{tb}++;
                 $y{$cy}{total_birdies}++;
@@ -1372,13 +1372,13 @@ get_player_scores {
                 $bph{$hp}{b}++;
                 $bpp{$course}{$bh}{$pn}++;
             }
-            if (($pph > 3) && ($pph - $hole) == 2) {
+            if (($pph > 3) && ($hole - $pph) == -2) {
                 $p{$pn}{$course}{$h}{e}++;
                 $p{$pn}{te}++;
                 $y{$cy}{total_eagles}++;
                 $et{$cy}{$pn} += 1;
             }
-            if (($pph == 3) && ($pph - $hole) == 2) {
+            if (($pph == 3) && ($hole - $pph) == -2) {
                 # print "Hold in one by: $pn on $course $h\n";
                 $p{$pn}{$course}{$h}{h}++;
                 $p{$pn}{th}++;
