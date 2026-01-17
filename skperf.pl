@@ -54,7 +54,7 @@ my ($cy, $cw, $t0, $t1, $fna, $total_time);
 my (%bt, %et, %difficult, %bph, %bpp, %to, %ht, %c);
 
 #
-# These are hash variable from included files. see 'require' above.
+# These are hash variables from included files. see 'require' above.
 #
 our (%dates);
 our (%subs);
