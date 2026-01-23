@@ -1,9 +1,10 @@
 #! /usr/bin/perl
 #
-# Copyright (c) 2018, 2021, Scott O'Connor
+# Copyright (c) 2018, 2026, Scott O'Connor
 #
 
 use Getopt::Long;
+use POSIX;
 
 $year = (1900 + (localtime)[5]);
 
@@ -38,13 +39,10 @@ unlink @html_list;
 #
 $num_weeks = 0;
 
-for (my $week = 1; $week < 16; $week++) {
-    $s = `./skperf.pl -s -y $year -w $week | grep "Total holes played"`;
-    ($s) = $s =~ /Total holes played: (\d+)/;
-    if ($s > 0) {
-        $num_weeks++;
-    }
-}
+$s = `./skperf.pl -s -y $year | grep "Total holes played"`;
+($s) = $s =~ /Total holes played: (\d+)/;
+$num_weeks = ceil(($s/288));
+print "Number of weeks: $num_weeks\n";
 
 if ($num_weeks == 15) {
     open ($log, ">", "/tmp/$start_year-$cur_year.html");
