@@ -983,6 +983,7 @@ print_player_stats {
         }
         print "\nTotal Strokes = $p{$pn}{total_strokes}\n";
         printf("Average Score = %.2f\n", ($p{$pn}{total_strokes} / $total_player_rounds));
+        printf("Total Hole-In-Ones = %d\n", $p{$pn}{th});
         printf("Total Eagles = %d\n", $p{$pn}{te});
         printf("Total Birdies = %d\n", $p{$pn}{tb});
 
@@ -1018,7 +1019,7 @@ print_player_stats {
                         $p{$pn}{$sc}{$h}{e} ? $p{$pn}{$sc}{$h}{e} : 0);
                 } elsif ($par == 3) {
                     printf("ave = %.2f\n  Hole-in-Ones=%d, ", ($p{$pn}{$sc}{$h}{shots} / $p{$pn}{$sc}{xplayed}),
-                        $p{$pn}{$sc}{$h}{e} ? $p{$pn}{$sc}{$h}{e} : 0);
+                        $p{$pn}{$sc}{$h}{h} ? $p{$pn}{$sc}{$h}{h} : 0);
                 }
                 printf("Birdies=%d, Pars=%d, Bogies=%d, Double Bogies=%d, Others=%d\n\n", $p{$pn}{$sc}{$h}{b},
                     $p{$pn}{$sc}{$h}{p}, $p{$pn}{$sc}{$h}{bo}, $p{$pn}{$sc}{$h}{db}, $p{$pn}{$sc}{$h}{o});
