@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 #
-# Copyright (c) 2024, Scott O'Connor
+# Copyright (c) 2024, 2026 Scott O'Connor
 #
 # This is a random generator for the week 16 (blind draw) point quota tournament.
 #
@@ -13,7 +13,7 @@ my %golfers = (
     1 =>  { name => "Dan Correia", taken => 0 , partner => 2 },
     2 =>  { name => "Paul Correia", taken => 0, partner => 1 },
     3 =>  { name => "Chet Czapkowski", taken => 0, partner =>  4 },
-    4 =>  { name => "Jim Marotta", taken => 0, partner => 3 },
+    4 =>  { name => "Mike Perisho", taken => 0, partner => 3 },
     5 =>  { name => "Scott O'Connor", taken => 0, partner => 6 },
     6 =>  { name => "Paul Percuoco", taken => 0, partner => 5 },
     7 =>  { name => "Pat Donahue", taken => 0, partner => 8 },
@@ -22,8 +22,8 @@ my %golfers = (
     10 => { name => "John Maley", taken => 0, partner =>  9 },
     11 => { name => "Tom Curley", taken => 0, partner =>  12 },
     12 => { name => "Ray Curley", taken => 0, partner => 11 },
-    13 => { name => "Kevin Cunningham", taken => 0, partner => 14 },
-    14 => { name => "Mike Perisho", taken => 0, partner => 13},
+    13 => { name => "Alex Chase", taken => 0, partner => 14 },
+    14 => { name => "Chris Mason", taken => 0, partner => 13},
     15 => { name => "Randy Carter", taken => 0, partner => 16 },
     16 => { name => "Jim O'Keefe", taken => 0, partner => 15},
     17 => { name => "Steve Cormey", taken => 0, partner => 18 },
@@ -57,7 +57,7 @@ my $y = 1;
 
 while ($y < 33) {
     my $which_num = (int(rand(4)));
-    my @seed_values = $source->random_values(4); 
+    my @seed_values = $source->random_values(4);
     print "@seed_values\n", if 0;
     my $seed = $seed_values[$which_num];
     print STDOUT "seed -> $seed - which_num = $which_num\n", if 0;
@@ -81,7 +81,7 @@ while ($y < 33) {
             $lastx = 0;
         }
         next;
-    } 
+    }
 
     $golfers{$x}{taken} = 1;
     $team{$y} = $golfers{$x}{name};
