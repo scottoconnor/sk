@@ -61,7 +61,7 @@ foreach my $pn (keys %golfers_gdbm) {
     tie %tnfb_db, 'GDBM_File', $file, GDBM_READER, 0644
         or die "$GDBM_File::gdbm_errno";
 
-    foreach my $y (1997..$end_year) {
+    foreach my $y (2003..$end_year) {
         foreach my $m (4..9) {
             foreach my $d (1..31) {
                 my $date = "$y-$m-$d";
