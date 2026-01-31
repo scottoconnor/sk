@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 #
-# Copyright (c) 2018, 2025 Scott O'Connor
+# Copyright (c) 2018, 2026 Scott O'Connor
 #
 
 use strict;
@@ -17,8 +17,15 @@ my ($debug) = 0;
 my (%tnfb_db, %league, $dh);
 my ($max_scores) = 20;
 my ($sf, $sb, $nf, $nb);
-our (%c);
 our (%dates);
+my ($league) = "./golfers";
+my (%golfers_gdbm);
+my ($total_scores, $div, %t, $tier, $course_data, @course_elements);
+my ($end_year) = (1900 + (localtime)[5]);
+my ($year) = $end_year;
+my @courses = ("SF", "SB", "NF", "NB");
+
+$div = 5;
 
 GetOptions (
     "x" => \$expected_diff,
@@ -30,37 +37,100 @@ or die("Error in command line arguments\n");
 my ($month) = (localtime)[4];
 $month++;
 my ($day) = (localtime)[3];
-my ($year) = (1900 + (localtime)[5]);
+
+opendir($dh, "$league") || die "Can't open \"$league\" directory.";
 
 #
-# Read the Gnu database files.
+# Read and store the Gnu gdbm database files.
 #
-opendir($dh, "./golfers") || die "Can't open \"golfers\" directory.";
-
 while (readdir $dh) {
-    if ($_ =~ /(^1\d{3}\056gdbm)/) {
-        tie %tnfb_db, 'GDBM_File', "golfers/$_", GDBM_READER, 0644
+    if ($_ =~ /(^1\d{3}$\.gdbm)/) {
+        tie %tnfb_db, 'GDBM_File', "$league/$_", GDBM_READER, 0644
             or die "$GDBM_File::gdbm_errno";
+        $golfers_gdbm{$tnfb_db{'Player'}} = "$league/$_";
+        untie %tnfb_db;
+    }
+}
+closedir ($dh);
 
-        #
-        # Only add a player to the handicap list if they are active
-        # and have a valid handicap index.
-        #
-        if ($tnfb_db{'Active'} == 0 || $tnfb_db{'Current'} == -100) {
-            untie %tnfb_db;
+foreach my $pn (keys %golfers_gdbm) {
+
+    my $file = $golfers_gdbm{$pn};
+    my ($course_year);
+
+    tie %tnfb_db, 'GDBM_File', $file, GDBM_READER, 0644
+        or die "$GDBM_File::gdbm_errno";
+
+    foreach my $y (1997..$end_year) {
+        foreach my $m (4..9) {
+            foreach my $d (1..31) {
+                my $date = "$y-$m-$d";
+                if (exists($tnfb_db{$date})) {
+                    my @sr = split(/:/, $tnfb_db{$date});
+                    print "$date: $tnfb_db{$date}\n", if 0;
+                    print "$date: @sr\n", if 0;
+                    print "$date: $sr[4], $sr[6]\n", if 0;
+
+                    ($course_year) = $sr[3] =~ /(\d\d\d\d)-/;
+                    print "year = $course_year\n", if (0);
+                    $course_data = get_course_data($course_year, $sr[0]);
+                    print "course data $course_data\n", if (0);
+                    @course_elements = split(/:/, $course_data);
+
+                    $tier = int($sr[4] / $div);
+                    print "tier $tier: hi = $sr[4]\n", if 0;
+                    $t{$tier}{strokes} += $sr[4];
+                    $t{$tier}{xplayed}++;
+                    $t{$tier}{scores}++;
+                    $t{$sr[0]}{$tier}{strokes} += $sr[4];
+                    $t{$sr[0]}{$tier}{xplayed}++;
+                    $t{$sr[0]}{$tier}{scores}++;
+
+                    $total_scores++;
+                }
+            }
+        }
+    }
+}
+
+while (my $sc = shift @courses) {
+    for ($tier = 0; $tier < 8; $tier++) {
+        if (!defined($t{$sc}{$tier})) {
             next;
         }
+        my $ave = (($t{$sc}{$tier}{strokes}/$t{$sc}{$tier}{xplayed}) * 1.0);
+        $t{$sc}{$tier}{ave} = $ave;
+        printf("%s: tier %d, (scores %d), strokes %d, ave = %.2f\n", $sc, $tier,
+            $t{$sc}{$tier}{scores}, $t{$sc}{$tier}{strokes}, $ave), if (0);
 
-        (my $first, my $last) = split(/ /, $tnfb_db{'Player'}, 2);
-        my $pn = "$last, $first";
+    }
+}
 
-        $league{$tnfb_db{'Team'}}{$pn}{hi} = $tnfb_db{'Current'};
+foreach my $pn (keys %golfers_gdbm) {
 
+    my $file = $golfers_gdbm{$pn};
+
+    tie %tnfb_db, 'GDBM_File', $file, GDBM_READER, 0644
+        or die "$GDBM_File::gdbm_errno";
+
+    #
+    # Only add a player to the handicap list if they are active
+    # and have a valid handicap index.
+    #
+    if ($tnfb_db{'Active'} == 0 || $tnfb_db{'Current'} == -100) {
         untie %tnfb_db;
+        next;
+    }
 
-        if ($expected_diff) {
-            expected_diff("golfers/$_");
-        }
+    (my $first, my $last) = split(/ /, $tnfb_db{'Player'}, 2);
+    my $pn = "$last, $first";
+
+    $league{$tnfb_db{'Team'}}{$pn}{hi} = $tnfb_db{'Current'};
+
+    untie %tnfb_db;
+
+    if ($expected_diff) {
+        expected_diff($file);
     }
 }
 closedir ($dh);
@@ -78,8 +148,7 @@ foreach my $team (sort keys(%league)) {
     my %tnfb = %{$league{$team}};
     foreach my $pn (sort keys %tnfb) {
         ($sf, $sb, $nf, $nb) = gen_handicap($tnfb{$pn}{hi});
-        printf("%-18s %4.1fN /%2d %2d %2d %2d%s\n", $pn, $tnfb{$pn}{hi}, $sf, $sb, $nf, $nb,
-            $tnfb{$pn}{aging}), if !defined($name);
+        printf("%-18s %4.1fN /%2d %2d %2d %2d\n", $pn, $tnfb{$pn}{hi}, $sf, $sb, $nf, $nb), if !defined($name);
     }
     print "\n", if !defined($name);
 }
@@ -95,8 +164,7 @@ foreach my $team (sort keys(%league)) {
     my %tnfb = %{$league{$team}};
     foreach my $pn (sort keys %tnfb) {
         ($sf, $sb, $nf, $nb) = gen_handicap($tnfb{$pn}{hi});
-        printf("%-18s %4.1fN /%2d %2d %2d %2d%s\n", $pn, $tnfb{$pn}{hi}, $sf, $sb, $nf, $nb,
-            $tnfb{$pn}{aging}), if !defined($name);
+        printf("%-18s %4.1fN /%2d %2d %2d %2d%s\n", $pn, $tnfb{$pn}{hi}, $sf, $sb, $nf, $nb), if !defined($name);
     }
 }
 
@@ -175,13 +243,17 @@ expected_diff {
     my $num_scores = 0;
     $by = ($year - 5);
 
+    print "$by to $year\n", if (0);
+
     foreach my $y (reverse ($by..$year)) {
         foreach my $w (reverse (1..15)) {
             if (exists($tnfb_db{$dates{$y}{$w}})) {
                 @sr = split(/:/, $tnfb_db{$dates{$y}{$w}});
-                $diff = round(((113 / $sr[2]) * ($sr[7] - $sr[1])),  10);
-                my $index_diff = ($diff - $hi);
-                $diff = calc_xd($pn, $index_diff, $diff, $hi);
+                print "$sr[0]: Scoring Record: @sr\n", if (0);
+                $diff = ((113 / $sr[2]) * ($sr[7] - $sr[1]));
+                my $tier = int($sr[4] / $div);
+                #printf("%s: score diff: %.2f, xd = %.2f\n", $pn, $diff, $t{$sr[0]}{$tier}{ave});
+                $diff += round($t{$sr[0]}{$tier}{ave});
                 $diff = round($diff,  10);
                 push (@scores, $diff);
                 $num_scores++;
@@ -192,27 +264,31 @@ expected_diff {
     }
 
     #
+    # League members that don't have more than 10 scores, allow
+    # the use of the current handicap index.
+    #
+    if (($team ne "Sub") && ($num_scores < 10)) {
+        print "$pn: league member with $num_scores scores.\n", if (0);
+        return;
+    }
+
+    #
     # If the player does not have the required number of scores,
     # a handicap can not be generted for them.
     #
     if (($use = &nscores($num_scores)) == 0) {
         delete($league{$team}{$pn});
         untie %tnfb_db;
+        print "$pn: only has $num_scores scores.\n", if (0);
         return;
     }
-
-    $league{$team}{$pn}{aging} = "";
-    #if ($use < 5) {
-        #printf("%s : use -> %d\n", $pn, $use), if ($pn =~ /$name/);
-        #$league{$team}{$pn}{aging} = "*";
-    #}
 
     @scores = sort {$a <=> $b} @scores;
 
     $hi = 0;
 
     for (my $y = 0; $y < $use; $y++) {
-        printf("score diff -> %.2f\n", $scores[$y]), if ($pn =~ /$name/);
+        #printf("$pn: score diff -> %.2f\n", $scores[$y]), if ($pn =~ /$name/);
         $hi += $scores[$y];
     }
     $hi /= $use;
@@ -220,69 +296,9 @@ expected_diff {
     $hi /= 2;
     $hi = round($hi, 10);
     $hi = abs($hi), if ($hi == 0.0);
-
+    print "$pn: $hi\n", if (0);
     $league{$team}{$pn}{hi} = $hi;
     #$tnfb_db{'Current'} = $hi;
 
     untie %tnfb_db;
-}
-
-sub
-calc_xd {
-    my ($pn, $id, $diff, $hi) = @_;
-    my ($nd, $hid, $d, $new_diff);
-
-    $d = 1.1;
-    if ($id <= -5) {
-        $nd = ($hi * $d);
-        $nd += 2.0;
-    }
-    $d = 1.2;
-    if ($id <= -4 && $id > -5) {
-        $nd = ($hi * $d);
-        $nd += 1.75;
-    }
-    $d = 1.3;
-    if ($id <= -3 && $id > -4) {
-        $nd = ($hi * $d);
-        $nd += 1.5;
-    }
-    $d = 1.4;
-    if ($id <= -2 && $id > -3) {
-        $nd = ($hi * $d);
-        $nd += 1.0;
-    }
-    $d = 1.5;
-    if ($id <= -1.5 && $id > -2) {
-        $nd = ($hi * $d);
-        $nd += 0.5;
-    }
-
-    if ($id > -1.5 && $id < 1.5) {
-        $nd = $hi;
-    }
-
-    my $d = 1.4;
-    if ($id >= 1.5 && $id < 2) {
-        $nd = ($hi * $d);
-    }
-    my $d = 1.5;
-    if ($id >= 2 && $id < 3) {
-        $nd = ($hi * $d);
-    }
-    my $d = 1.6;
-    if ($id >= 3 && $id < 4) {
-        $nd = ($hi * $d);
-    }
-    my $d = 1.7;
-    if ($id >= 4 && $id < 5) {
-        $nd = ($hi * $d);
-    }
-    my $d = 1.8;
-    if ($id >= 5) {
-        $nd = ($hi * $d);
-    }
-
-    $new_diff = ($diff + $nd);
-    return ($new_diff);
 }
