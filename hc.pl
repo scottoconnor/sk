@@ -13,7 +13,6 @@ use GDBM_File;
 my ($allowance) = 0.9;
 my ($expected_diff) = 0;
 my (undef($name));
-my ($debug) = 0;
 my (%tnfb_db, %league, $dh);
 my ($max_scores) = 20;
 my ($sf, $sb, $nf, $nb);
@@ -29,7 +28,6 @@ $div = 5;
 
 GetOptions (
     "x" => \$expected_diff,
-    "d" => \$debug,
     "n=s" => \$name,
     "a=f" => \$allowance),
 or die("Error in command line arguments\n");
