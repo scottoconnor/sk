@@ -12,6 +12,7 @@ use GDBM_File;
 
 my ($allowance) = 0.9;
 my ($expected_diff) = 0;
+my ($div) = 4;
 my (undef($name));
 my (%tnfb_db, %league, $dh);
 my ($max_scores) = 20;
@@ -19,16 +20,15 @@ my ($sf, $sb, $nf, $nb);
 our (%dates);
 my ($league) = "./golfers";
 my (%golfers_gdbm);
-my ($total_scores, $div, %t, $tier, $course_data, @course_elements);
+my ($total_scores, %t, $tier, $course_data, @course_elements);
 my ($end_year) = (1900 + (localtime)[5]);
 my ($year) = $end_year;
 my @courses = ("SF", "SB", "NF", "NB");
 
-$div = 5;
-
 GetOptions (
     "x" => \$expected_diff,
     "n=s" => \$name,
+    "d=i" => \$div,
     "a=f" => \$allowance),
 or die("Error in command line arguments\n");
 
@@ -284,7 +284,7 @@ expected_diff {
 
     #
     # If the player does not have the required number of scores,
-    # a handicap can not be generted for them.
+    # a handicap can not be calculated for them.
     #
     if (($use = &nscores($num_scores)) == 0) {
         delete($league{$team}{$pn});
