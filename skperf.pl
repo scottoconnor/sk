@@ -790,7 +790,10 @@ print_stats {
         printf("Total Strokes = %d\n", $y{$yp}{total_strokes});
         printf("League Stroke Average = %.2f\n",
             ($y{$yp}{total_strokes} / $y{$yp}{total_scores}));
-        printf("Total Eagles = %d\n", $y{$yp}{total_eagles});
+        printf("Total Hole-in-Ones = %d\n", $y{$yp}{total_holeinone}),
+            if ($y{$yp}{total_holeinone});
+        printf("Total Eagles = %d\n", $y{$yp}{total_eagles}),
+            if ($y{$yp}{total_eagles});
         printf("Total Birdies = %d\n", $y{$yp}{total_birdies});
         printf("Total Pars = %d\n", $y{$yp}{total_pars});
         printf("Total Bogies = %d\n", $y{$yp}{total_bogies});
