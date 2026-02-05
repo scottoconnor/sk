@@ -78,7 +78,6 @@ foreach my $pn (keys %golfers_gdbm) {
                     $tier = int($sr[4] / $div);
                     $t{$sr[0]}{$tier}{strokes} += ($sr[7] - $course_elements[3]);
                     $t{$sr[0]}{$tier}{xplayed}++;
-                    $t{$sr[0]}{$tier}{scores}++;
 
                     $total_scores++;
                 }
@@ -95,7 +94,7 @@ while (my $sc = shift @courses) {
         my $ave = (($t{$sc}{$tier}{strokes}/$t{$sc}{$tier}{xplayed}) * 1.0);
         $t{$sc}{$tier}{ave} = $ave;
         printf("%s: tier %d, (scores %d), strokes %d, ave = %.2f\n", $sc, $tier,
-            $t{$sc}{$tier}{scores}, $t{$sc}{$tier}{strokes}, $ave), if (0);
+            $t{$sc}{$tier}{xplayed}, $t{$sc}{$tier}{strokes}, $ave), if (1);
 
     }
 }
