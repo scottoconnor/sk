@@ -794,7 +794,8 @@ print_stats {
             if ($y{$yp}{total_holeinone});
         printf("Total Eagles = %d\n", $y{$yp}{total_eagles}),
             if ($y{$yp}{total_eagles});
-        printf("Total Birdies = %d\n", $y{$yp}{total_birdies});
+        printf("Total Birdies = %d\n", $y{$yp}{total_birdies}),
+            if ($y{$yp}{total_birdies});
         printf("Total Pars = %d\n", $y{$yp}{total_pars});
         printf("Total Bogies = %d\n", $y{$yp}{total_bogies});
         printf("Total Double Bogies = %d\n", $y{$yp}{total_db});
@@ -814,8 +815,12 @@ print_stats {
         printf("Total Strokes = <b><font color=\"green\">%d</font></b></br>\n", $y{$yp}{total_strokes});
         printf("League Stroke Average = <b><font color=\"green\">%.2f</font></b></br>\n",
             ($y{$yp}{total_strokes} / $y{$yp}{total_scores}));
-        printf("Total Eagles  = <b><font color=\"green\">%d</font></b></br>\n", $y{$yp}{total_eagles});
-        printf("Total Birdies = <b><font color=\"green\">%d</font></b></br>\n", $y{$yp}{total_birdies});
+        printf("Total Hole-in-Ones  = <b><font color=\"green\">%d</font></b></br>\n", $y{$yp}{total_holeinone}),
+            if ($y{$yp}{total_holeinone});
+        printf("Total Eagles  = <b><font color=\"green\">%d</font></b></br>\n", $y{$yp}{total_eagles}),
+            if ($y{$yp}{total_eagles});
+        printf("Total Birdies = <b><font color=\"green\">%d</font></b></br>\n", $y{$yp}{total_birdies}),
+            if ($y{$yp}{total_birdies});
         printf("Total Pars = <b><font color=\"green\">%d</font></b></br>\n", $y{$yp}{total_pars});
         printf("Total Bogies = <b><font color=\"green\">%d</font></b></br>\n", $y{$yp}{total_bogies});
         printf("Total Double Bogies = <b><font color=\"green\">%d</font></b></br>\n", $y{$yp}{total_db});
@@ -849,6 +854,37 @@ print_tables {
 
     my($yp) = @_;
     my(%birds, %eagles, %holeinone, $size);
+
+    if ($ht{$yp}) {
+        %holeinone = %{$ht{$yp}};
+        print "Hole-In-One Table $yp", if !$html;
+        print " - Weeks $start_week through $end_week",
+            if ((($end_week - $start_week) < 14) && ($end_week - $start_week) > 0) && !$html;
+        print " - Week $start_week", if ($start_week == $end_week) && !$html;
+        print ":\n", if !$html;
+        print "<b>Hole-In-One Table $yp</b>\n", if $html;
+        print "<b> - Weeks $start_week through $end_week:</b>",
+            if ((($end_week - $start_week) < 14) && ($end_week - $start_week) > 0) && $html;
+        print "<b> - Week $start_week:</b>", if ($start_week == $end_week) && $html;
+        print "\n<head>\n", if $html;
+        print "<style>\n", if $html;
+        print " table {\n  border-collapse: collapse;\n }\n", if $html;
+        print " table, td, th {\n  border: 1px solid black;\n }\n", if $html;
+        print "</style>\n", if $html;
+        print "</head>\n", if $html;
+        #print "<table style=\"width:25\%\"></br>\n", if $html;
+        print "<table border=\"1\" width = \"300\">\n", if $html;
+        print "  <tr>\n    <th style=\"text-align:left\">Name</th>\n", if $html;
+        print "    <th style=\"text-align:center\">Hole-In-Ones</th>\n  </tr>\n", if $html;
+        foreach my $key (sort { $holeinone{$b} <=> $holeinone{$a} } keys %holeinone) {
+            printf "%-20s %4d\n", $key, $holeinone{$key}, if !$html;
+            print "  <tr>\n", if $html;
+            printf "    <td>%s</td>\n    <td style=\"text-align:center\">%d</td>", $key, $holeinone{$key}, if $html;
+            print "  </tr>\n", if $html;
+        }
+        print "</table></br>\n", if $html;
+        print "\n", if !$html;
+    }
 
     if ($bt{$yp}) {
         %birds = %{$bt{$yp}};
@@ -907,37 +943,6 @@ print_tables {
             printf "%-20s %4d\n", $key, $eagles{$key}, if !$html;
             print "  <tr>\n", if $html;
             printf "    <td>%s</td>\n    <td style=\"text-align:center\">%d</td>", $key, $eagles{$key}, if $html;
-            print "  </tr>\n", if $html;
-        }
-        print "</table></br>\n", if $html;
-        print "\n", if !$html;
-    }
-
-    if ($ht{$yp}) {
-        %holeinone = %{$ht{$yp}};
-        print "Hole-In-One Table $yp", if !$html;
-        print " - Weeks $start_week through $end_week",
-            if ((($end_week - $start_week) < 14) && ($end_week - $start_week) > 0) && !$html;
-        print " - Week $start_week", if ($start_week == $end_week) && !$html;
-        print ":\n", if !$html;
-        print "<b>Hole-In-One Table $yp</b>\n", if $html;
-        print "<b> - Weeks $start_week through $end_week:</b>",
-            if ((($end_week - $start_week) < 14) && ($end_week - $start_week) > 0) && $html;
-        print "<b> - Week $start_week:</b>", if ($start_week == $end_week) && $html;
-        print "\n<head>\n", if $html;
-        print "<style>\n", if $html;
-        print " table {\n  border-collapse: collapse;\n }\n", if $html;
-        print " table, td, th {\n  border: 1px solid black;\n }\n", if $html;
-        print "</style>\n", if $html;
-        print "</head>\n", if $html;
-        #print "<table style=\"width:25\%\"></br>\n", if $html;
-        print "<table border=\"1\" width = \"300\">\n", if $html;
-        print "  <tr>\n    <th style=\"text-align:left\">Name</th>\n", if $html;
-        print "    <th style=\"text-align:center\">Hole-In-Ones</th>\n  </tr>\n", if $html;
-        foreach my $key (sort { $holeinone{$b} <=> $holeinone{$a} } keys %holeinone) {
-            printf "%-20s %4d\n", $key, $holeinone{$key}, if !$html;
-            print "  <tr>\n", if $html;
-            printf "    <td>%s</td>\n    <td style=\"text-align:center\">%d</td>", $key, $holeinone{$key}, if $html;
             print "  </tr>\n", if $html;
         }
         print "</table></br>\n", if $html;
