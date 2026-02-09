@@ -11,7 +11,7 @@ use Getopt::Long;
 use GDBM_File;
 
 my ($allowance) = 0.9;
-my ($expected_diff) = 0;
+my ($expected_diff) = 1;
 my ($div) = 4;
 my (undef($name));
 my (%tnfb_db, %league, $dh);
@@ -94,7 +94,7 @@ while (my $sc = shift @courses) {
         my $ave = (($t{$sc}{$tier}{strokes}/$t{$sc}{$tier}{xplayed}) * 1.0);
         $t{$sc}{$tier}{ave} = $ave;
         printf("%s: tier %d, (scores %d), strokes %d, ave = %.2f\n", $sc, $tier,
-            $t{$sc}{$tier}{xplayed}, $t{$sc}{$tier}{strokes}, $ave), if (1);
+            $t{$sc}{$tier}{xplayed}, $t{$sc}{$tier}{strokes}, $ave), if (0);
 
     }
 }
@@ -221,7 +221,7 @@ sub
 expected_diff {
     my ($fn) = @_;
 
-    my (%tnfb_db, $use, @sr, $diff, $ex_diff, %pc, $hi, %pd, $by, $id, $nd);
+    my (%tnfb_db, $use, @sr, $diff, $ex_diff, $hi, $by, $tier);
 
     tie %tnfb_db, 'GDBM_File', $fn, GDBM_WRITER, 0644
         or die "$GDBM_File::gdbm_errno";
@@ -236,32 +236,25 @@ expected_diff {
     my $num_scores = 0;
     $by = ($year - 5);
 
-    print "$by to $year\n", if (0);
-
     foreach my $y (reverse ($by..$year)) {
         foreach my $w (reverse (1..15)) {
             if (exists($tnfb_db{$dates{$y}{$w}})) {
                 @sr = split(/:/, $tnfb_db{$dates{$y}{$w}});
                 print "$sr[0]: Scoring Record: @sr\n", if (0);
                 $diff = ((113 / $sr[2]) * ($sr[7] - $sr[1]));
-                my $tier = int($sr[4] / $div);
+                $tier = int($sr[4] / $div);
                 my $remainder = (($sr[4] / $div) - $tier);
                 $remainder *= 100;
-                printf("$pn: tier %d: hi = %.1f, remainder = %d%%\n",  $tier, $sr[4], $remainder),
-                    if ($pn =~ /Linstrom/ && 0);
-                if (($remainder > 70) && ($remainder < 85)) {
-                    $ex_diff = (($t{$sr[0]}{$tier}{ave} * 3) + $t{$sr[0]}{($tier + 1)}{ave});
+                if ($remainder > 85) {
+                    $ex_diff = (($t{$sr[0]}{$tier}{ave} * 2) + (($t{$sr[0]}{($tier + 1)}{ave} * 2) * 0.9));
                     $ex_diff /= 4;
                     $diff += $ex_diff;
-                    printf("$pn: 3x + 1\n"), if ($pn =~ /Linstrom/ && 0);
-                } elsif ($remainder > 85) {
-                    $ex_diff = (($t{$sr[0]}{$tier}{ave} * 2) + ($t{$sr[0]}{($tier + 1)}{ave} * 2));
+                } elsif (($remainder > 70) && ($remainder <= 85)) {
+                    $ex_diff = (($t{$sr[0]}{$tier}{ave} * 3) + ($t{$sr[0]}{($tier + 1)}{ave} * 0.8));
                     $ex_diff /= 4;
                     $diff += $ex_diff;
-                    printf("$pn: 2x + 2x\n"), if ($pn =~ /Linstrom/ && 0);
                 } else {
                     $diff += $t{$sr[0]}{$tier}{ave};
-                    printf("$pn: Just add\n"), if ($pn =~ /Linstrom/ && 0);
                 }
                 $diff = round($diff,  10);
                 push (@scores, $diff);
