@@ -245,11 +245,11 @@ expected_diff {
                 $tier = int($sr[4] / $div);
                 my $remainder = (($sr[4] / $div) - $tier);
                 $remainder *= 100;
-                if ($remainder > 85) {
+                if ($remainder > 90) {
                     $ex_diff = (($t{$sr[0]}{$tier}{ave} * 2) + (($t{$sr[0]}{($tier + 1)}{ave} * 2) * 0.9));
                     $ex_diff /= 4;
                     $diff += $ex_diff;
-                } elsif (($remainder > 70) && ($remainder <= 85)) {
+                } elsif (($remainder > 80) && ($remainder <= 90)) {
                     $ex_diff = (($t{$sr[0]}{$tier}{ave} * 3) + ($t{$sr[0]}{($tier + 1)}{ave} * 0.8));
                     $ex_diff /= 4;
                     $diff += $ex_diff;
