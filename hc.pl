@@ -17,13 +17,13 @@ my (undef($name));
 my (%tnfb_db, %league, $dh);
 my ($max_scores) = 20;
 my ($sf, $sb, $nf, $nb);
-our (%dates);
 my ($league) = "./golfers";
 my (%golfers_gdbm);
 my ($total_scores, %t, $tier, $course_data, @course_elements);
 my ($end_year) = (1900 + (localtime)[5]);
 my ($year) = $end_year;
 my @courses = ("SF", "SB", "NF", "NB");
+our (%dates);
 
 GetOptions (
     "x" => \$expected_diff,
@@ -54,12 +54,15 @@ closedir ($dh);
 foreach my $pn (keys %golfers_gdbm) {
 
     my $file = $golfers_gdbm{$pn};
-    my ($course_year);
+    my ($course_year, $start_year);
+
+    $start_year = ($end_year - 23);
+    print "$start_year..$end_year\n", if (0);
 
     tie %tnfb_db, 'GDBM_File', $file, GDBM_READER, 0644
         or die "$GDBM_File::gdbm_errno";
 
-    foreach my $y (2003..$end_year) {
+    foreach my $y ($start_year..$end_year) {
         foreach my $m (4..9) {
             foreach my $d (1..31) {
                 my $date = "$y-$m-$d";
@@ -271,6 +274,7 @@ expected_diff {
     #
     if (($team ne "Sub") && ($num_scores < 10)) {
         print "$pn: league member with $num_scores scores.\n", if (0);
+        untie %tnfb_db;
         return;
     }
 
