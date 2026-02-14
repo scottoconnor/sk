@@ -13,6 +13,7 @@ use GDBM_File;
 my ($allowance) = 0.9;
 my ($expected_diff) = 1;
 my ($div) = 4;
+my ($debug) = 0;
 my (undef($name));
 my (%tnfb_db, %league, $dh);
 my ($max_scores) = 20;
@@ -28,7 +29,7 @@ our (%dates);
 GetOptions (
     "x" => \$expected_diff,
     "n=s" => \$name,
-    "d=i" => \$div,
+    "d" => \$debug,
     "a=f" => \$allowance),
 or die("Error in command line arguments\n");
 
@@ -90,14 +91,14 @@ foreach my $pn (keys %golfers_gdbm) {
 }
 
 while (my $sc = shift @courses) {
-    for ($tier = 0; $tier < 8; $tier++) {
+    for ($tier = 0; $tier < 20; $tier++) {
         if (!defined($t{$sc}{$tier})) {
             next;
         }
         my $ave = (($t{$sc}{$tier}{strokes}/$t{$sc}{$tier}{xplayed}) * 1.0);
         $t{$sc}{$tier}{ave} = $ave;
-        printf("%s: tier %d, (scores %d), strokes %d, ave = %.2f\n", $sc, $tier,
-            $t{$sc}{$tier}{xplayed}, $t{$sc}{$tier}{strokes}, $ave), if (0);
+        printf("%s: tier %d, (scores %d), strokes %d, ave = %.1f\n", $sc, $tier,
+            $t{$sc}{$tier}{xplayed}, $t{$sc}{$tier}{strokes}, $ave), if ($debug);
 
     }
 }
@@ -246,19 +247,9 @@ expected_diff {
                 print "$sr[0]: Scoring Record: @sr\n", if (0);
                 $diff = ((113 / $sr[2]) * ($sr[7] - $sr[1]));
                 $tier = int($sr[4] / $div);
-                my $remainder = (($sr[4] / $div) - $tier);
-                $remainder *= 100;
-                if ($remainder > 90) {
-                    $ex_diff = (($t{$sr[0]}{$tier}{ave} * 2) + (($t{$sr[0]}{($tier + 1)}{ave} * 2) * 0.9));
-                    $ex_diff /= 4;
-                    $diff += $ex_diff;
-                } elsif (($remainder > 80) && ($remainder <= 90)) {
-                    $ex_diff = (($t{$sr[0]}{$tier}{ave} * 3) + ($t{$sr[0]}{($tier + 1)}{ave} * 0.8));
-                    $ex_diff /= 4;
-                    $diff += $ex_diff;
-                } else {
-                    $diff += $t{$sr[0]}{$tier}{ave};
-                }
+                printf("new diff: %.1f (diff %.1f + ex_diff %.1f)\n\n", 
+                    ($diff + $t{$sr[0]}{$tier}{ave}), $diff, $t{$sr[0]}{$tier}{ave}), if ($debug);
+                $diff += $t{$sr[0]}{$tier}{ave};
                 $diff = round($diff,  10);
                 push (@scores, $diff);
                 $num_scores++;
@@ -292,7 +283,6 @@ expected_diff {
     @scores = sort {$a <=> $b} @scores;
 
     $hi = 0;
-
     for (my $y = 0; $y < $use; $y++) {
         #printf("$pn: score diff -> %.2f\n", $scores[$y]), if ($pn =~ /$name/);
         $hi += $scores[$y];
@@ -304,7 +294,7 @@ expected_diff {
     $hi = abs($hi), if ($hi == 0.0);
     print "$pn: $hi\n", if (0);
     $league{$team}{$pn}{hi} = $hi;
-    #$tnfb_db{'Current'} = $hi;
+    $tnfb_db{'Current'} = $hi;
 
     untie %tnfb_db;
 }
