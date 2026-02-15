@@ -90,14 +90,6 @@ GetOptions (
     "a" => \$add)
 or die("Error in command line arguments\n");
 
-if ($only_year) {
-    $cur_year = $start_year = $end_year = $only_year;
-}
-
-if ($only_week) {
-    $start_week = $end_week = $only_week;
-}
-
 #
 # Open the league directory and only read the Gnu database files.
 #
@@ -127,6 +119,14 @@ if ($start_year >= $cur_year && !$valid_year) {
 
 if ($end_year >= $cur_year && !$valid_year) {
     $end_year = ($cur_year - 1);
+}
+
+if ($only_year) {
+    $cur_year = $start_year = $end_year = $only_year;
+}
+
+if ($only_week) {
+    $start_week = $end_week = $only_week;
 }
 
 #
