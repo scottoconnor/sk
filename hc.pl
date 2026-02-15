@@ -10,11 +10,13 @@ require './hcroutines.pl';
 use Getopt::Long;
 use GDBM_File;
 
-my ($allowance) = 0.9;
 my ($expected_diff) = 1;
-my ($div) = 4;
-my ($debug) = 0;
 my (undef($name));
+my ($debug) = 0;
+my ($update_hi) = 0;
+my ($allowance) = 0.9;
+
+my ($div) = 4;
 my (%tnfb_db, %league, $dh);
 my ($max_scores) = 20;
 my ($sf, $sb, $nf, $nb);
@@ -30,6 +32,7 @@ GetOptions (
     "x" => \$expected_diff,
     "n=s" => \$name,
     "d" => \$debug,
+    "u" => \$update_hi,
     "a=f" => \$allowance),
 or die("Error in command line arguments\n");
 
@@ -226,8 +229,11 @@ expected_diff {
     my ($fn) = @_;
 
     my (%tnfb_db, $use, @sr, $diff, $ex_diff, $hi, $by, $tier);
+    my ($rw) = GDBM_READER;
 
-    tie %tnfb_db, 'GDBM_File', $fn, GDBM_WRITER, 0644
+    $rw = GDBM_WRITER, if ($update_hi);
+
+    tie %tnfb_db, 'GDBM_File', $fn, $rw, 0644
         or die "$GDBM_File::gdbm_errno";
 
     my ($first, $last) = split(/ /, $tnfb_db{'Player'}, 2);
@@ -294,7 +300,7 @@ expected_diff {
     $hi = abs($hi), if ($hi == 0.0);
     print "$pn: $hi\n", if (0);
     $league{$team}{$pn}{hi} = $hi;
-    $tnfb_db{'Current'} = $hi;
+    $tnfb_db{'Current'} = $hi, if ($update_hi);
 
     untie %tnfb_db;
 }
