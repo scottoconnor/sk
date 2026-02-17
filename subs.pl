@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2022, 2025 Scott O'Connor
+# Copyright (c) 2022, 2026 Scott O'Connor
 #
 # These are subs by year/week for the TNFB.
 #
@@ -1257,5 +1257,7 @@
                 "Rick Wood" => "Pat Donahue",
                 "Steve Calvao" => "Bob Donahue",
                 "Paul Rotker" => "Charlie Weeks" },
+    },
+    2026 => {
     },
 );
