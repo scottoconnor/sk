@@ -266,21 +266,13 @@ expected_diff {
     }
 
     #
-    # League members that don't have more than 10 scores, allow
-    # the use of the current handicap index.
-    #
-    if (($team ne "Sub") && ($num_scores < 10)) {
-        print "$pn: league member with $num_scores scores.\n", if (0);
-        untie %tnfb_db;
-        return;
-    }
-
-    #
     # If the player does not have the required number of scores,
     # a handicap can not be calculated for them.
     #
+    # Allow league members with less than 10 scores.
+    #
     if (($use = &nscores($num_scores)) == 0) {
-        delete($league{$team}{$pn});
+        delete($league{$team}{$pn}), if ($team eq "Sub");
         untie %tnfb_db;
         print "$pn: only has $num_scores scores.\n", if (0);
         return;
