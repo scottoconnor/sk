@@ -26,6 +26,14 @@ or die("Error in command line arguments\n");
 
 undef (%y);
 
+#
+# Due to course changes, year 2025 and later have to be compared together.
+# Otherwise, years 2003 - 2024 can be compared together.
+#
+if ($year > 2024) {
+    $start_year = 2025;
+}
+
 $num_weeks = 0;
 
 #
