@@ -19,6 +19,7 @@ my ($allowance) = 0.9;
 my ($div) = 4;
 my (%tnfb_db, %league, $dh);
 my ($max_scores) = 20;
+my ($hi_diffs) = 0;
 my ($sf, $sb, $nf, $nb);
 my ($league) = "./golfers";
 my (%golfers_gdbm);
@@ -136,6 +137,7 @@ foreach my $pn (keys %golfers_gdbm) {
 closedir ($dh);
 
 print "$month-$day-$year               (sf sb nf nb)\n", if !defined($name);
+print "DO NOT USE. Handicaps need updating\n", if ($hi_diffs);
 
 #
 # First, print out the league members.
@@ -240,7 +242,7 @@ expected_diff {
 
     my $pn = "$last, $first";
     my $team = $tnfb_db{'Team'};
-    my $hi = $tnfb_db{'Current'};
+    my $saved_hi = $tnfb_db{'Current'};
 
     undef(my @scores);
     my $num_scores = 0;
@@ -290,7 +292,9 @@ expected_diff {
     $hi /= 2;
     $hi = round($hi, 10);
     $hi = abs($hi), if ($hi == 0.0);
-    print "$pn: $hi\n", if (0);
+    if ($hi != $saved_hi) {
+        $hi_diffs++;
+    }
     $league{$team}{$pn}{hi} = $hi;
     $tnfb_db{'Current'} = $hi, if ($update_hi);
 
