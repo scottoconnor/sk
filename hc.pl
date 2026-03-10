@@ -21,11 +21,11 @@ my (%tnfb_db, %league, $dh);
 my ($max_scores) = 20;
 my ($hi_diffs) = 0;
 my ($sf, $sb, $nf, $nb);
+my ($valid_year) = 0;
 my ($league) = "./golfers";
 my (%golfers_gdbm);
 my ($total_scores, %t, $tier, $course_data, @course_elements);
-my ($end_year) = (1900 + (localtime)[5]);
-my ($year) = $end_year;
+my ($year) = (1900 + (localtime)[5]);
 my @courses = ("SF", "SB", "NF", "NB");
 our (%dates);
 
@@ -37,8 +37,7 @@ GetOptions (
     "a=f" => \$allowance),
 or die("Error in command line arguments\n");
 
-my ($month) = (localtime)[4];
-$month++;
+my ($month) = (((localtime)[4]) + 1);
 my ($day) = (localtime)[3];
 
 opendir($dh, "$league") || die "Can't open \"$league\" directory.";
@@ -51,23 +50,29 @@ while (readdir $dh) {
         tie %tnfb_db, 'GDBM_File', "$league/$_", GDBM_READER, 0644
             or die "$GDBM_File::gdbm_errno";
         $golfers_gdbm{$tnfb_db{'Player'}} = "$league/$_";
+        if (exists($tnfb_db{"Team_$year"})) {
+            $valid_year = 1;
+        }
         untie %tnfb_db;
     }
 }
 closedir ($dh);
+
+if ($valid_year == 0) {
+    $year = ((1900 + (localtime)[5]) - 1);
+}
 
 foreach my $pn (keys %golfers_gdbm) {
 
     my $file = $golfers_gdbm{$pn};
     my ($course_year, $start_year);
 
-    $start_year = ($end_year - 23);
-    print "$start_year..$end_year\n", if (0);
+    $start_year = ($year - 20);
 
     tie %tnfb_db, 'GDBM_File', $file, GDBM_READER, 0644
         or die "$GDBM_File::gdbm_errno";
 
-    foreach my $y ($start_year..$end_year) {
+    foreach my $y ($start_year..$year) {
         foreach my $m (4..9) {
             foreach my $d (1..31) {
                 my $date = "$y-$m-$d";
@@ -230,7 +235,7 @@ sub
 expected_diff {
     my ($fn) = @_;
 
-    my (%tnfb_db, $use, @sr, $diff, $ex_diff, $hi, $by, $tier);
+    my (%tnfb_db, $use, @sr, $diff, $ex_diff, $hi, $start_year, $tier);
     my ($rw) = GDBM_READER;
 
     $rw = GDBM_WRITER, if ($update_hi);
@@ -246,9 +251,9 @@ expected_diff {
 
     undef(my @scores);
     my $num_scores = 0;
-    $by = ($year - 5);
+    $start_year = ($year - 5);
 
-    foreach my $y (reverse ($by..$year)) {
+    foreach my $y (reverse ($start_year..$year)) {
         foreach my $w (reverse (1..15)) {
             if (exists($tnfb_db{$dates{$y}{$w}})) {
                 @sr = split(/:/, $tnfb_db{$dates{$y}{$w}});
