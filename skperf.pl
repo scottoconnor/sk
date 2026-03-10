@@ -81,7 +81,7 @@ GetOptions (
     "g" =>  \$top_gun,
     "l=s" => \$league,
     "o" => \$others,
-    "ha" => \$hardest,
+    "H" => \$hardest,
     "b" => \$birdies_per_hole,
     "bpp" => \$birdies_per_player,
     "r" => \$hires,
@@ -1150,7 +1150,7 @@ show_most_improved {
 
         if (defined($p{$pn}{A}) && defined($p{$pn}{B})) {
             print "$pn: A: $p{$pn}{Adate} $p{$pn}{A} ",
-                "B: $p{$pn}{Bdate} $p{$pn}{B}\n", if 0;
+                "B: $p{$pn}{Bdate} $p{$pn}{B}\n", if (0);
         }
 
         untie %tnfb_db;
