@@ -185,7 +185,6 @@ if ($delete) {
 
         if (defined($tnfb_db{$key})) {
             delete($tnfb_db{$key});
-            #gen_hi($file);
             $count++;
         }
         untie %tnfb_db;
@@ -293,7 +292,6 @@ if ($add) {
                     print "$pn $date: $db_out\n";
                     $tnfb_db{$date} = $db_out;
                     untie %tnfb_db;
-                    #gen_hi($gdbm_file);
                     $count++;
                 } else {
                     untie %tnfb_db;
