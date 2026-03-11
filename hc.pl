@@ -72,27 +72,25 @@ foreach my $pn (keys %golfers_gdbm) {
         or die "$GDBM_File::gdbm_errno";
 
     foreach my $y ($start_year..$year) {
-        foreach my $m (4..9) {
-            foreach my $d (1..31) {
-                my $date = "$y-$m-$d";
-                if (exists($tnfb_db{$date})) {
-                    my @sr = split(/:/, $tnfb_db{$date});
-                    print "$date: $tnfb_db{$date}\n", if 0;
-                    print "$date: @sr\n", if 0;
-                    print "$date: $sr[4], $sr[6]\n", if 0;
+        foreach my $w (1..15) {
+            if (exists($tnfb_db{$dates{$y}{$w}})) {
+                my @sr = split(/:/, $tnfb_db{$dates{$y}{$w}});
+                my $date = $sr[3];
+                print "$date: $tnfb_db{$date}\n", if 0;
+                print "$date: @sr\n", if 0;
+                print "$date: $sr[4], $sr[6]\n", if 0;
 
-                    ($course_year) = $sr[3] =~ /(\d\d\d\d)-/;
-                    print "year = $course_year\n", if (0);
-                    $course_data = get_course_data($course_year, $sr[0]);
-                    print "$course_data\n", if (0);
-                    @course_elements = split(/:/, $course_data);
+                ($course_year) = $sr[3] =~ /(\d\d\d\d)-/;
+                print "year = $course_year\n", if (0);
+                $course_data = get_course_data($course_year, $sr[0]);
+                print "$course_data\n", if (0);
+                @course_elements = split(/:/, $course_data);
 
-                    $tier = int($sr[4] / $div);
-                    $t{$sr[0]}{$tier}{strokes} += ($sr[7] - $course_elements[3]);
-                    $t{$sr[0]}{$tier}{xplayed}++;
+                $tier = int($sr[4] / $div);
+                $t{$sr[0]}{$tier}{strokes} += ($sr[7] - $course_elements[3]);
+                $t{$sr[0]}{$tier}{xplayed}++;
 
-                    $total_scores++;
-                }
+                $total_scores++;
             }
         }
     }
