@@ -92,14 +92,14 @@ print "\n\n";
 
 print "$year Hardest to Easiest Holes\n";
 print "-----------------------------\n";
-@line = `./skperf.pl -ha -y $year`;
+@line = `./skperf.pl -H -y $year`;
 print @line;
 
 print "\n\n";
 
 print "$year Hardest to Easiest Holes Per Nine\n";
 print "--------------------------------------\n";
-@line = `./skperf.pl -ha -y $year`;
+@line = `./skperf.pl -H -y $year`;
 @nline = grep(/South Front/, @line);
 print @nline, "\n\n";
 @nline = grep(/South Back/, @line);
