@@ -951,7 +951,9 @@ print_tables {
 sub
 print_player_stats {
 
-    die "$start_year != $end_year, only 1 year at a time.\n", if ($start_year != $end_year);
+    if (($start_year <= 2024) && ($end_year > 2024)) {
+        die "Can not cross over from 2024 to 2025 for player stats. ($start_year -> $end_year)\n";
+    }
 
     my ($par, $course_data, @course_elements, @par_per_hole);
 
