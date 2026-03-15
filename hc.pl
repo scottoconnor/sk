@@ -243,7 +243,6 @@ expected_diff {
 
     my $pn = "$last, $first";
     my $team = $tnfb_db{'Team'};
-    my $saved_hi = $tnfb_db{'Current'};
 
     undef(my @scores);
     my $num_scores = 0;
