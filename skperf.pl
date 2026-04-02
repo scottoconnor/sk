@@ -183,7 +183,7 @@ if ($delete) {
         tie %tnfb_db, 'GDBM_File', $file, GDBM_WRITER, 0640
             or die "$GDBM_File::gdbm_errno";
 
-        if (defined($tnfb_db{$key})) {
+        if (exists($tnfb_db{$key})) {
             delete($tnfb_db{$key});
             $count++;
         }
@@ -262,7 +262,7 @@ if ($add) {
                 tie %tnfb_db, 'GDBM_File', $gdbm_file, GDBM_READER, 0644
                     or die "$GDBM_File::gdbm_errno";
 
-                if (defined($tnfb_db{$date})) {
+                if (exists($tnfb_db{$date})) {
                     print "$pn: Score already exists.\n";
                     untie %tnfb_db;
                     next;
@@ -283,7 +283,7 @@ if ($add) {
                 tie %tnfb_db, 'GDBM_File', $gdbm_file, GDBM_WRITER, 0644
                     or die "$GDBM_File::gdbm_errno";
 
-                if (!defined($tnfb_db{$date})) {
+                if (!exists($tnfb_db{$date})) {
                     $team = "Team_$year";
                     if ($year >= 2022 && !exists($tnfb_db{$team})) {
                         $tnfb_db{$team} = $tnfb_db{'Team'};
