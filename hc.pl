@@ -275,7 +275,6 @@ expected_diff {
     # Allow league members with less than 10 scores.
     #
     if (($use = &nscores($num_scores)) == 0) {
-        delete($league{$team}{$pn}), if ($team eq "Sub");
         untie %tnfb_db;
         print "$pn: only has $num_scores scores.\n", if (0);
         return;
