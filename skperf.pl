@@ -43,6 +43,7 @@ my ($most_improved) = 0;
 my ($league) = "./golfers";
 my ($delete) = 0;
 my ($add) = 0;
+my ($dryrun) = 0;
 my ($perf) = 1;
 my ($total_time) = 0;
 my (undef(%totals));
@@ -87,6 +88,7 @@ GetOptions (
     "r" => \$hires,
     "h" =>  \$html,
     "d" => \$delete,
+    "dr" => \$dryrun,
     "a" => \$add)
 or die("Error in command line arguments\n");
 
@@ -286,11 +288,11 @@ if ($add) {
                 if (!exists($tnfb_db{$date})) {
                     $team = "Team_$year";
                     if ($year >= 2022 && !exists($tnfb_db{$team})) {
-                        $tnfb_db{$team} = $tnfb_db{'Team'};
-                        $tnfb_db{'Active'} = 1;
+                        $tnfb_db{$team} = $tnfb_db{'Team'}, if (!$dryrun);
+                        $tnfb_db{'Active'} = 1, if (!$dryrun);
                     }
                     print "$pn $date: $db_out\n";
-                    $tnfb_db{$date} = $db_out;
+                    $tnfb_db{$date} = $db_out, if (!$dryrun);
                     untie %tnfb_db;
                     $count++;
                 } else {
