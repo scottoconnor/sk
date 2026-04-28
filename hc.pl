@@ -130,7 +130,7 @@ foreach my $pn (keys %golfers_gdbm) {
 }
 closedir ($dh);
 
-print "$month-$day-$year               (sf sb nf nb)\n", if !defined($name);
+print "$month-$day-$year                (sf sb nf nb)\n", if !defined($name);
 
 #
 # First, print out the league members.
@@ -155,7 +155,7 @@ foreach my $team (sort keys(%league)) {
     if ($team ne "Sub") {
         next;
     }
-    print "$team\n", if !defined($name);
+    print "$team                      (sf sb nf nb)\n", if !defined($name);
     my %tnfb = %{$league{$team}};
     foreach my $pn (sort keys %tnfb) {
         ($sf, $sb, $nf, $nb) = gen_handicap($tnfb{$pn}{hi});
