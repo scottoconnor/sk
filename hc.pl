@@ -20,7 +20,6 @@ my ($div) = 4;
 my (%tnfb_db, %league, $dh);
 my ($max_scores) = 20;
 my ($sf, $sb, $nf, $nb);
-my ($valid_year) = 0;
 my ($league) = "./golfers";
 my (%golfers_gdbm);
 my ($total_scores, %t, $tier, $course_data, @course_elements);
@@ -49,17 +48,10 @@ while (readdir $dh) {
         tie %tnfb_db, 'GDBM_File', "$league/$_", GDBM_READER, 0644
             or die "$GDBM_File::gdbm_errno";
         $golfers_gdbm{$tnfb_db{'Player'}} = "$league/$_";
-        if (exists($tnfb_db{"Team_$year"})) {
-            $valid_year = 1;
-        }
         untie %tnfb_db;
     }
 }
 closedir ($dh);
-
-if ($valid_year == 0) {
-    $year = ((1900 + (localtime)[5]) - 1);
-}
 
 foreach my $pn (keys %golfers_gdbm) {
 
