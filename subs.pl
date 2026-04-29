@@ -1260,6 +1260,7 @@
     },
     2026 => {
         1 => { "Dave Louie" => "Steve Cormey",
+               "Curt Farnsworth" => "Steve Bulawka",
                "Bill Percuoco" => "Paul Correia" },
     },
 );
