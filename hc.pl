@@ -216,7 +216,7 @@ gen_handicap {
     $nb *= $allowance;
     $nb = round($nb, 1);
 
-    $sb = $nb = 0;
+    $nb = 0;
     return ($sf, $sb, $nf, $nb);
 }
 
