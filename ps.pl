@@ -43,7 +43,7 @@ printf("Average subs = %.2f\n", ($total_subs / $num_weeks));
 print "\n\n";
 
 foreach my $pn (reverse sort { $ss{$a} <=> $ss{$b} } (keys(%ss))) {
-    if ($ss{$pn} > 9) {
+    if ($ss{$pn} > 19) {
         print "$pn: $ss{$pn}\n";
     }
 }
