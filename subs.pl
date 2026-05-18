@@ -1279,6 +1279,7 @@
                "Steve Willey" => "Bob Donahue" },
         4 => { "Dave Louie" => "Mike Schmidt",
                "Steve Willey" => "Steve Cormey",
+               "Rick Wood" => "Marc Foland",
                "Curt Farnsworth" => "Steve Bulawka" },
     },
 );
