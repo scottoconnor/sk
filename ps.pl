@@ -14,10 +14,10 @@ my $w;
 foreach my $year (sort keys %subs) {
     $year_subs = 0;
     for ($w = 1; $w < 16; $w++) {
-        $num_weeks++;
         if (!defined($subs{$year}{$w})) {
             next;
         }
+        $num_weeks++;
         %s = %{$subs{$year}{$w}};
         $size = keys(%s);
         print "Year: $year, Week: $w, ($size Subs)\n";
