@@ -1281,5 +1281,7 @@
                "Steve Willey" => "Steve Cormey",
                "Rick Wood" => "Marc Foland",
                "Curt Farnsworth" => "Steve Bulawka" },
+        5 => { "Dave Louie" => "Mike Schmidt",
+               "Bill Percuoco" => "Steve Cormey" },
     },
 );
