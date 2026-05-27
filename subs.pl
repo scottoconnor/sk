@@ -1282,6 +1282,7 @@
                "Rick Wood" => "Marc Foland",
                "Curt Farnsworth" => "Steve Bulawka" },
         5 => { "Dave Louie" => "Mike Schmidt",
+               "Steve Willey" => "Bob Donahue",
                "Bill Percuoco" => "Steve Cormey" },
     },
 );

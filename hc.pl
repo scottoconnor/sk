@@ -250,7 +250,12 @@ expected_diff {
                 $tier = int($sr[4] / $div);
                 printf("new diff: %.1f (diff %.1f + ex_diff %.1f)\n\n", 
                     ($diff + $t{$sr[0]}{$tier}{ave}), $diff, $t{$sr[0]}{$tier}{ave}), if ($debug);
-                $diff += $t{$sr[0]}{$tier}{ave};
+                if ($diff < $t{$sr[0]}{$tier}{ave}) {
+                    print "$pn ($y): $diff, $t{$sr[0]}{$tier}{ave}\n", if (0);
+                    $diff += ($t{$sr[0]}{$tier}{ave} * .97);
+                } else {
+                    $diff += $t{$sr[0]}{$tier}{ave};
+                }
                 $diff = round($diff,  10);
                 push (@scores, $diff);
                 $num_scores++;
