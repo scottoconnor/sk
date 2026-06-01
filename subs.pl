@@ -1284,5 +1284,7 @@
         5 => { "Dave Louie" => "Mike Schmidt",
                "Steve Willey" => "Bob Donahue",
                "Bill Percuoco" => "Steve Cormey" },
+        6 => { "Dave Louie" => "Mike Schmidt",
+               "Bill Percuoco" => "Steve Cormey" },
     },
 );
