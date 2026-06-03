@@ -1285,6 +1285,7 @@
                "Steve Willey" => "Bob Donahue",
                "Bill Percuoco" => "Steve Cormey" },
         6 => { "Dave Louie" => "Mike Schmidt",
+               "Steve Willey" => "Larry Fryatt",
                "Bill Percuoco" => "Steve Cormey" },
     },
 );
