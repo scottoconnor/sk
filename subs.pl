@@ -1293,5 +1293,7 @@
                "Dick Fields" => "Mike Perisho",
                "Brian Sargent" => "Pat Donahue",
                "Steve Willey" => "Dan Correia", },
+        8 => { "Dave Louie" => "Mike Schmidt",
+               "Rick Wood" => "Marc Foland", },
     },
 );
