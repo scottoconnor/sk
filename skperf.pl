@@ -1202,7 +1202,7 @@ if ($birdies_per_player) {
             foreach my $pn (reverse sort { $players{$a} <=> $players{$b} } (keys(%players))) {
                 print "$pn: $players{$pn}\n";
             }
-            print "\n\n";
+            print "\n";
         }
     }
 }
