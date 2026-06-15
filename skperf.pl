@@ -302,7 +302,11 @@ if ($add) {
         }
         close(FD);
     }
-    print "Added $count scores for week $w.\n";
+    if ($dryrun) {
+        print "Would have added $count scores for week $w.\n";
+    } else {
+        print "Added $count scores for week $w.\n";
+    }
 }
 
 #
