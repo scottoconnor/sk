@@ -12,7 +12,6 @@ use GDBM_File;
 
 my ($expected_diff) = 1;
 my (undef($name));
-my ($debug) = 0;
 my ($update_hi) = 0;
 my ($allowance) = 0.9;
 
@@ -30,7 +29,6 @@ our (%dates);
 GetOptions (
     "x" => \$expected_diff,
     "n=s" => \$name,
-    "d" => \$debug,
     "u" => \$update_hi,
     "a=f" => \$allowance),
 or die("Error in command line arguments\n");
@@ -96,7 +94,7 @@ while (my $sc = shift @courses) {
         my $ave = (($t{$sc}{$tier}{strokes}/$t{$sc}{$tier}{xplayed}) * 1.0);
         $t{$sc}{$tier}{ave} = $ave;
         printf("%s: tier %d, (scores %d), strokes %d, ave = %.1f\n", $sc, $tier,
-            $t{$sc}{$tier}{xplayed}, $t{$sc}{$tier}{strokes}, $ave), if ($debug);
+            $t{$sc}{$tier}{xplayed}, $t{$sc}{$tier}{strokes}, $ave), if (0);
 
     }
 }
@@ -249,7 +247,7 @@ expected_diff {
                 $diff = ((113 / $sr[2]) * ($sr[7] - $sr[1]));
                 $tier = int($sr[4] / $div);
                 printf("new diff: %.1f (diff %.1f + ex_diff %.1f)\n\n", 
-                    ($diff + $t{$sr[0]}{$tier}{ave}), $diff, $t{$sr[0]}{$tier}{ave}), if ($debug);
+                    ($diff + $t{$sr[0]}{$tier}{ave}), $diff, $t{$sr[0]}{$tier}{ave}), if (0);
                 if ($diff < $t{$sr[0]}{$tier}{ave}) {
                     print "$pn ($y): $diff, $t{$sr[0]}{$tier}{ave}\n", if (0);
                     $diff += ($t{$sr[0]}{$tier}{ave} * .96);
