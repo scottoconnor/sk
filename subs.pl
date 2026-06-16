@@ -1294,6 +1294,8 @@
                "Brian Sargent" => "Pat Donahue",
                "Steve Willey" => "Dan Correia", },
         8 => { "Dave Louie" => "Mike Schmidt",
+               "Ken Ineson" => "Bob Tuttle",
+               "Bill Percuoco" => "Scott O'Connor",
                "Rick Wood" => "Marc Foland", },
     },
 );
