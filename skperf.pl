@@ -1233,8 +1233,7 @@ get_player_scores {
         #
         if (!exists($tnfb_db{$d})) {
             if (defined($subs{$cy}{$cw}{$pn})) {
-                my $subbingfor = $subs{$cy}{$cw}{$pn};
-                print "$pn: no sub score on ($cy:$cw) (sub for $subbingfor)\n";
+                print "$pn: no sub score on ($cy:$cw) (for $subs{$cy}{$cw}{$pn})\n";
             }
             next;
         }
