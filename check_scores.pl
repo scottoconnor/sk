@@ -20,6 +20,7 @@ my ($na_scores) = 0;
 my $t;
 my $rw;
 my ($year, $month, $day, $date);
+my (%tnfb_db);
 
 for (my $x = 1000; $x <= 1300; $x++) {
     my $file = "golfers/$x.gdbm";
@@ -32,12 +33,12 @@ for (my $x = 1000; $x <= 1300; $x++) {
     #$rw = GDBM_WRITER;
     my ($scores) = 0;
 
-    tie my %tnfb_db, 'GDBM_File', $file, $rw, 0644
+    tie %tnfb_db, 'GDBM_File', $file, $rw, 0644
         or die "$GDBM_File::gdbm_errno";
 
     my $pn =  $tnfb_db{'Player'};
 
-    if (($tnfb_db{'Team'} eq "Sub") && 0) {
+    if (($tnfb_db{'Team'} ne "Sub") && 0) {
         print "$tnfb_db{'Player'} skipping...\n";
         untie %tnfb_db;
         next;
@@ -85,9 +86,8 @@ for (my $x = 1000; $x <= 1300; $x++) {
     untie %tnfb_db;
 }
 
+printf("All Scores = %d - %d issues found\n", $all_scores, $bad_scores);
 print "Scores with NA/NA = $na_scores\n", if ($na_scores > 0);
-print "Bad Scores = $bad_scores\n", if ($bad_scores > 0);
-print "All Scores = $all_scores\n";
 
 sub
 check_score
@@ -108,7 +108,8 @@ check_score
     }
     if ($sr[4] eq "NA" && $sr[5] eq "NA") {
         $na_scores++;
-        print "Need deleting: $pn, $sr[3]: $sr[4] and $sr[5]\n", if (0);
+        print "Need deleting: $pn on $date: $sr[3]: $sr[4] and $sr[5]\n", if (0);
+        #delete($tnfb_db{$date}), if ($rw eq GDBM_WRITER);
         $ret = 1;
     }
     if ($date ne $sr[3]) {
