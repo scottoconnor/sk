@@ -11,8 +11,8 @@ use Getopt::Long;
 use GDBM_File;
 
 my ($expected_diff) = 1;
-my (undef($name));
 my ($update_hi) = 0;
+my ($four) = 0;
 my ($allowance) = 0.9;
 
 my ($div) = 4;
@@ -28,8 +28,8 @@ our (%dates);
 
 GetOptions (
     "x" => \$expected_diff,
-    "n=s" => \$name,
     "u" => \$update_hi,
+    "f" => \$four,
     "a=f" => \$allowance),
 or die("Error in command line arguments\n");
 
@@ -128,7 +128,11 @@ foreach my $pn (keys %golfers_gdbm) {
 }
 closedir ($dh);
 
-print "$month-$day-$year                 (sf sb nf nb)\n", if !defined($name);
+if ($four) {
+    print "$month-$day-$year                (sf sb nf nb)\n";
+} else {
+    print "$month-$day-$year                (sf  n)\n";
+}
 
 #
 # First, print out the league members.
@@ -137,13 +141,23 @@ foreach my $team (sort keys(%league)) {
     if ($team eq "Sub") {
         next;
     }
-    print "$team\n", if !defined($name);
+    print "$team\n";
     my %tnfb = %{$league{$team}};
     foreach my $pn (sort keys %tnfb) {
         ($sf, $sb, $nf, $nb) = gen_handicap($tnfb{$pn}{hi});
-        printf("%-18s %4.1fN /%2d %2d %2d %2d\n", $pn, $tnfb{$pn}{hi}, $sf, $sb, $nf, $nb), if !defined($name);
+        if ($four) {
+            printf("%-18s %4.1fN /%2d %2d %2d %2d\n", $pn, $tnfb{$pn}{hi}, $sf, $sb, $nf, $nb);
+        } else {
+            printf("%-18s %4.1fN /%2d %2d\n", $pn, $tnfb{$pn}{hi}, $sf, $nf);
+        }
     }
-    print "\n", if !defined($name);
+    print "\n";
+}
+
+if ($four) {
+    print "$month-$day-$year                (sf sb nf nb)\n";
+} else {
+    print "$month-$day-$year                (sf  n)\n";
 }
 
 #
@@ -153,11 +167,14 @@ foreach my $team (sort keys(%league)) {
     if ($team ne "Sub") {
         next;
     }
-    print "$team                      (sf sb nf nb)\n", if !defined($name);
     my %tnfb = %{$league{$team}};
     foreach my $pn (sort keys %tnfb) {
         ($sf, $sb, $nf, $nb) = gen_handicap($tnfb{$pn}{hi});
-        printf("%-18s %4.1fN /%2d %2d %2d %2d%s\n", $pn, $tnfb{$pn}{hi}, $sf, $sb, $nf, $nb), if !defined($name);
+        if ($four) {
+            printf("%-18s %4.1fN /%2d %2d %2d %2d\n", $pn, $tnfb{$pn}{hi}, $sf, $sb, $nf, $nb);
+        } else {
+            printf("%-18s %4.1fN /%2d %2d\n", $pn, $tnfb{$pn}{hi}, $sf, $nf);
+        }
     }
 }
 
@@ -214,7 +231,6 @@ gen_handicap {
     $nb *= $allowance;
     $nb = round($nb, 1);
 
-    $nb = 0;
     return ($sf, $sb, $nf, $nb);
 }
 
@@ -279,7 +295,7 @@ expected_diff {
 
     $hi = 0;
     for (my $y = 0; $y < $use; $y++) {
-        #printf("$pn: score diff -> %.2f\n", $scores[$y]), if ($pn =~ /$name/);
+        #printf("$pn: score diff -> %.2f\n", $scores[$y]);
         $hi += $scores[$y];
     }
     $hi /= $use;
