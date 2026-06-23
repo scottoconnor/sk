@@ -1297,5 +1297,8 @@
                "Ken Ineson" => "Bob Tuttle",
                "Bill Percuoco" => "Scott O'Connor",
                "Rick Wood" => "Marc Foland", },
+        9 => { "Dave Louie" => "Mike Schmidt",
+               "Rick Wood" => "Jim O'Keefe",
+               "Ken Ineson" => "Bob Tuttle", },
     },
 );
