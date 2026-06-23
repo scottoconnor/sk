@@ -103,12 +103,12 @@ check_score
         $ret = 1;
     }
     if ($sr[0] ne "SF" && $sr[0] ne "SB" && $sr[0] ne "NF" && $sr[0] ne "NB") {
-        print "Bad course: $sr[0], $date, $pn\n";
+        print "Bad course: $sr[0], $pn, $date\n";
         $ret = 1;
     }
     if ($sr[4] eq "NA" && $sr[5] eq "NA") {
         $na_scores++;
-        print "Need deleting: $pn on $date: $sr[3]: $sr[4] and $sr[5]\n", if (0);
+        print "Need deleting: $pn on $date: $sr[3]: $sr[4] and $sr[5]\n";
         #delete($tnfb_db{$date}), if ($rw eq GDBM_WRITER);
         $ret = 1;
     }
