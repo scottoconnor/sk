@@ -1298,6 +1298,7 @@
                "Bill Percuoco" => "Scott O'Connor",
                "Rick Wood" => "Marc Foland", },
         9 => { "Dave Louie" => "Mike Schmidt",
+               "Bill Percuoco" => "Ray Curley",
                "Rick Wood" => "Jim O'Keefe",
                "Ken Ineson" => "Bob Tuttle", },
     },
