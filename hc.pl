@@ -19,7 +19,6 @@ my ($div) = 4;
 my (%tnfb_db, %league, $dh);
 my ($max_scores) = 20;
 my ($sf, $sb, $nf, $nb);
-my ($league) = "./golfers";
 my (%golfers_gdbm);
 my ($total_scores, %t, $tier, $course_data, @course_elements);
 my ($year) = (1900 + (localtime)[5]);
@@ -36,16 +35,16 @@ or die("Error in command line arguments\n");
 my ($month) = (((localtime)[4]) + 1);
 my ($day) = (localtime)[3];
 
-opendir($dh, "$league") || die "Can't open \"$league\" directory.";
+opendir($dh, "./golfers") || die "Can't open \"./golfers\" directory.";
 
 #
 # Read and store the Gnu gdbm database files.
 #
 while (readdir $dh) {
     if ($_ =~ /(^1\d{3}$\.gdbm)/) {
-        tie %tnfb_db, 'GDBM_File', "$league/$_", GDBM_READER, 0644
+        tie %tnfb_db, 'GDBM_File', "./golfers/$_", GDBM_READER, 0644
             or die "$GDBM_File::gdbm_errno";
-        $golfers_gdbm{$tnfb_db{'Player'}} = "$league/$_";
+        $golfers_gdbm{$tnfb_db{'Player'}} = "./golfers/$_";
         untie %tnfb_db;
     }
 }
