@@ -1301,5 +1301,7 @@
                "Bill Percuoco" => "Ray Curley",
                "Rick Wood" => "Jim O'Keefe",
                "Ken Ineson" => "Bob Tuttle", },
+        10 => { "Dave Louie" => "Mike Schmidt",
+               "Rick Wood" => "Mike Gill", },
     },
 );
