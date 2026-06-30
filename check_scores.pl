@@ -7,6 +7,7 @@ use strict;
 use Time::Piece;
 use Time::Seconds;
 use GDBM_File;
+use Time::HiRes qw(gettimeofday);
 use warnings;
 
 require './tnfb_years.pl';
@@ -21,6 +22,8 @@ my $t;
 my $rw;
 my ($year, $month, $day, $date);
 my (%tnfb_db);
+
+my $t0 = gettimeofday();
 
 for (my $x = 1000; $x <= 1300; $x++) {
     my $file = "golfers/$x.gdbm";
@@ -49,14 +52,18 @@ for (my $x = 1000; $x <= 1300; $x++) {
 
     while ($sy <= $end_year) {
 
-        ($year, $month, $day) = $t->ymd =~ /(\d{4})-\060*(\d+)-\060*(\d+)/;
+        ($year, $month, $day) = $t->ymd =~ /(\d{4})-\060*(\d{1,2})-\060*(\d{1,2})/;
         $date = "$year-$month-$day";
-        print "date = $date\n", if (0);
+        print $t->ymd . "\n", if (0);
 
         if (!exists($tnfb_db{$date})) {
             # Move to next day
             $t += ONE_DAY;
             ($sy) = $t->year =~ /(\d\d\d\d)/;
+            if ($t->mon > 8) {
+                $sy++;
+                $t = Time::Piece->strptime("$sy-04-01", "%Y-%m-%d");
+            }
             next;
         }
 
@@ -78,6 +85,11 @@ for (my $x = 1000; $x <= 1300; $x++) {
         # Move to next day
         $t += ONE_DAY;
         ($sy) = $t->year =~ /(\d\d\d\d)/;
+
+        if ($t->mon > 8) {
+            $sy++;
+            $t = Time::Piece->strptime("$sy-04-01", "%Y-%m-%d");
+        }
     }
 
     printf("%-18s = %s (%d)\n", $tnfb_db{'Player'}, $file, $scores);
@@ -86,8 +98,12 @@ for (my $x = 1000; $x <= 1300; $x++) {
     untie %tnfb_db;
 }
 
+my $t1 = gettimeofday();
+my $total_time += ($t1 - $t0);
+
 printf("All Scores = %d - %d issues found\n", $all_scores, $bad_scores);
 print "Scores with NA/NA = $na_scores\n", if ($na_scores > 0);
+printf("Total time = %.2f seconds\n", $total_time);
 
 sub
 check_score
