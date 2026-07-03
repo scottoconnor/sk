@@ -128,9 +128,9 @@ foreach my $pn (keys %golfers_gdbm) {
 closedir ($dh);
 
 if ($four) {
-    print "$month-$day-$year                (sf sb nf nb)\n";
+    printf("%-25s (sf sb nf nb)\n", "$month-$day-$year");
 } else {
-    print "$month-$day-$year                (sf  n)\n";
+    printf("%-25s (sf n)\n", "$month-$day-$year");
 }
 
 #
@@ -154,9 +154,9 @@ foreach my $team (sort keys(%league)) {
 }
 
 if ($four) {
-    print "$month-$day-$year                (sf sb nf nb)\n";
+    printf("%-25s (sf sb nf nb)\n", "$month-$day-$year");
 } else {
-    print "$month-$day-$year                (sf  n)\n";
+    printf("%-25s (sf n)\n", "$month-$day-$year");
 }
 
 #
