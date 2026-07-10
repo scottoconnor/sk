@@ -26,7 +26,7 @@ my @courses = ("SF", "SB", "NF", "NB");
 our (%dates);
 
 GetOptions (
-    "x" => \$expected_diff,
+    "x!" => \$expected_diff,
     "u" => \$update_hi,
     "f" => \$four,
     "a=f" => \$allowance),
