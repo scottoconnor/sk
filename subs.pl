@@ -1303,8 +1303,7 @@
                "Ken Ineson" => "Bob Tuttle", },
        10 => { "Dave Louie" => "Mike Schmidt",
                "Rick Wood" => "Mike Gill", },
-       11 => { "Dave Louie" => "Mike Schmidt",
-               "Bill Percuoco" => "Alex Chase",
-               "Steve Willey" => "Carl Humphreys", },
+       11 => { "Bill Percuoco" => "Mike Schmidt",
+               "Paul Sirois" => "Pete Linstrom", },
     },
 );
