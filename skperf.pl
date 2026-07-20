@@ -1232,9 +1232,6 @@ get_player_scores {
         # a sub was defined for this week and has no score.
         #
         if (!exists($tnfb_db{$d})) {
-            if (defined($subs{$cy}{$cw}{$pn})) {
-                print "$pn: no sub score on ($cy:$cw) (for $subs{$cy}{$cw}{$pn})\n";
-            }
             next;
         }
 
