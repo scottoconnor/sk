@@ -1228,8 +1228,7 @@ get_player_scores {
         my $d = $dates{$cy}{$cw};
 
         #
-        # If no score on this week, push on. Check to see if
-        # a sub was defined for this week and has no score.
+        # If no score on this week, push on.
         #
         if (!exists($tnfb_db{$d})) {
             next;
