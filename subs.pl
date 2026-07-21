@@ -1305,5 +1305,10 @@
                "Rick Wood" => "Mike Gill", },
        11 => { "Bill Percuoco" => "Mike Schmidt",
                "Paul Sirois" => "Pete Linstrom", },
+       12 => { "Dick Fields" => "Mike Rogers",
+               "Rick Wood" => "Pat Donahue",
+               "Steve Calvao" => "Bob Donahue",
+               "Bill Percuoco" => "John Maley", },
+       13 => { "Trent Albers" => "Carl Humphreys", },
     },
 );
