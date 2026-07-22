@@ -43,7 +43,6 @@ my ($most_improved) = 0;
 my ($league) = "./golfers";
 my ($delete) = 0;
 my ($add) = 0;
-my ($dryrun) = 0;
 my ($perf) = 1;
 my ($total_time) = 0;
 my (undef(%totals));
@@ -88,7 +87,6 @@ GetOptions (
     "r" => \$hires,
     "h" =>  \$html,
     "d" => \$delete,
-    "dr" => \$dryrun,
     "a" => \$add)
 or die("Error in command line arguments\n");
 
@@ -202,7 +200,7 @@ if ($add) {
     my ($db_out, $course_rating, $slope, $gdbm_file, @sr, $pn);
     my ($date, $fn, @week, $month, $day, $year, $course, $line, $c, $fb);
     my ($hi, $ph, $post, $cph, $shot, @swings, $swing, $team, $count);
-    my ($course_data, @course_elements);
+    my ($course_data, @course_elements, $num);
 
     $count = 0;
 
@@ -286,15 +284,18 @@ if ($add) {
                     or die "$GDBM_File::gdbm_errno";
 
                 if (!exists($tnfb_db{$date})) {
+                    $num = split(/:/, $db_out);
                     $team = "Team_$year";
                     if ($year >= 2022 && !exists($tnfb_db{$team})) {
-                        $tnfb_db{$team} = $tnfb_db{'Team'}, if (!$dryrun);
-                        $tnfb_db{'Active'} = 1, if (!$dryrun);
+                        $tnfb_db{$team} = $tnfb_db{'Team'}, if ($num == 17);
+                        $tnfb_db{'Active'} = 1, if ($num == 17);
                     }
                     print "$pn $date: $db_out\n";
-                    $tnfb_db{$date} = $db_out, if (!$dryrun);
+                    if ($num == 17) {
+                        $tnfb_db{$date} = $db_out;
+                        $count++;
+                    }
                     untie %tnfb_db;
-                    $count++;
                 } else {
                     untie %tnfb_db;
                 }
@@ -302,11 +303,7 @@ if ($add) {
         }
         close(FD);
     }
-    if ($dryrun) {
-        print "Would have added $count scores for week $w.\n";
-    } else {
-        print "Added $count scores for week $w.\n";
-    }
+    print "Added $count scores for week $w.\n";
 }
 
 #
