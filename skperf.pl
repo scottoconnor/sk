@@ -200,9 +200,10 @@ if ($add) {
     my ($db_out, $course_rating, $slope, $gdbm_file, @sr, $pn);
     my ($date, $fn, @week, $month, $day, $year, $course, $line, $c, $fb);
     my ($hi, $ph, $post, $cph, $shot, @swings, $swing, $team, $count);
-    my ($course_data, @course_elements, $num);
+    my ($course_data, @course_elements, $num, $num_scores);
 
     $count = 0;
+    $num_scores = 0;
 
     print "Enter week of play: ";
     chomp(my $w = <STDIN>);
@@ -295,6 +296,7 @@ if ($add) {
                         $tnfb_db{$date} = $db_out;
                         $count++;
                     }
+                    $num_scores++;
                     untie %tnfb_db;
                 } else {
                     untie %tnfb_db;
@@ -303,7 +305,7 @@ if ($add) {
         }
         close(FD);
     }
-    print "Added $count scores for week $w.\n";
+    print "Added $count scores for week $w. (Otherwise add $num_scores scores)\n";
 }
 
 #
