@@ -253,10 +253,10 @@ if ($add) {
                     next;
                 }
                 #
-                # If the player doesn't exit, create their db file.
+                # If the player's db doesn't exist, stop and create it.
                 #
                 if (!exists($golfers_gdbm{$pn})) {
-                    create_tnfb_db($pn);
+                    die "Player ($pn) does not exist. Need to create?\n";
                 }
                 $gdbm_file = $golfers_gdbm{$pn};
 
@@ -383,35 +383,6 @@ net_double_bogey {
         $post += ($v > $max_score) ? $max_score : $v;
     }
     return ($hi, $ph, $post);
-}
-
-sub
-create_tnfb_db() {
-    my ($new_pn) = @_;
-    my ($new_file, $x, $y, $hi);
-
-    for ($x = 1; $x < 300; $x++) {
-        $y = 1000 + $x;
-        $new_file = "golfers/$y.gdbm";
-        if (! -e $new_file) {
-            print "$new_pn: new db file is: $new_file\n";
-            last;
-        }
-    }
-    tie %tnfb_db, 'GDBM_File', $new_file, GDBM_WRCREAT, 0644
-        or die "$GDBM_File::gdbm_errno";
-    $tnfb_db{'Player'} = $new_pn;
-    $tnfb_db{'Team'} = "Sub";
-    $tnfb_db{'Active'} = 1;
-    print "Enter $new_pn\'s Handicap Index: ";
-    chomp($hi = <STDIN>);
-    $tnfb_db{'Current'} = $hi;
-    untie %tnfb_db;
-
-    #
-    # Update golfers_gdbm hash
-    #
-    $golfers_gdbm{$new_pn} = $new_file;
 }
 
 #
