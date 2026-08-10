@@ -10,14 +10,12 @@ use GDBM_File;
 use Time::HiRes qw(gettimeofday);
 use warnings;
 
-require './tnfb_years.pl';
-
 # Get current year
 my $end_year = localtime->year;
 my $sy;
-my ($bad_scores) = 0;
-my ($all_scores) = 0;
-my ($na_scores) = 0;
+my $bad_scores = 0;
+my $all_scores = 0;
+my $na_scores = 0;
 my $t;
 my $rw;
 my ($year, $month, $day, $date);
@@ -34,7 +32,7 @@ for (my $x = 1000; $x <= 1300; $x++) {
 
     $rw = GDBM_READER;
     #$rw = GDBM_WRITER;
-    my ($scores) = 0;
+    my $scores = 0;
 
     tie %tnfb_db, 'GDBM_File', $file, $rw, 0644
         or die "$GDBM_File::gdbm_errno";
@@ -108,7 +106,7 @@ printf("Total time = %.2f seconds\n", $total_time);
 sub
 check_score
 {
-    my($pn, $date, $s) = @_;
+    my ($pn, $date, $s) = @_;
     my @sr = split(/:/, $s);
     my $ret = 0;
 
