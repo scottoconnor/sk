@@ -3,13 +3,20 @@
 # Copyright (c) 2026, Scott O'Connor
 #
 
+use strict;
+
 require './subs.pl';
 
-my ($total_subs) = 0;
-my ($total_years) = 0;
-my ($num_weeks) = 0;
+my $total_subs = 0;
+my $total_years = 0;
+my $num_weeks = 0;
 my $year_subs;
 my $w;
+my %ss;
+my %s;
+my $size;
+
+our %subs;
 
 foreach my $year (sort keys %subs) {
     $year_subs = 0;
