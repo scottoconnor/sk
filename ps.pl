@@ -12,6 +12,7 @@ my $total_years = 0;
 my $num_weeks = 0;
 my $year_subs;
 my $w;
+my %league_player;
 my %ss;
 my %s;
 my $size;
@@ -36,6 +37,7 @@ foreach my $year (sort keys %subs) {
         $year_subs += $size;
         foreach my $pn (sort keys %s) {
             print "\t$pn for $s{$pn}\n";
+            $league_player{$s{$pn}}++;
             $ss{$pn}++;
         }
         print "\n";
@@ -49,8 +51,20 @@ printf("Average subs = %.2f\n", ($total_subs / $num_weeks));
 
 print "\n\n";
 
+print "Subs table:\n";
+print "-----------\n";
 foreach my $pn (reverse sort { $ss{$a} <=> $ss{$b} } (keys(%ss))) {
     if ($ss{$pn} > 19) {
         print "$pn: $ss{$pn}\n";
+    }
+}
+
+print "\n\n", if (0);
+
+print "League Member table:\n", if (0);
+print "--------------------\n", if (0);
+foreach my $pn (reverse sort { $league_player{$a} <=> $league_player{$b} } ((%league_player))) {
+    if ($league_player{$pn} > 19) {
+        print "$pn: $league_player{$pn}\n", if (0);
     }
 }
