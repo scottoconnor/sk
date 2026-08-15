@@ -4,12 +4,14 @@
 #
 
 use strict;
+use Getopt::Long qw(:config no_ignore_case);
 
 require './subs.pl';
 
 my $total_subs = 0;
 my $total_years = 0;
 my $num_weeks = 0;
+my $members = 0;
 my $year_subs;
 my $w;
 my %league_player;
@@ -18,6 +20,10 @@ my %s;
 my $size;
 
 our %subs;
+
+GetOptions (
+    "m" => \$members)
+or die("Error in command line arguments\n");
 
 foreach my $year (sort keys %subs) {
     $year_subs = 0;
@@ -59,12 +65,10 @@ foreach my $pn (reverse sort { $ss{$a} <=> $ss{$b} } (keys(%ss))) {
     }
 }
 
-print "\n\n", if (0);
-
-print "League Member table:\n", if (0);
-print "--------------------\n", if (0);
+print "\n\nLeague Member table:\n", if ($members);
+print "--------------------\n", if ($members);
 foreach my $pn (reverse sort { $league_player{$a} <=> $league_player{$b} } ((%league_player))) {
     if ($league_player{$pn} > 19) {
-        print "$pn: $league_player{$pn}\n", if (0);
+        print "$pn: $league_player{$pn}\n", if ($members);
     }
 }
