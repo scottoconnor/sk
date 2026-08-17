@@ -1322,6 +1322,8 @@
                "Joe Graceffa" => "Tony Albertini",
                "Dick Fields" => "Mike Perisho",
                "Brian Sargent" => "Jim O'Keefe", },
-       15 => { "Bill Percuoco" => "Steve Bulawka", },
+       15 => { "Bill Percuoco" => "Steve Bulawka",
+               "Steve Willey" => "Dan Correia",
+               "Dave Louie" => "Carl Humphreys", },
     },
 );
