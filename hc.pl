@@ -265,7 +265,7 @@ expected_diff {
                     ($diff + $t{$sr[0]}{$tier}{ave}), $diff, $t{$sr[0]}{$tier}{ave}), if (0);
                 if ($diff < $t{$sr[0]}{$tier}{ave}) {
                     print "$pn ($y): $diff, $t{$sr[0]}{$tier}{ave}\n", if (0);
-                    $diff += ($t{$sr[0]}{$tier}{ave} * .96);
+                    $diff += ($t{$sr[0]}{$tier}{ave} * .95);
                 } else {
                     $diff += $t{$sr[0]}{$tier}{ave};
                 }
