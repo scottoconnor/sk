@@ -100,7 +100,7 @@ get_course_data {
         if ($course eq "SB") {
             return("South Back:34.2:129:35:4:3:4:4:5:3:4:3:5:8:9:5:7:2:6:1:4:3");
         }
-    } elsif ($year >= 2026) {
+    } elsif ($year == 2026) {
         if ($course eq "SF") {
             return("South Front:35.0:119:36:4:4:3:4:4:4:5:5:3:7:1:9:4:2:8:3:5:6");
         }
@@ -109,6 +109,16 @@ get_course_data {
         }
         if ($course eq "NF") {
             return("North Front:34.1:121:35:4:4:3:4:4:5:3:4:4:2:3:9:6:1:4:5:8:7");
+        }
+    } elsif ($year >= 2027) {
+        if ($course eq "SF") {
+            return("South Front:35.0:119:36:4:4:3:4:4:4:5:5:3:3:1:9:6:2:7:4:5:8");
+        }
+        if ($course eq "SB") {
+            return("South Back:34.2:129:35:4:3:4:4:5:3:4:3:5:7:9:5:3:4:8:1:6:2");
+        }
+        if ($course eq "NF") {
+            return("North Front:34.1:121:35:4:4:3:4:4:5:3:4:4:2:3:7:4:1:9:8:6:5");
         }
     }
 
