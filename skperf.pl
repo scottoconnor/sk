@@ -11,6 +11,7 @@ require './hcroutines.pl';
 use Time::HiRes qw(gettimeofday);
 use GDBM_File;
 use Getopt::Long qw(:config no_ignore_case);
+use Array::Compare;
 
 #
 # Global variables.
@@ -198,9 +199,9 @@ if ($delete) {
 if ($add) {
 
     my ($db_out, $course_rating, $slope, $gdbm_file, @sr, $pn);
-    my ($date, $fn, @week, $month, $day, $year, $course, $line, $c, $fb);
+    my ($date, $time, $fn, @week, $month, $day, $year, $course, $line, $c, $fb, @hh);
     my ($hi, $ph, $post, $cph, $shot, @swings, $swing, $team, $count);
-    my ($course_data, @course_elements, $num, $num_scores);
+    my ($course_data, @course_elements, @handicap_hole, $num, $num_scores);
 
     $count = 0;
     $num_scores = 0;
@@ -230,6 +231,7 @@ if ($add) {
             if ($line =~ /(4|5)\072\d{2}/) {
                 @week = split (/,/, $line);
                 $date = @week[0];
+                $time = @week[1];
                 ($year, $month, $day) = split /-/, $date;
                 my $month = abs($month);
                 my $day = abs($day);
@@ -243,6 +245,21 @@ if ($add) {
                 @course_elements = split(/:/, $course_data);
                 ($course_rating, $slope) = @course_elements[1..2];
                 print "$course: $course_rating, $slope\n", if (0);
+            } elsif ($line =~ /Handicap Hole/) {
+                @hh = split (/,/, $line);
+                # First few elements aren't needed. Just need the numbers.
+                @hh = splice(@hh, 4, 9);
+
+                $course_data = get_course_data($year, $course);
+                @course_elements = split(/:/, $course_data);
+                @handicap_hole = @course_elements[13..21];
+
+                my $comp = Array::Compare->new;
+
+                if (!$comp->compare(\@hh, \@handicap_hole)) {
+                    die "Handicap hole arrays do not match for $course, $time\n";
+                }
+
             } elsif ($line =~ /^(\d{1,2})/) {
                 @sr = split (/,/, $line);
                 $pn = $sr[3];
