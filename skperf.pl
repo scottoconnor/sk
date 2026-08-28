@@ -298,26 +298,24 @@ if ($add) {
                     $db_out = $db_out . ":$swing";
                 }
 
+                die "$pn: Score already exists.\n", if (exists($tnfb_db{$date}));
+
                 tie %tnfb_db, 'GDBM_File', $gdbm_file, GDBM_WRITER, 0644
                     or die "$GDBM_File::gdbm_errno";
 
-                if (!exists($tnfb_db{$date})) {
-                    $num = split(/:/, $db_out);
-                    $team = "Team_$year";
-                    if ($year >= 2022 && !exists($tnfb_db{$team})) {
-                        $tnfb_db{$team} = $tnfb_db{'Team'}, if ($num == 17);
-                        $tnfb_db{'Active'} = 1, if ($num == 17);
-                    }
-                    print "$pn $date: $db_out\n";
-                    if ($num == 17) {
-                        $tnfb_db{$date} = $db_out;
-                        $count++;
-                    }
-                    $num_scores++;
-                    untie %tnfb_db;
-                } else {
-                    untie %tnfb_db;
+                $num = split(/:/, $db_out);
+                $team = "Team_$year";
+                if ($year >= 2022 && !exists($tnfb_db{$team})) {
+                    $tnfb_db{$team} = $tnfb_db{'Team'}, if ($num == 17);
+                    $tnfb_db{'Active'} = 1, if ($num == 17);
                 }
+                if ($num == 17) {
+                    $tnfb_db{$date} = $db_out;
+                    $count++;
+                    print "$pn $date: $db_out\n";
+                }
+                $num_scores++;
+                untie %tnfb_db;
             }
         }
         close(FD);
