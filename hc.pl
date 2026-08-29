@@ -41,7 +41,7 @@ opendir($dh, "./golfers") || die "Can't open \"./golfers\" directory.";
 # Read and store the Gnu gdbm database files.
 #
 while (readdir $dh) {
-    if ($_ =~ /(^1\d{3}$\.gdbm)/) {
+    if ($_ =~ /(^1\d{3}\056gdbm)/) {
         tie %tnfb_db, 'GDBM_File', "./golfers/$_", GDBM_READER, 0644
             or die "$GDBM_File::gdbm_errno";
         $golfers_gdbm{$tnfb_db{'Player'}} = "./golfers/$_";
