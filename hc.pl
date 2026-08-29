@@ -114,7 +114,7 @@ foreach my $pn (keys %golfers_gdbm) {
         next;
     }
 
-    (my $first, my $last) = split(/ /, $tnfb_db{'Player'}, 2);
+    my ($first, $last) = split(/ /, $tnfb_db{'Player'}, 2);
     my $pn = "$last, $first";
 
     $league{$tnfb_db{'Team'}}{$pn}{hi} = $tnfb_db{'Current'};

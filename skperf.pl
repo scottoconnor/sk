@@ -102,7 +102,7 @@ opendir($dh, "$league") || die "Can't open \"$league\" directory.";
 
 my $valid_year = 0;
 while (readdir $dh) {
-    if ($_ =~ /(^1\d{3}$\.gdbm)/) {
+    if ($_ =~ /(^1\d{3}\056gdbm)/) {
         tie %tnfb_db, 'GDBM_File', "$league/$_", GDBM_READER, 0644
             or die "$GDBM_File::gdbm_errno";
         $golfers_gdbm{$tnfb_db{'Player'}} = "$league/$_";
@@ -355,7 +355,7 @@ net_double_bogey {
 
     #
     # If the player does not have enough scores for a stable index,
-    # input here what they player played at that night.
+    # input here what the player played at that night.
     #
     if ($hi == -100) {
         #
