@@ -4,7 +4,6 @@
 #
 
 use strict;
-require './tnfb_years.pl';
 require './hcroutines.pl';
 
 use Getopt::Long;
@@ -23,7 +22,7 @@ my (%golfers_gdbm);
 my ($total_scores, %t, $tier, $course_data, @course_elements);
 my ($year) = (1900 + (localtime)[5]);
 my @courses = ("SF", "SB", "NF", "NB");
-our (%dates);
+our %dates;
 
 GetOptions (
     "x!" => \$expected_diff,
@@ -34,6 +33,8 @@ or die("Error in command line arguments\n");
 
 my ($month) = (((localtime)[4]) + 1);
 my ($day) = (localtime)[3];
+
+&get_years_weeks_dates();
 
 opendir($dh, "./golfers") || die "Can't open \"./golfers\" directory.";
 
@@ -65,9 +66,9 @@ foreach my $pn (keys %golfers_gdbm) {
             if (exists($tnfb_db{$dates{$y}{$w}})) {
                 my @sr = split(/:/, $tnfb_db{$dates{$y}{$w}});
                 my $date = $sr[3];
-                print "$date: $tnfb_db{$date}\n", if 0;
+                print "$date: $tnfb_db{$date}\n", if (0);
                 print "$date: @sr\n", if 0;
-                print "$date: $sr[4], $sr[6]\n", if 0;
+                print "$date: $sr[4], $sr[6]\n", if (0);
 
                 ($course_year) = $sr[3] =~ /(\d\d\d\d)-/;
                 print "year = $course_year\n", if (0);
@@ -80,7 +81,7 @@ foreach my $pn (keys %golfers_gdbm) {
                 $t{$sr[0]}{$tier}{xplayed}++;
 
                 $total_scores++;
-            }
+            } 
         }
     }
 }
@@ -258,7 +259,7 @@ expected_diff {
         foreach my $w (reverse (1..15)) {
             if (exists($tnfb_db{$dates{$y}{$w}})) {
                 @sr = split(/:/, $tnfb_db{$dates{$y}{$w}});
-                print "$sr[0]: Scoring Record: @sr\n", if (0);
+                print "@sr[0]: Scoring Record: @sr\n", if (0);
                 $diff = ((113 / $sr[2]) * ($sr[7] - $sr[1]));
                 $tier = int($sr[4] / $div);
                 printf("new diff: %.1f (diff %.1f + ex_diff %.1f)\n\n", 

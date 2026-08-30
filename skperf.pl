@@ -4,7 +4,6 @@
 #
 
 use strict;
-require './tnfb_years.pl';
 require './subs.pl';
 require './hcroutines.pl';
 
@@ -57,8 +56,8 @@ my (%bt, %et, %difficult, %bph, %bpp, %to, %ht, %c);
 #
 # These are hash variables from included files. see 'require' above.
 #
-our (%dates);
-our (%subs);
+our %dates;
+our %subs;
 
 if ($#ARGV < 0) {
     exit;
@@ -113,6 +112,8 @@ while (readdir $dh) {
     }
 }
 closedir ($dh);
+
+&get_years_weeks_dates();
 
 if ($start_year >= $cur_year && !$valid_year) {
     $start_year = ($cur_year - 1);

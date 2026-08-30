@@ -3,13 +3,25 @@
 # Copyright (c) 2018, 2026 Scott O'Connor
 #
 
-require './tnfb_years.pl';
-
 use strict;
 use POSIX;
-use GDBM_File;
 
-our (%dates);
+use GDBM_File;
+use Time::Piece;
+use Time::Seconds;
+use warnings;
+
+my $end_year = localtime->year;
+my $sy;
+my $t;
+my ($year, $month, $day, $date);
+my %tnfb_db;
+my %d;
+our %dates;
+my $league = "./golfers";
+my $dh;
+my $golfers;
+my %golfers_gdbm;
 
 #
 # Determine how many scores to use.
@@ -57,7 +69,7 @@ sub round {
     # After we multiply it by the factor, truncate everything after
     # the first digit after the decimal point. Not needed.
     #
-    ($r) = $r =~ /(\055*\d*\056\d{1})/;
+    $r =~ /(\055*\d*\056\d{1})/;
 
     #
     # See if there is a digit after the decmial point.
@@ -133,6 +145,91 @@ get_course_data {
     }
     if ($course eq "NB") {
         return("North Back:35.1:130:36:4:4:5:3:4:4:3:4:5:2:3:9:8:7:4:6:5:1");
+    }
+}
+
+sub
+get_years_weeks_dates {
+
+    opendir($dh, "$league") || die "Can't open \"$league\" directory.";
+
+    while (readdir $dh) {
+        if ($_ =~ /(^1\d{3}\056gdbm)/) {
+            tie %tnfb_db, 'GDBM_File', "$league/$_", GDBM_READER, 0644
+                or die "$GDBM_File::gdbm_errno";
+            $golfers_gdbm{$tnfb_db{'Player'}} = "$league/$_";
+            untie %tnfb_db;
+        }
+    }
+
+    foreach my $pn (keys %golfers_gdbm) {
+
+        my $file = $golfers_gdbm{$pn};
+        my $scores = 0;
+
+        tie %tnfb_db, 'GDBM_File', $file, GDBM_READER, 0644
+            or die "$GDBM_File::gdbm_errno";
+
+        my $pn =  $tnfb_db{'Player'};
+
+        $sy = 1997;
+        $t = Time::Piece->strptime("$sy-04-01", "%Y-%m-%d");
+
+        while ($sy <= $end_year) {
+
+            ($year, $month, $day) = $t->ymd =~ /(\d{4})-\060*(\d{1,2})-\060*(\d{1,2})/;
+            $date = "$year-$month-$day";
+
+            # If the score exists, check if the day is Tuesday
+            if ((exists($tnfb_db{$date})) && ($t->fullday eq 'Tuesday')) {
+                $d{$date} = $date;
+            }
+
+            # Move to next day
+            if (exists($d{$date})) {
+                $t += ONE_WEEK;
+            } else {
+                $t += ONE_DAY;
+            }
+            if ($t->mon > 8) {
+                if ($sy > 2002) {
+                    do {
+                        $sy++;
+                    } while ((!exists($tnfb_db{"Team_$sy"})) && ($sy <= $end_year));
+                } else {
+                    $sy++;
+                }
+                $t = Time::Piece->strptime("$sy-04-01", "%Y-%m-%d");
+            }
+        }
+        untie %tnfb_db;
+    }
+
+    my $week = 1;
+    $sy = 1997;
+    $t = Time::Piece->strptime("$sy-04-01", "%Y-%m-%d");
+
+    while ($sy <= $end_year) {
+        ($year, $month, $day) = $t->ymd =~ /(\d{4})-\060*(\d{1,2})-\060*(\d{1,2})/;
+        $date = "$year-$month-$day";
+        if (exists($d{$date})) {
+            $dates{$year}{$week} = $d{$date};
+            $dates{$year}{weeks} = $week;
+            print "$year: $week: $date: $d{$date}\n", if (0);
+            $week++;
+        }
+
+        if (exists($d{$date})) {
+            $t += ONE_WEEK;
+        } else {
+            $t += ONE_DAY;
+        }
+
+        if ($t->mon > 8) {
+            $sy++;
+            $t = Time::Piece->strptime("$sy-04-01", "%Y-%m-%d");
+            $week = 1;
+        }
     }
 }
 1;
