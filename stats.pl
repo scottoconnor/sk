@@ -1,13 +1,26 @@
 #! /usr/bin/perl
 #
-# Copyright (c) 2019, 2022 Scott O'Connor
+# Copyright (c) 2019, 2026 Scott O'Connor
 #
 
+use strict;
 use Getopt::Long;
 
-$year = (1900 + (localtime)[5]);
-$start_year = 2003;
-$html = 0;
+my $year = (1900 + (localtime)[5]);
+my $cnt;
+my $xx;
+my $start_year = 2003;
+my $html = 0;
+my $weekly_stats = 0;
+my $cumulative_stats = 0;
+my $all_time = 0;
+my $line;
+my $week;
+my $ret;
+my $val;
+my $y;
+my @return;
+undef(my %y);
 
 
 if ($#ARGV < 0) {
@@ -24,25 +37,15 @@ GetOptions (
     "a" => \$all_time)
 or die("Error in command line arguments\n");
 
-undef (%y);
-
-#
-# Due to course changes, year 2025 and later have to be compared together.
-# Otherwise, years 2003 - 2024 can be compared together.
-#
-#if ($year > 2024) {
-    #$start_year = 2025;
-#}
-
-$num_weeks = 0;
+my $num_weeks = 0;
 
 #
 # First, find how many weeks have been played in the current year.
 #
 for ($week = 1; $week <= 15; $week++) {
     $ret = `./skperf.pl -s -y $year -w $week | grep "Total holes played"`;
-    ($ret) = $ret =~ /Total holes played: (\d+)/;
-    if ($ret > 0) {
+    ($val) = $ret =~ /Total holes played: (\d+)/;
+    if ($val > 0) {
         $num_weeks++;
     }
 }
@@ -55,35 +58,35 @@ for ($y = $start_year; $y <= $year; $y++) {
         @return = `./skperf.pl -s -y $y`;
         while ($line = shift @return) {
             chomp ($line);
-            if (($ft) = $line =~ /50\053 = (\d+)/) {
-                $y{$y}{ft} = $ft;
+            if (($val) = $line =~ /50\053 = (\d+)/) {
+                $y{$y}{ft} = $val;
             }
-            if (($thirty) = $line =~ /30\047s = (\d+)/) {
-                defined($y{$y}{thirty} = $thirty);
+            if (($val) = $line =~ /30\047s = (\d+)/) {
+                $y{$y}{thirty} = $val;
             }
-            if (($to) = $line =~ /Total Others = (\d+)/) {
-                $y{$y}{to} = $to;
+            if (($val) = $line =~ /Total Others = (\d+)/) {
+                $y{$y}{to} = $val;
             }
-            if (($tbo) = $line =~ /Total Bogies = (\d+)/) {
-                $y{$y}{tbo} = $tbo;
+            if (($val) = $line =~ /Total Bogies = (\d+)/) {
+                $y{$y}{tbo} = $val;
             }
-            if (($tp) = $line =~ /Total Pars = (\d+)/) {
-                $y{$y}{tp} = $tp;
+            if (($val) = $line =~ /Total Pars = (\d+)/) {
+                $y{$y}{tp} = $val;
             }
-            if (($tb) = $line =~ /Total Birdies = (\d+)/) {
-                $y{$y}{tb} = $tb;
+            if (($val) = $line =~ /Total Birdies = (\d+)/) {
+                $y{$y}{tb} = $val;
             }
-            if (($te) = $line =~ /Total Eagles = (\d+)/) {
-                $y{$y}{te} = $te;
+            if (($val) = $line =~ /Total Eagles = (\d+)/) {
+                $y{$y}{te} = $val;
             }
-            if (($lsa) = $line =~ /League Stroke Average = (\d+\056\d+)/) {
-                $y{$y}{lsa} = $lsa;
+            if (($val) = $line =~ /League Stroke Average = (\d+\056\d+)/) {
+                $y{$y}{lsa} = $val;
             }
-            if (($th) = $line =~ /Total holes played: (\d+)/) {
-                $y{$y}{th} = $th;
+            if (($val) = $line =~ /Total holes played: (\d+)/) {
+                $y{$y}{th} = $val;
             }
-            if (($tposted) = $line =~ /Total Posted scores: (\d+)/) {
-                $y{$y}{tposted} = $tposted;
+            if (($val) = $line =~ /Total Posted scores: (\d+)/) {
+                $y{$y}{tposted} = $val;
             }
         }
     }
@@ -96,35 +99,35 @@ for ($y = $start_year; $y <= $year; $y++) {
         @return = `./skperf.pl -s -y $y -w $week`;
         while ($line = shift @return) {
             chomp ($line);
-            if (($wft) = $line =~ /50\053 = (\d+)/) {
-                $y{$y}{wft} = $wft;
+            if (($val) = $line =~ /50\053 = (\d+)/) {
+                $y{$y}{wft} = $val;
             }
-            if (($thirty) = $line =~ /Total 30\047s = (\d+)/) {
-                defined($y{$y}{wthirty} = $thirty);
+            if (($val) = $line =~ /Total 30\047s = (\d+)/) {
+                defined($y{$y}{wthirty} = $val);
             }
-            if (($wlsa) = $line =~ /League Stroke Average = (\d+\056\d+)/) {
-                $y{$y}{wlsa} = $wlsa;
+            if (($val) = $line =~ /League Stroke Average = (\d+\056\d+)/) {
+                $y{$y}{wlsa} = $val;
             }
-            if (($two) = $line =~ /Total Others = (\d+)/) {
-                $y{$y}{two} = $two;
+            if (($val) = $line =~ /Total Others = (\d+)/) {
+                $y{$y}{two} = $val;
             }
-            if (($twbo) = $line =~ /Total Bogies = (\d+)/) {
-                $y{$y}{twbo} = $twbo;
+            if (($val) = $line =~ /Total Bogies = (\d+)/) {
+                $y{$y}{twbo} = $val;
             }
-            if (($twp) = $line =~ /Total Pars = (\d+)/) {
-                $y{$y}{twp} = $twp;
+            if (($val) = $line =~ /Total Pars = (\d+)/) {
+                $y{$y}{twp} = $val;
             }
-            if (($twb) = $line =~ /Total Birdies = (\d+)/) {
-                $y{$y}{twb} = $twb;
+            if (($val) = $line =~ /Total Birdies = (\d+)/) {
+                $y{$y}{twb} = $val;
             }
-            if (($twe) = $line =~ /Total Eagles = (\d+)/) {
-                $y{$y}{twe} = $twe;
+            if (($val) = $line =~ /Total Eagles = (\d+)/) {
+                $y{$y}{twe} = $val;
             }
-            if (($twh) = $line =~ /Total holes played: (\d+)/) {
-                $y{$y}{twh} = $twh;
+            if (($val) = $line =~ /Total holes played: (\d+)/) {
+                $y{$y}{twh} = $val;
             }
-            if (($twposted) = $line =~ /Total Posted scores: (\d+)/) {
-                $y{$y}{twposted} = $twposted;
+            if (($val) = $line =~ /Total Posted scores: (\d+)/) {
+                $y{$y}{twposted} = $val;
             }
         }
     }
@@ -133,35 +136,35 @@ for ($y = $start_year; $y <= $year; $y++) {
         @return = `./skperf.pl -s -y $y -sw 1 -ew $week`;
         while ($line = shift @return) {
             chomp ($line);
-            if (($cft) = $line =~ /50\053 = (\d+)/) {
-                $y{$y}{cft} = $cft;
+            if (($val) = $line =~ /50\053 = (\d+)/) {
+                $y{$y}{cft} = $val;
             }
-            if (($thirty) = $line =~ /Total 30\047s = (\d+)/) {
-                defined($y{$y}{cthirty} = $thirty);
+            if (($val) = $line =~ /Total 30\047s = (\d+)/) {
+                defined($y{$y}{cthirty} = $val);
             }
-            if (($clsa) = $line =~ /League Stroke Average = (\d+\056\d+)/) {
-                $y{$y}{clsa} = $clsa;
+            if (($val) = $line =~ /League Stroke Average = (\d+\056\d+)/) {
+                $y{$y}{clsa} = $val;
             }
-            if (($cto) = $line =~ /Total Others = (\d+)/) {
-                $y{$y}{cto} = $cto;
+            if (($val) = $line =~ /Total Others = (\d+)/) {
+                $y{$y}{cto} = $val;
             }
-            if (($ctbo) = $line =~ /Total Bogies = (\d+)/) {
-                $y{$y}{ctbo} = $ctbo;
+            if (($val) = $line =~ /Total Bogies = (\d+)/) {
+                $y{$y}{ctbo} = $val;
             }
-            if (($ctp) = $line =~ /Total Pars = (\d+)/) {
-                $y{$y}{ctp} = $ctp;
+            if (($val) = $line =~ /Total Pars = (\d+)/) {
+                $y{$y}{ctp} = $val;
             }
-            if (($ctb) = $line =~ /Total Birdies = (\d+)/) {
-                $y{$y}{ctb} = $ctb;
+            if (($val) = $line =~ /Total Birdies = (\d+)/) {
+                $y{$y}{ctb} = $val;
             }
-            if (($cte) = $line =~ /Total Eagles = (\d+)/) {
-                $y{$y}{cte} = $cte;
+            if (($val) = $line =~ /Total Eagles = (\d+)/) {
+                $y{$y}{cte} = $val;
             }
-            if (($cth) = $line =~ /Total holes played: (\d+)/) {
-                $y{$y}{cth} = $cth;
+            if (($val) = $line =~ /Total holes played: (\d+)/) {
+                $y{$y}{cth} = $val;
             }
-            if (($tcuposted) = $line =~ /Total Posted scores: (\d+)/) {
-                $y{$y}{tcuposted} = $tcuposted;
+            if (($val) = $line =~ /Total Posted scores: (\d+)/) {
+                $y{$y}{tcuposted} = $val;
             }
         }
     }

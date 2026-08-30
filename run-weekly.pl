@@ -3,22 +3,27 @@
 # Copyright (c) 2018, 2026, Scott O'Connor
 #
 
+use strict;
 use Getopt::Long;
 use POSIX;
 
-$year = (1900 + (localtime)[5]);
-
-$year_day = ((localtime)[7] + 1);
-if ($year_day < 117) {
-    $year = ((1900 + (localtime)[5]) - 1);
-}
+my $year = (1900 + (localtime)[5]);
 
 GetOptions (
         "y=s" => \$year)
 or die("Error in command line arguments\n");
 
-$cur_year = $year;
-$start_year = 2003;
+my $cur_year = $year;
+my $start_year = 2003;
+my $dh;
+my $fh;
+my $html_list;
+my $week;
+my $num_weeks;
+my $s;
+my $th;
+my @line;
+my @html_list;
 
 #
 # First, remove old html file from /tmp
@@ -39,60 +44,34 @@ unlink @html_list;
 #
 $num_weeks = 0;
 
-$s = `./skperf.pl -s -y $year | grep "Total holes played"`;
-($s) = $s =~ /Total holes played: (\d+)/;
-$num_weeks = ceil(($s/288));
+$s = qx(./skperf.pl -s -y $year | grep \"Total holes played\");
+($th) = $s =~ /Total holes played: (\d+)/;
+$num_weeks = ceil(($th/288));
 print "Number of weeks: $num_weeks\n";
-
-if ($num_weeks == 15) {
-    open ($log, ">", "/tmp/$start_year-$cur_year.html");
-} else {
-    open ($log, ">", "/tmp/$start_year-$cur_year-week-$num_weeks.html");
-}
-open ($log2, ">", "/tmp/$start_year-$cur_year-only-week-$num_weeks.html");
-
-#
-# Now generate the weekly stats for these weeks from start year to cur year
-#
-while ($start_year <= $year) {
-    select $log;
-    @line = `./skperf.pl -s -t -h -y $year -sw 1 -ew $num_weeks`;
-    print @line;
-    print "<br><br>\n";
-    select $log2;
-    @line = `./skperf.pl -s -t -h -y $year -w $num_weeks`;
-    print @line;
-    print "<br><br>";
-    $year--;
-}
-close($log);
-close($log2);
 
 #
 # Get the stats and table for the current year, then tack the
 # weekly stats below the overall stats.
 #
 
-open ($log, ">", "/tmp/$cur_year.html");
-select $log;
+open ($fh, ">", "/tmp/$cur_year.html");
+select $fh;
 
-@line = `./skperf.pl -s -t -h -y $cur_year`;
+@line = qx{./skperf.pl -s -t -h -y $cur_year};
 print @line;
 print "<br><br>";
 
 $week = $num_weeks;
 while ($week > 0) {
-    @line = `./skperf.pl -h -s -t -y $cur_year -w $week`;
-    print @line;
-    @line = `./skperf.pl -h -g -y $cur_year -w $week`;
+    @line = qx{./skperf.pl -h -s -g -t -y $cur_year -w $week};
     print @line;
     print "<br><br>";
     $week--;
 }
 
-@line = `./stats.pl -y $cur_year -w -h`;
+@line = qx(./stats.pl -w -h -y $cur_year);
 print @line;
-@line = `./stats.pl -y $cur_year -c -h`;
+@line = qx(./stats.pl -c -h -y $cur_year);
 print @line;
 
-close ($log);
+close ($fh);
