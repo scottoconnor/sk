@@ -441,15 +441,6 @@ if ($vhc) {
                 $d = $dates{$yp}{$w};
                 if ($p{$pn}{$d}{shot} && defined($p{$pn}{$d}{hc})) {
 
-                    #
-                    # Do not count weeks we don't have a valid
-                    # handicap index or handicap.
-                    #
-                    if ($p{$pn}{$d}{hc} eq "NA") {
-                        $na{$pn} = $d;
-                        next;
-                    }
-
                     $p{$pn}{diff} += $p{$pn}{$d}{diff};
                     $p{$pn}{rounds}++;
                     $temp{$p{$pn}{$d}{team}}{diff} += $p{$pn}{$d}{diff};
@@ -532,13 +523,6 @@ if ($vhc) {
             next;
         }
         printf("%-25s: %.2f\n", $team, $league{$team}{avediff});
-    }
-
-    #
-    # If a player has NA for handicap index or handicap, print here.
-    #
-    foreach my $player (sort keys %na) {
-        print "\nNA for \"$player\": $na{$player}\n";
     }
 }
 
@@ -1110,11 +1094,9 @@ show_most_improved {
             $d = $dates{$start_year}{$cw};
             if (!defined($p{$pn}{A}) && exists($tnfb_db{$d})) {
                 @score = split(/:/, $tnfb_db{$d});
-                if (@score[4] ne "NA") {
-                    $p{$pn}{A} = (@score[4] + 6);
-                    $p{$pn}{Adate} = $d;
-                    last;
-                }
+                $p{$pn}{A} = (@score[4] + 6);
+                $p{$pn}{Adate} = $d;
+                last;
             }
         }
 
@@ -1125,10 +1107,8 @@ show_most_improved {
             $d = $dates{($end_year+1)}{$cw};
             if (!defined($p{$pn}{B}) && exists($tnfb_db{$d})) {
                 @score = split(/:/, $tnfb_db{$d});
-                if (@score[4] ne "NA") {
-                    $p{$pn}{B} = (@score[4] + 6);
-                    $p{$pn}{Bdate} = $d;
-                }
+                $p{$pn}{B} = (@score[4] + 6);
+                $p{$pn}{Bdate} = $d;
             }
         }
 
