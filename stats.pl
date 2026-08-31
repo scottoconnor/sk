@@ -46,9 +46,6 @@ $week = $num_weeks;
 
 for ($sy = $start_year; $sy <= $year; $sy++) {
 
-    #
-    # Weekly stats now
-    #
     if ($weekly_stats) {
         @return = qx{./skperf.pl -s -y $sy -w $week};
         while ($line = shift @return) {
@@ -138,8 +135,8 @@ if ($weekly_stats) {
     print "
     <tr>
       <th>Rank</th>
-      <th>Year</th>
-      <th>Stroke Average</th>
+      <th style=\"text-align:center\">Year</th>
+      <th style=\"text-align:center\">Stroke Average</th>
     </tr>
     \n";
   }
@@ -147,13 +144,13 @@ if ($weekly_stats) {
     $cnt = 1;
     foreach $key (sort { $y{$a}{wlsa} <=> $y{$b}{wlsa} } (keys(%y))) {
         if ($key == $year) {
-            printf("    <tr>\n      <td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
-            printf("      <td><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-            printf("      <td style=\"text-align:center\"><b><font color=\"red\">%.2f</font></b></td>\n", $y{$key}{wlsa}), if $html;
+            printf("<tr><td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
+            printf("<td style=\"text-align:center\"><b><font color=\"red\">%.2f</font></b></td>\n", $y{$key}{wlsa}), if $html;
         } else {
-            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-            printf("      <td>%d</td>\n", $key), if $html;
-            printf("       <td style=\"text-align:center\">%.2f\n</td>", $y{$key}{wlsa}), if $html;
+            printf("<tr><td>%2d</td>\n", $cnt++), if $html;
+            printf("<td style=\"text-align:center\">%d</td>\n", $key), if $html;
+            printf("<td style=\"text-align:center\">%.2f\n</td>\n", $y{$key}{wlsa}), if $html;
         }
         printf("%2d: %d -> %.2f\n", $cnt++, $key, $y{$key}{wlsa}), if !$html;
     }
@@ -189,7 +186,7 @@ if ($weekly_stats) {
     print "
     <tr>
       <th>Rank</th>
-      <th>Year</th>
+      <th style=\"text-align:center\">Year</th>
       <th style=\"text-align:center\">30's</th>
     </tr>
     \n";
@@ -198,13 +195,13 @@ if ($weekly_stats) {
     $cnt = 1;
     foreach $key (reverse sort { $y{$a}{wthirty} <=> $y{$b}{wthirty} } (keys(%y))) {
         if ($key == $year) {
-            printf("    <tr>\n      <td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
-            printf("      <td><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-            printf("      <td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{wthirty}), if $html;
+            printf("<tr><td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
+            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{wthirty}), if $html;
         } else {
-            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-            printf("      <td>%d</td>\n", $key), if $html;
-            printf("      <td style=\"text-align:center\">%d</td>\n", $y{$key}{wthirty}), if $html;
+            printf("<tr><td>%2d</td>\n", $cnt++), if $html;
+            printf("<td style=\"text-align:center\">%d</td>\n", $key), if $html;
+            printf("<td style=\"text-align:center\">%d</td>\n", $y{$key}{wthirty}), if $html;
         }
         printf("%2d: %d -> %2d\n", $cnt++, $key, $y{$key}{wthirty}), if !$html;
 
@@ -241,7 +238,7 @@ if ($weekly_stats) {
     print "
     <tr>
       <th>Rank</th>
-      <th>Year</th>
+      <th style=\"text-align:center\">Year</th>
       <th style=\"text-align:center\">50's</th>
     </tr>
     \n";
@@ -250,13 +247,13 @@ if ($weekly_stats) {
     $cnt = 1;
     foreach $key (sort { $y{$a}{wft} <=> $y{$b}{wft} } (keys(%y))) {
         if ($key == $year) {
-            printf("    <tr>\n      <td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
-            printf("      <td><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-            printf("      <td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{wft}), if $html;
+            printf("<tr><td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
+            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{wft}), if $html;
         } else {
-            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-            printf("      <td>%d</td>\n", $key), if $html;
-            printf("      <td style=\"text-align:center\">%d</td>\n", $y{$key}{wft}), if $html;
+            printf("<tr><td>%2d</td>\n", $cnt++), if $html;
+            printf("<td style=\"text-align:center\">%d</td>\n", $key), if $html;
+            printf("<td style=\"text-align:center\">%d</td>\n", $y{$key}{wft}), if $html;
         }
         printf("%2d: %d -> %2d\n", $cnt++, $key, $y{$key}{wft}), if !$html;
     }
@@ -292,7 +289,7 @@ if ($weekly_stats) {
     print "
     <tr>
       <th>Rank</th>
-      <th>Year</th>
+      <th style=\"text-align:center\">Year</th>
       <th style=\"text-align:center\">Others</th>
     </tr>
     \n";
@@ -301,13 +298,13 @@ if ($weekly_stats) {
     $cnt = 1;
     foreach $key (sort { $y{$a}{two} <=> $y{$b}{two} } (keys(%y))) {
         if ($key == $year) {
-            printf("    <tr>\n      <td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
-            printf("      <td><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-            printf("      <td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{two}), if $html;
+            printf("<tr><td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
+            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{two}), if $html;
         } else {
-            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-            printf("      <td>%d</td>\n", $key), if $html;
-            printf("      <td style=\"text-align:center\">%d</td>\n", $y{$key}{two}), if $html;
+            printf("<tr><td>%2d</td>\n", $cnt++), if $html;
+            printf("<td style=\"text-align:center\">%d</td>\n", $key), if $html;
+            printf("<td style=\"text-align:center\">%d</td>\n", $y{$key}{two}), if $html;
         }
         printf("%2d: %d -> %2d\n", $cnt++, $key, $y{$key}{two}), if !$html;
     }
@@ -343,7 +340,7 @@ if ($weekly_stats) {
     print "
     <tr>
       <th>Rank</th>
-      <th>Year</th>
+      <th style=\"text-align:center\">Year</th>
       <th style=\"text-align:center\">Bogies</th>
     </tr>
     \n";
@@ -352,13 +349,13 @@ if ($weekly_stats) {
     $cnt = 1;
     foreach $key (reverse sort { $y{$a}{twbo} <=> $y{$b}{twbo} } (keys(%y))) {
         if ($key == $year) {
-            printf("    <tr>\n      <td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
-            printf("      <td><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-            printf("      <td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{twbo}), if $html;
+            printf("<tr><td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
+            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{twbo}), if $html;
         } else {
-            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-            printf("      <td>%d</td>\n", $key), if $html;
-            printf("      <td style=\"text-align:center\">%d</td>\n", $y{$key}{twbo}), if $html;
+            printf("<tr><td>%2d</td>\n", $cnt++), if $html;
+            printf("<td style=\"text-align:center\">%d</td>\n", $key), if $html;
+            printf("<td style=\"text-align:center\">%d</td>\n", $y{$key}{twbo}), if $html;
         }
         printf("%2d: %d -> %2d\n", $cnt++, $key, $y{$key}{twbo}), if !$html;
     }
@@ -394,7 +391,7 @@ if ($weekly_stats) {
     print "
     <tr>
       <th>Rank</th>
-      <th>Year</th>
+      <th style=\"text-align:center\">Year</th>
       <th style=\"text-align:center\">Pars</th>
     </tr>
     \n";
@@ -403,13 +400,13 @@ if ($weekly_stats) {
     $cnt = 1;
     foreach $key (reverse sort { $y{$a}{twp} <=> $y{$b}{twp} } (keys(%y))) {
         if ($key == $year) {
-            printf("    <tr>\n      <td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
-            printf("      <td><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-            printf("      <td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{twp}), if $html;
+            printf("<tr><td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
+            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{twp}), if $html;
         } else {
-            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-            printf("      <td>%d</td>\n", $key), if $html;
-            printf("      <td style=\"text-align:center\">%d</td>\n", $y{$key}{twp}), if $html;
+            printf("<tr><td>%2d</td>\n", $cnt++), if $html;
+            printf("<td style=\"text-align:center\">%d</td>\n", $key), if $html;
+            printf("<td style=\"text-align:center\">%d</td>\n", $y{$key}{twp}), if $html;
         }
         printf("%2d: %d -> %2d\n", $cnt++, $key, $y{$key}{twp}), if !$html;
     }
@@ -445,7 +442,7 @@ if ($weekly_stats) {
     print "
     <tr>
       <th>Rank</th>
-      <th>Year</th>
+      <th style=\"text-align:center\">Year</th>
       <th style=\"text-align:center\">Birdies</th>
     </tr>
     \n";
@@ -454,13 +451,13 @@ if ($weekly_stats) {
     $cnt = 1;
     foreach $key (reverse sort { $y{$a}{twb} <=> $y{$b}{twb} } (keys(%y))) {
         if ($key == $year) {
-            printf("    <tr>\n      <td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
-            printf("      <td><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-            printf("      <td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{twb}), if $html;
+            printf("<tr><td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
+            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{twb}), if $html;
         } else {
-            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-            printf("      <td>%d</td>\n", $key), if $html;
-            printf("      <td style=\"text-align:center\">%d</td>\n", $y{$key}{twb}), if $html;
+            printf("<tr><td>%2d</td>\n", $cnt++), if $html;
+            printf("<td style=\"text-align:center\">%d</td>\n", $key), if $html;
+            printf("<td style=\"text-align:center\">%d</td>\n", $y{$key}{twb}), if $html;
         }
         printf("%2d: %d -> %2d\n", $cnt++, $key, $y{$key}{twb}), if !$html;
     }
@@ -496,7 +493,7 @@ if ($weekly_stats) {
     print "
     <tr>
       <th>Rank</th>
-      <th>Year</th>
+      <th style=\"text-align:center\">Year</th>
       <th style=\"text-align:center\">Eagles</th>
     </tr>
     \n";
@@ -505,13 +502,13 @@ if ($weekly_stats) {
     $cnt = 1;
     foreach $key (reverse sort { $y{$a}{twe} <=> $y{$b}{twe} } (keys(%y))) {
         if ($key == $year) {
-            printf("    <tr>\n      <td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
-            printf("      <td><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-            printf("      <td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{twe}), if $html;
+            printf("<tr><td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
+            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{twe}), if $html;
         } else {
-            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-            printf("      <td>%d</td>\n", $key), if $html;
-            printf("      <td style=\"text-align:center\">%d</td>\n", $y{$key}{twe}), if $html;
+            printf("<tr><td>%2d</td>\n", $cnt++), if $html;
+            printf("<td style=\"text-align:center\">%d</td>\n", $key), if $html;
+            printf("<td style=\"text-align:center\">%d</td>\n", $y{$key}{twe}), if $html;
         }
         printf("%2d: %d -> %2d\n", $cnt++, $key, $y{$key}{twe}), if !$html;
     }
@@ -551,8 +548,8 @@ if ($cumulative_stats) {
     print "
     <tr>
       <th>Rank</th>
-      <th>Year</th>
-      <th>Stroke Average</th>
+      <th style=\"text-align:center\">Year</th>
+      <th style=\"text-align:center\">Stroke Average</th>
     </tr>
     \n";
   }
@@ -560,15 +557,13 @@ if ($cumulative_stats) {
     $cnt = 1;
     foreach $key (sort { $y{$a}{clsa} <=> $y{$b}{clsa} } (keys(%y))) {
         if ($key == $year) {
-            printf("    <tr>\n      <td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
-            printf("      <td><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-            #printf("      <td><b><font color=\"red\">%.2f</font></b></td>\n    </tr>\n", $y{$key}{clsa}), if $html;
-            printf("      <td style=\"text-align:center\"><b><font color=\"red\">%.2f</font></b></td>\n", $y{$key}{clsa}), if $html;
+            printf("<tr><td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
+            printf("<td style=\"text-align:center\"><b><font color=\"red\">%.2f</font></b></td>\n", $y{$key}{clsa}), if $html;
         } else {
-            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-            printf("      <td>%d</td>\n", $key), if $html;
-            #printf("      <td>%.2f</td>\n    </tr>\n", $y{$key}{clsa}), if $html;
-            printf("      <td style=\"text-align:center\">%.2f\n</td>", $y{$key}{clsa}), if $html;
+            printf("<tr><td>%2d</td>\n", $cnt++), if $html;
+            printf("<td style=\"text-align:center\">%d</td>\n", $key), if $html;
+            printf("<td style=\"text-align:center\">%.2f\n</td>", $y{$key}{clsa}), if $html;
         }
         printf("%2d: %d -> %.2f\n", $cnt++, $key, $y{$key}{clsa}), if !$html;
     }
@@ -604,7 +599,7 @@ if ($cumulative_stats) {
     print "
     <tr>
       <th>Rank</th>
-      <th>Year</th>
+      <th style=\"text-align:center\">Year</th>
       <th style=\"text-align:center\">30's</th>
     </tr>
     \n";
@@ -613,13 +608,13 @@ if ($cumulative_stats) {
     $cnt = 1;
     foreach $key (reverse sort { $y{$a}{cthirty} <=> $y{$b}{cthirty} } (keys(%y))) {
         if ($key == $year) {
-            printf("    <tr>\n      <td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
-            printf("      <td><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-            printf("      <td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{cthirty}), if $html;
+            printf("<tr><td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
+            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{cthirty}), if $html;
         } else {
-            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-            printf("      <td>%d</td>\n", $key), if $html;
-            printf("      <td style=\"text-align:center\">%d</td>\n", $y{$key}{cthirty}), if $html;
+            printf("<tr><td>%2d</td>\n", $cnt++), if $html;
+            printf("<td style=\"text-align:center\">%d</td>\n", $key), if $html;
+            printf("<td style=\"text-align:center\">%d</td>\n", $y{$key}{cthirty}), if $html;
         }
         printf("%2d: %d -> %2d\n", $cnt++, $key, $y{$key}{cthirty}), if !$html;
     }
@@ -655,7 +650,7 @@ if ($cumulative_stats) {
     print "
     <tr>
       <th>Rank</th>
-      <th>Year</th>
+      <th style=\"text-align:center\">Year</th>
       <th style=\"text-align:center\">50+</th>
     </tr>
     \n";
@@ -664,13 +659,13 @@ if ($cumulative_stats) {
     $cnt = 1;
     foreach $key (sort { $y{$a}{cft} <=> $y{$b}{cft} } (keys(%y))) {
         if ($key == $year) {
-            printf("    <tr>\n      <td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
-            printf("      <td><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-            printf("      <td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{cft}), if $html;
+            printf("<tr><td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
+            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{cft}), if $html;
         } else {
-            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-            printf("      <td>%d</td>\n", $key), if $html;
-            printf("      <td style=\"text-align:center\">%d</td>\n", $y{$key}{cft}), if $html;
+            printf("<tr><td>%2d</td>\n", $cnt++), if $html;
+            printf("<td style=\"text-align:center\">%d</td>\n", $key), if $html;
+            printf("<td style=\"text-align:center\">%d</td>\n", $y{$key}{cft}), if $html;
         }
         printf("%2d: %d -> %2d\n", $cnt++, $key, $y{$key}{cft}), if !$html;
     }
@@ -706,7 +701,7 @@ if ($cumulative_stats) {
     print "
     <tr>
       <th>Rank</th>
-      <th>Year</th>
+      <th style=\"text-align:center\">Year</th>
       <th style=\"text-align:center\">Others</th>
     </tr>
     \n";
@@ -715,13 +710,13 @@ if ($cumulative_stats) {
     $cnt = 1;
     foreach $key (sort { $y{$a}{cto} <=> $y{$b}{cto} } (keys(%y))) {
         if ($key == $year) {
-            printf("    <tr>\n      <td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
-            printf("      <td><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-            printf("      <td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{cto}), if $html;
+            printf("<tr><td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
+            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{cto}), if $html;
         } else {
-            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-            printf("      <td>%d</td>\n", $key), if $html;
-            printf("      <td style=\"text-align:center\">%d</td>\n", $y{$key}{cto}), if $html;
+            printf("<tr><td>%2d</td>\n", $cnt++), if $html;
+            printf("<td style=\"text-align:center\">%d</td>\n", $key), if $html;
+            printf("<td style=\"text-align:center\">%d</td>\n", $y{$key}{cto}), if $html;
         }
         printf("%2d: %d -> %d\n", $cnt++, $key, $y{$key}{cto}), if !$html;
     }
@@ -757,7 +752,7 @@ if ($cumulative_stats) {
     print "
     <tr>
       <th>Rank</th>
-      <th>Year</th>
+      <th style=\"text-align:center\">Year</th>
       <th style=\"text-align:center\">Bogies</th>
     </tr>
     \n";
@@ -766,13 +761,13 @@ if ($cumulative_stats) {
     $cnt = 1;
     foreach $key (reverse sort { $y{$a}{ctbo} <=> $y{$b}{ctbo} } (keys(%y))) {
         if ($key == $year) {
-            printf("    <tr>\n      <td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
-            printf("      <td><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-            printf("      <td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{ctbo}), if $html;
+            printf("<tr><td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
+            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{ctbo}), if $html;
         } else {
-            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-            printf("      <td>%d</td>\n", $key), if $html;
-            printf("      <td style=\"text-align:center\">%d</td>\n", $y{$key}{ctbo}), if $html;
+            printf("<tr><td>%2d</td>\n", $cnt++), if $html;
+            printf("<td style=\"text-align:center\">%d</td>\n", $key), if $html;
+            printf("<td style=\"text-align:center\">%d</td>\n", $y{$key}{ctbo}), if $html;
         }
         printf("%2d: %d -> %d\n", $cnt++, $key, $y{$key}{ctbo}), if !$html;
     }
@@ -808,7 +803,7 @@ if ($cumulative_stats) {
     print "
     <tr>
       <th>Rank</th>
-      <th>Year</th>
+      <th style=\"text-align:center\">Year</th>
       <th style=\"text-align:center\">Pars</th>
     </tr>
     \n";
@@ -817,13 +812,13 @@ if ($cumulative_stats) {
     $cnt = 1;
     foreach $key (reverse sort { $y{$a}{ctp} <=> $y{$b}{ctp} } (keys(%y))) {
         if ($key == $year) {
-            printf("    <tr>\n      <td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
-            printf("      <td><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-            printf("      <td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{ctp}), if $html;
+            printf("<tr><td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
+            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{ctp}), if $html;
         } else {
-            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-            printf("      <td>%d</td>\n", $key), if $html;
-            printf("      <td style=\"text-align:center\">%d</td>\n", $y{$key}{ctp}), if $html;
+            printf("<tr><td>%2d</td>\n", $cnt++), if $html;
+            printf("<td style=\"text-align:center\">%d</td>\n", $key), if $html;
+            printf("<td style=\"text-align:center\">%d</td>\n", $y{$key}{ctp}), if $html;
         }
         printf("%2d: %d -> %d\n", $cnt++, $key, $y{$key}{ctp}), if !$html;
     }
@@ -859,7 +854,7 @@ if ($cumulative_stats) {
     print "
     <tr>
       <th>Rank</th>
-      <th>Year</th>
+      <th style=\"text-align:center\">Year</th>
       <th style=\"text-align:center\">Birdies</th>
     </tr>
     \n";
@@ -868,13 +863,13 @@ if ($cumulative_stats) {
     $cnt = 1;
     foreach $key (reverse sort { $y{$a}{ctb} <=> $y{$b}{ctb} } (keys(%y))) {
         if ($key == $year) {
-            printf("    <tr>\n      <td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
-            printf("      <td><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-            printf("      <td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{ctb}), if $html;
+            printf("<tr><td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
+            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{ctb}), if $html;
         } else {
-            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-            printf("      <td>%d</td>\n", $key), if $html;
-            printf("      <td style=\"text-align:center\">%d</td>\n", $y{$key}{ctb}), if $html;
+            printf("<tr><td>%2d</td>\n", $cnt++), if $html;
+            printf("<td style=\"text-align:center\">%d</td>\n", $key), if $html;
+            printf("<td style=\"text-align:center\">%d</td>\n", $y{$key}{ctb}), if $html;
         }
         printf("%2d: %d -> %2d\n", $cnt++, $key, $y{$key}{ctb}), if !$html;
     }
@@ -910,7 +905,7 @@ if ($cumulative_stats) {
     print "
     <tr>
       <th>Rank</th>
-      <th>Year</th>
+      <th style=\"text-align:center\">Year</th>
       <th style=\"text-align:center\">Eagles</th>
     </tr>
     \n";
@@ -919,13 +914,13 @@ if ($cumulative_stats) {
     $cnt = 1;
     foreach $key (reverse sort { $y{$a}{cte} <=> $y{$b}{cte} } (keys(%y))) {
         if ($key == $year) {
-            printf("    <tr>\n      <td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
-            printf("      <td><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-            printf("      <td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{cte}), if $html;
+            printf("<tr><td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
+            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
+            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{cte}), if $html;
         } else {
-            printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
-            printf("      <td>%d</td>\n", $key), if $html;
-            printf("      <td style=\"text-align:center\">%d</td>\n", $y{$key}{cte}), if $html;
+            printf("<tr><td>%2d</td>\n", $cnt++), if $html;
+            printf("<td style=\"text-align:center\">%d</td>\n", $key), if $html;
+            printf("<td style=\"text-align:center\">%d</td>\n", $y{$key}{cte}), if $html;
         }
         printf("%2d: %d -> %d\n", $cnt++, $key, $y{$key}{cte}), if !$html;
     }
