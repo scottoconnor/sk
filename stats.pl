@@ -170,7 +170,7 @@ if ($weekly_stats) {
     </style>
     </head>
     <body>
-    <table style=\"width:30%\">
+    <table style=\"width:20%\">
     ";
   }
   print "<caption><b>League Stroke Average on week $week</b></caption>", if $html;
@@ -189,11 +189,13 @@ if ($weekly_stats) {
         if ($key == $year) {
             printf("    <tr>\n      <td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
             printf("      <td><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-            printf("      <td><b><font color=\"red\">%.2f</font></b></td>\n    </tr>\n", $y{$key}{wlsa}), if $html;
+            #printf("      <td><b><font color=\"red\">%.2f</font></b></td>\n    </tr>\n", $y{$key}{wlsa}), if $html;
+            printf("      <td style=\"text-align:center\"><b><font color=\"red\">%.2f</font></b></td>\n", $y{$key}{wlsa}), if $html;
         } else {
             printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
             printf("      <td>%d</td>\n", $key), if $html;
-            printf("      <td>%.2f</td>\n    </tr>\n", $y{$key}{wlsa}), if $html;
+            #printf("      <td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{wlsa}), if $html;
+            printf("       <td style=\"text-align:center\"><td>%.2f</td>\n    </td>\n", $y{$key}{wlsa}), if $html;
         }
         printf("%2d: %d -> %.2f\n", $cnt++, $key, $y{$key}{wlsa}), if !$html;
     }
@@ -220,7 +222,7 @@ if ($weekly_stats) {
     </style>
     </head>
     <body>
-    <table style=\"width:30%\">
+    <table style=\"width:20%\">
     ";
   }
   print "<br><br>\n", if $html;
@@ -272,7 +274,7 @@ if ($weekly_stats) {
     </style>
     </head>
     <body>
-    <table style=\"width:30%\">
+    <table style=\"width:20%\">
     ";
   }
   print "<br><br>\n", if $html;
@@ -323,7 +325,7 @@ if ($weekly_stats) {
     </style>
     </head>
     <body>
-    <table style=\"width:30%\">
+    <table style=\"width:20%\">
     ";
   }
   print "<br><br>\n", if $html;
@@ -374,7 +376,7 @@ if ($weekly_stats) {
     </style>
     </head>
     <body>
-    <table style=\"width:30%\">
+    <table style=\"width:20%\">
     ";
   }
   print "<br><br>\n", if $html;
@@ -425,7 +427,7 @@ if ($weekly_stats) {
     </style>
     </head>
     <body>
-    <table style=\"width:30%\">
+    <table style=\"width:20%\">
     ";
   }
   print "<br><br>\n", if $html;
@@ -476,7 +478,7 @@ if ($weekly_stats) {
     </style>
     </head>
     <body>
-    <table style=\"width:30%\">
+    <table style=\"width:20%\">
     ";
   }
   print "<br><br>\n", if $html;
@@ -527,7 +529,7 @@ if ($weekly_stats) {
     </style>
     </head>
     <body>
-    <table style=\"width:30%\">
+    <table style=\"width:20%\">
     ";
   }
   print "<br><br>\n", if $html;
@@ -583,7 +585,7 @@ if ($cumulative_stats) {
     </style>
     </head>
     <body>
-    <table style=\"width:30%\">
+    <table style=\"width:20%\">
     ";
   }
   print "<caption><b>League Stroke Average<br>week 1 through $week</b></caption>", if $html;
@@ -633,7 +635,7 @@ if ($cumulative_stats) {
     </style>
     </head>
     <body>
-    <table style=\"width:30%\">
+    <table style=\"width:20%\">
     ";
   }
   print "<br><br>\n", if $html;
@@ -684,7 +686,7 @@ if ($cumulative_stats) {
     </style>
     </head>
     <body>
-    <table style=\"width:30%\">
+    <table style=\"width:20%\">
     ";
   }
   print "<br><br>\n", if $html;
@@ -735,7 +737,7 @@ if ($cumulative_stats) {
     </style>
     </head>
     <body>
-    <table style=\"width:30%\">
+    <table style=\"width:20%\">
     ";
   }
   print "<br><br>\n", if $html;
@@ -786,7 +788,7 @@ if ($cumulative_stats) {
     </style>
     </head>
     <body>
-    <table style=\"width:30%\">
+    <table style=\"width:20%\">
     ";
   }
   print "<br><br>\n", if $html;
@@ -837,7 +839,7 @@ if ($cumulative_stats) {
     </style>
     </head>
     <body>
-    <table style=\"width:30%\">
+    <table style=\"width:20%\">
     ";
   }
   print "<br><br>\n", if $html;
@@ -888,7 +890,7 @@ if ($cumulative_stats) {
     </style>
     </head>
     <body>
-    <table style=\"width:30%\">
+    <table style=\"width:20%\">
     ";
   }
   print "<br><br>\n", if $html;
@@ -939,7 +941,7 @@ if ($cumulative_stats) {
     </style>
     </head>
     <body>
-    <table style=\"width:30%\">
+    <table style=\"width:20%\">
     ";
   }
   print "<br><br>\n", if $html;
@@ -995,7 +997,7 @@ if ($all_time) {
     </style>
     </head>
     <body>
-    <table style=\"width:30%\">
+    <table style=\"width:20%\">
     ";
   }
   print "<caption><b>League Stroke Average.</b></caption>", if $html;
@@ -1045,7 +1047,7 @@ if ($all_time) {
     </style>
     </head>
     <body>
-    <table style=\"width:30%\">
+    <table style=\"width:20%\">
     ";
   }
   print "<br><br>\n", if $html;
@@ -1096,7 +1098,7 @@ if ($all_time) {
     </style>
     </head>
     <body>
-    <table style=\"width:30%\">
+    <table style=\"width:20%\">
     ";
   }
   print "<br><br>\n", if $html;
@@ -1147,7 +1149,7 @@ if ($all_time) {
     </style>
     </head>
     <body>
-    <table style=\"width:30%\">
+    <table style=\"width:20%\">
     ";
   }
   print "<br><br>\n", if $html;
@@ -1198,7 +1200,7 @@ if ($all_time) {
     </style>
     </head>
     <body>
-    <table style=\"width:30%\">
+    <table style=\"width:20%\">
     ";
   }
   print "<br><br>\n", if $html;
@@ -1249,7 +1251,7 @@ if ($all_time) {
     </style>
     </head>
     <body>
-    <table style=\"width:30%\">
+    <table style=\"width:20%\">
     ";
   }
   print "<br><br>\n", if $html;
@@ -1300,7 +1302,7 @@ if ($all_time) {
     </style>
     </head>
     <body>
-    <table style=\"width:30%\">
+    <table style=\"width:20%\">
     ";
   }
   print "<br><br>\n", if $html;
@@ -1351,7 +1353,7 @@ if ($all_time) {
     </style>
     </head>
     <body>
-    <table style=\"width:30%\">
+    <table style=\"width:20%\">
     ";
   }
   print "<br><br>\n", if $html;
