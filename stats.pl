@@ -117,12 +117,6 @@ for ($sy = $start_year; $sy <= $year; $sy++) {
             if (($val) = $line =~ /Total Eagles = (\d+)/) {
                 $y{$sy}{twe} = $val;
             }
-            if (($val) = $line =~ /Total holes played: (\d+)/) {
-                $y{$sy}{twh} = $val;
-            }
-            if (($val) = $line =~ /Total Posted scores: (\d+)/) {
-                $y{$sy}{twposted} = $val;
-            }
         }
     }
 
@@ -153,12 +147,6 @@ for ($sy = $start_year; $sy <= $year; $sy++) {
             }
             if (($val) = $line =~ /Total Eagles = (\d+)/) {
                 $y{$sy}{cte} = $val;
-            }
-            if (($val) = $line =~ /Total holes played: (\d+)/) {
-                $y{$sy}{cth} = $val;
-            }
-            if (($val) = $line =~ /Total Posted scores: (\d+)/) {
-                $y{$sy}{tcuposted} = $val;
             }
         }
     }
@@ -258,7 +246,7 @@ if ($weekly_stats) {
             printf("      <td>%d</td>\n", $key), if $html;
             printf("      <td style=\"text-align:center\">%d</td>\n", $y{$key}{wthirty}), if $html;
         }
-        printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $key, $y{$key}{wthirty}, (($y{$key}{wthirty} / $y{$key}{twposted}) * 100)), if !$html;
+        printf("%2d: %d -> %2d\n", $cnt++, $key, $y{$key}{wthirty}), if !$html;
 
     }
   if ($html) {
@@ -310,7 +298,7 @@ if ($weekly_stats) {
             printf("      <td>%d</td>\n", $key), if $html;
             printf("      <td style=\"text-align:center\">%d</td>\n", $y{$key}{wft}), if $html;
         }
-        printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $key, $y{$key}{wft}, (($y{$key}{wft} / $y{$key}{twposted}) * 100)), if !$html;
+        printf("%2d: %d -> %2d\n", $cnt++, $key, $y{$key}{wft}), if !$html;
     }
   if ($html) {
     print "
@@ -361,7 +349,7 @@ if ($weekly_stats) {
             printf("      <td>%d</td>\n", $key), if $html;
             printf("      <td style=\"text-align:center\">%d</td>\n", $y{$key}{two}), if $html;
         }
-        printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $key, $y{$key}{two}, (($y{$key}{two} / $y{$key}{twh}) * 100)), if !$html;
+        printf("%2d: %d -> %2d\n", $cnt++, $key, $y{$key}{two}), if !$html;
     }
   if ($html) {
     print "
@@ -412,7 +400,7 @@ if ($weekly_stats) {
             printf("      <td>%d</td>\n", $key), if $html;
             printf("      <td style=\"text-align:center\">%d</td>\n", $y{$key}{twbo}), if $html;
         }
-        printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $key, $y{$key}{twbo}, (($y{$key}{twbo} / $y{$key}{twh}) * 100)), if !$html;
+        printf("%2d: %d -> %2d\n", $cnt++, $key, $y{$key}{twbo}), if !$html;
     }
   if ($html) {
     print "
@@ -463,7 +451,7 @@ if ($weekly_stats) {
             printf("      <td>%d</td>\n", $key), if $html;
             printf("      <td style=\"text-align:center\">%d</td>\n", $y{$key}{twp}), if $html;
         }
-        printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $key, $y{$key}{twp}, (($y{$key}{twp} / $y{$key}{twh}) * 100)), if !$html;
+        printf("%2d: %d -> %2d\n", $cnt++, $key, $y{$key}{twp}), if !$html;
     }
   if ($html) {
     print "
@@ -514,7 +502,7 @@ if ($weekly_stats) {
             printf("      <td>%d</td>\n", $key), if $html;
             printf("      <td style=\"text-align:center\">%d</td>\n", $y{$key}{twb}), if $html;
         }
-        printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $key, $y{$key}{twb}, (($y{$key}{twb} / $y{$key}{twh}) * 100)), if !$html;
+        printf("%2d: %d -> %2d\n", $cnt++, $key, $y{$key}{twb}), if !$html;
     }
   if ($html) {
     print "
@@ -565,7 +553,7 @@ if ($weekly_stats) {
             printf("      <td>%d</td>\n", $key), if $html;
             printf("      <td style=\"text-align:center\">%d</td>\n", $y{$key}{twe}), if $html;
         }
-        printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $key, $y{$key}{twe}, (($y{$key}{twe} / $y{$key}{twh}) * 100)), if !$html;
+        printf("%2d: %d -> %2d\n", $cnt++, $key, $y{$key}{twe}), if !$html;
     }
   if ($html) {
     print "
@@ -671,7 +659,7 @@ if ($cumulative_stats) {
             printf("      <td>%d</td>\n", $key), if $html;
             printf("      <td style=\"text-align:center\">%d</td>\n", $y{$key}{cthirty}), if $html;
         }
-        printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $key, $y{$key}{cthirty}, (($y{$key}{cthirty} / $y{$key}{tcuposted}) * 100)), if !$html;
+        printf("%2d: %d -> %2d\n", $cnt++, $key, $y{$key}{cthirty}), if !$html;
     }
   if ($html) {
     print "
@@ -722,7 +710,7 @@ if ($cumulative_stats) {
             printf("      <td>%d</td>\n", $key), if $html;
             printf("      <td style=\"text-align:center\">%d</td>\n", $y{$key}{cft}), if $html;
         }
-        printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $key, $y{$key}{cft}, (($y{$key}{cft} / $y{$key}{tcuposted}) * 100)), if !$html;
+        printf("%2d: %d -> %2d\n", $cnt++, $key, $y{$key}{cft}), if !$html;
     }
   if ($html) {
     print "
@@ -773,7 +761,7 @@ if ($cumulative_stats) {
             printf("      <td>%d</td>\n", $key), if $html;
             printf("      <td style=\"text-align:center\">%d</td>\n", $y{$key}{cto}), if $html;
         }
-        printf("%2d: %d -> %d  (%.2f\%)\n", $cnt++, $key, $y{$key}{cto}, (($y{$key}{cto} / $y{$key}{cth}) * 100)), if !$html;
+        printf("%2d: %d -> %d\n", $cnt++, $key, $y{$key}{cto}), if !$html;
     }
   if ($html) {
     print "
@@ -824,7 +812,7 @@ if ($cumulative_stats) {
             printf("      <td>%d</td>\n", $key), if $html;
             printf("      <td style=\"text-align:center\">%d</td>\n", $y{$key}{ctbo}), if $html;
         }
-        printf("%2d: %d -> %d  (%.2f\%)\n", $cnt++, $key, $y{$key}{ctbo}, (($y{$key}{ctbo} / $y{$key}{cth}) * 100)), if !$html;
+        printf("%2d: %d -> %d\n", $cnt++, $key, $y{$key}{ctbo}), if !$html;
     }
   if ($html) {
     print "
@@ -875,7 +863,7 @@ if ($cumulative_stats) {
             printf("      <td>%d</td>\n", $key), if $html;
             printf("      <td style=\"text-align:center\">%d</td>\n", $y{$key}{ctp}), if $html;
         }
-        printf("%2d: %d -> %d  (%.2f\%)\n", $cnt++, $key, $y{$key}{ctp}, (($y{$key}{ctp} / $y{$key}{cth}) * 100)), if !$html;
+        printf("%2d: %d -> %d\n", $cnt++, $key, $y{$key}{ctp}), if !$html;
     }
   if ($html) {
     print "
@@ -926,7 +914,7 @@ if ($cumulative_stats) {
             printf("      <td>%d</td>\n", $key), if $html;
             printf("      <td style=\"text-align:center\">%d</td>\n", $y{$key}{ctb}), if $html;
         }
-        printf("%2d: %d -> %2d  (%.2f\%)\n", $cnt++, $key, $y{$key}{ctb}, (($y{$key}{ctb} / $y{$key}{cth}) * 100)), if !$html;
+        printf("%2d: %d -> %2d\n", $cnt++, $key, $y{$key}{ctb}), if !$html;
     }
   if ($html) {
     print "
@@ -977,7 +965,7 @@ if ($cumulative_stats) {
             printf("      <td>%d</td>\n", $key), if $html;
             printf("      <td style=\"text-align:center\">%d</td>\n", $y{$key}{cte}), if $html;
         }
-        printf("%2d: %d -> %d  (%.2f\%)\n", $cnt++, $key, $y{$key}{cte}, (($y{$key}{cte} / $y{$key}{cth}) * 100)), if !$html;
+        printf("%2d: %d -> %d\n", $cnt++, $key, $y{$key}{cte}), if !$html;
     }
   if ($html) {
     print "
