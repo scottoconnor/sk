@@ -10,7 +10,7 @@ use POSIX;
 my $year = (1900 + (localtime)[5]);
 
 GetOptions (
-        "y=s" => \$year)
+        "y=i" => \$year)
 or die("Error in command line arguments\n");
 
 my $cur_year = $year;
@@ -69,9 +69,7 @@ while ($week > 0) {
     $week--;
 }
 
-@line = qx(./stats.pl -w -h -y $cur_year);
-print @line;
-@line = qx(./stats.pl -c -h -y $cur_year);
+@line = qx(./stats.pl -w -c -h -y $cur_year);
 print @line;
 
 close ($fh);
