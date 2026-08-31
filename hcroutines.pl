@@ -214,7 +214,7 @@ get_years_weeks_dates {
         $date = "$year-$month-$day";
         if (exists($d{$date})) {
             $dates{$year}{$week} = $d{$date};
-            $dates{$year}{weeks} = $week;
+            $dates{$year}{end_week} = $week;
             print "$year: $week: $date: $d{$date}\n", if (0);
             $week++;
         }
