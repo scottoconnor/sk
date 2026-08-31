@@ -189,13 +189,11 @@ if ($weekly_stats) {
         if ($key == $year) {
             printf("    <tr>\n      <td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
             printf("      <td><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-            #printf("      <td><b><font color=\"red\">%.2f</font></b></td>\n    </tr>\n", $y{$key}{wlsa}), if $html;
             printf("      <td style=\"text-align:center\"><b><font color=\"red\">%.2f</font></b></td>\n", $y{$key}{wlsa}), if $html;
         } else {
             printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
             printf("      <td>%d</td>\n", $key), if $html;
-            #printf("      <td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{wlsa}), if $html;
-            printf("       <td style=\"text-align:center\"><td>%.2f</td>\n    </td>\n", $y{$key}{wlsa}), if $html;
+            printf("       <td style=\"text-align:center\">%.2f\n</td>", $y{$key}{wlsa}), if $html;
         }
         printf("%2d: %d -> %.2f\n", $cnt++, $key, $y{$key}{wlsa}), if !$html;
     }
@@ -604,11 +602,13 @@ if ($cumulative_stats) {
         if ($key == $year) {
             printf("    <tr>\n      <td><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
             printf("      <td><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-            printf("      <td><b><font color=\"red\">%.2f</font></b></td>\n    </tr>\n", $y{$key}{clsa}), if $html;
+            #printf("      <td><b><font color=\"red\">%.2f</font></b></td>\n    </tr>\n", $y{$key}{clsa}), if $html;
+            printf("      <td style=\"text-align:center\"><b><font color=\"red\">%.2f</font></b></td>\n", $y{$key}{clsa}), if $html;
         } else {
             printf("    <tr>\n      <td>%2d</td>\n", $cnt++), if $html;
             printf("      <td>%d</td>\n", $key), if $html;
-            printf("      <td>%.2f</td>\n    </tr>\n", $y{$key}{clsa}), if $html;
+            #printf("      <td>%.2f</td>\n    </tr>\n", $y{$key}{clsa}), if $html;
+            printf("      <td style=\"text-align:center\">%.2f\n</td>", $y{$key}{clsa}), if $html;
         }
         printf("%2d: %d -> %.2f\n", $cnt++, $key, $y{$key}{clsa}), if !$html;
     }
