@@ -19,7 +19,6 @@ my $week;
 my $ret;
 my $val;
 my $sy;
-my $num_weeks = 0;
 my @return;
 undef(my %y);
 
@@ -36,13 +35,9 @@ GetOptions (
     "y=i" => \$year)
 or die("Error in command line arguments\n");
 
-$num_weeks = 0;
-
 $ret = qx(./skperf.pl -s -y $year | grep \"Total holes played\");
 ($val) = $ret =~ /Total holes played: (\d+)/;
-$num_weeks = ceil(($val/288));
-
-$week = $num_weeks;
+$week = ceil(($val/288));
 
 for ($sy = $start_year; $sy <= $year; $sy++) {
 
@@ -50,17 +45,20 @@ for ($sy = $start_year; $sy <= $year; $sy++) {
         @return = qx{./skperf.pl -s -y $sy -w $week};
         while ($line = shift @return) {
             chomp ($line);
-            if (($val) = $line =~ /50\053 = (\d+)/) {
-                $y{$sy}{wft} = $val;
+            if (($val) = $line =~ /League Stroke Average = (\d+\056\d+)/) {
+                $y{$sy}{wlsa} = $val;
             }
             if (($val) = $line =~ /Total 30\047s = (\d+)/) {
                 $y{$sy}{wthirty} = $val;
             }
-            if (($val) = $line =~ /League Stroke Average = (\d+\056\d+)/) {
-                $y{$sy}{wlsa} = $val;
+            if (($val) = $line =~ /50\053 = (\d+)/) {
+                $y{$sy}{wft} = $val;
             }
             if (($val) = $line =~ /Total Others = (\d+)/) {
                 $y{$sy}{two} = $val;
+            }
+            if (($val) = $line =~ /Total Double Bogies = (\d+)/) {
+                $y{$sy}{twdbo} = $val;
             }
             if (($val) = $line =~ /Total Bogies = (\d+)/) {
                 $y{$sy}{twbo} = $val;
@@ -81,17 +79,20 @@ for ($sy = $start_year; $sy <= $year; $sy++) {
         @return = qx{./skperf.pl -s -y $sy -sw 1 -ew $week};
         while ($line = shift @return) {
             chomp ($line);
-            if (($val) = $line =~ /50\053 = (\d+)/) {
-                $y{$sy}{cft} = $val;
+            if (($val) = $line =~ /League Stroke Average = (\d+\056\d+)/) {
+                $y{$sy}{clsa} = $val;
             }
             if (($val) = $line =~ /Total 30\047s = (\d+)/) {
                 $y{$sy}{cthirty} = $val;
             }
-            if (($val) = $line =~ /League Stroke Average = (\d+\056\d+)/) {
-                $y{$sy}{clsa} = $val;
+            if (($val) = $line =~ /50\053 = (\d+)/) {
+                $y{$sy}{cft} = $val;
             }
             if (($val) = $line =~ /Total Others = (\d+)/) {
                 $y{$sy}{cto} = $val;
+            }
+            if (($val) = $line =~ /Total Double Bogies = (\d+)/) {
+                $y{$sy}{ctdbo} = $val;
             }
             if (($val) = $line =~ /Total Bogies = (\d+)/) {
                 $y{$sy}{ctbo} = $val;
@@ -109,827 +110,110 @@ for ($sy = $start_year; $sy <= $year; $sy++) {
     }
 }
 
+#
+# Print Header for comparison of individual weeks.
+#
 if ($weekly_stats) {
+  print "<!DOCTYPE html><font color=\"red\">
+  <H2>Comparison of week $week\'s</H2>\n", if $html;
+  print "Comparison of week $week\'s\n", if !$html;
 
-  if ($html) {
-    print "<!DOCTYPE html><font color=\"red\">
-    <H2>Comparison of week $week\'s</H2>
-    <html>
-    <head>
-    <style>
-    table, th, td {
-      border: 1px solid black;
-      border-collapse: collapse;
-    }
-    th, td {
-      text-align: left;
-    }
-    </style>
-    </head>
-    <body>
-    <table style=\"width:20%\">
-    ";
-  }
-  print "<caption><b>League Stroke Average on week $week</b></caption>", if $html;
-  if ($html) {
-    print "
-    <tr>
-      <th style=\"padding-left: 7px\">Rank</th>
-      <th style=\"text-align:center\">Year</th>
-      <th style=\"text-align:center\">Stroke Average</th>
-    </tr>
-    \n";
-  }
-    print "\nLeague Stroke Average on week $week.\n", if !$html;
-    $cnt = 1;
-    foreach $key (sort { $y{$a}{wlsa} <=> $y{$b}{wlsa} } (keys(%y))) {
-        if ($key == $year) {
-            printf("<tr><td style=\"padding-left: 7px\"><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
-            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-            printf("<td style=\"text-align:center\"><b><font color=\"red\">%.2f</font></b></td>\n", $y{$key}{wlsa}), if $html;
-        } else {
-            printf("<tr><td style=\"padding-left: 7px\">%2d</td>\n", $cnt++), if $html;
-            printf("<td style=\"text-align:center\">%d</td>\n", $key), if $html;
-            printf("<td style=\"text-align:center\">%.2f\n</td>\n", $y{$key}{wlsa}), if $html;
-        }
-        printf("%2d: %d -> %.2f\n", $cnt++, $key, $y{$key}{wlsa}), if !$html;
-    }
-  if ($html) {
-    print "
-    </table>
-
-    </body>
-    </html>\n";
-  }
-
-  if ($html) {
-    print "<!DOCTYPE html>
-    <html>
-    <head>
-    <style>
-    table, th, td {
-      border: 1px solid black;
-      border-collapse: collapse;
-    }
-    th, td {
-      text-align: left;
-    }
-    </style>
-    </head>
-    <body>
-    <table style=\"width:20%\">
-    ";
-  }
-  print "<br><br>\n", if $html;
-  print "<caption><b>Scores in the 30's on week $week</b></caption>", if $html;
-  if ($html) {
-    print "
-    <tr>
-      <th style=\"padding-left: 7px\">Rank</th>
-      <th style=\"text-align:center\">Year</th>
-      <th style=\"text-align:center\">30's</th>
-    </tr>
-    \n";
-  }
-    print "\nScores in the 30's on week $week.\n", if !$html;
-    $cnt = 1;
-    foreach $key (reverse sort { $y{$a}{wthirty} <=> $y{$b}{wthirty} } (keys(%y))) {
-        if ($key == $year) {
-            printf("<tr><td style=\"padding-left: 7px\"><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
-            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{wthirty}), if $html;
-        } else {
-            printf("<tr><td style=\"padding-left: 7px\">%2d</td>\n", $cnt++), if $html;
-            printf("<td style=\"text-align:center\">%d</td>\n", $key), if $html;
-            printf("<td style=\"text-align:center\">%d</td>\n", $y{$key}{wthirty}), if $html;
-        }
-        printf("%2d: %d -> %2d\n", $cnt++, $key, $y{$key}{wthirty}), if !$html;
-
-    }
-  if ($html) {
-    print "
-    </table>
-
-    </body>
-    </html>\n";
-  }
-
-  if ($html) {
-    print "<!DOCTYPE html>
-    <html>
-    <head>
-    <style>
-    table, th, td {
-      border: 1px solid black;
-      border-collapse: collapse;
-    }
-    th, td {
-      text-align: left;
-    }
-    </style>
-    </head>
-    <body>
-    <table style=\"width:20%\">
-    ";
-  }
-  print "<br><br>\n", if $html;
-  print "<caption><b>Scores in the 50's on week $week</b></caption>", if $html;
-  if ($html) {
-    print "
-    <tr>
-      <th style=\"padding-left: 7px\">Rank</th>
-      <th style=\"text-align:center\">Year</th>
-      <th style=\"text-align:center\">50's</th>
-    </tr>
-    \n";
-  }
-    print "\n50+ on week $week.\n", if !$html;
-    $cnt = 1;
-    foreach $key (sort { $y{$a}{wft} <=> $y{$b}{wft} } (keys(%y))) {
-        if ($key == $year) {
-            printf("<tr><td style=\"padding-left: 7px\"><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
-            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{wft}), if $html;
-        } else {
-            printf("<tr><td style=\"padding-left: 7px\">%2d</td>\n", $cnt++), if $html;
-            printf("<td style=\"text-align:center\">%d</td>\n", $key), if $html;
-            printf("<td style=\"text-align:center\">%d</td>\n", $y{$key}{wft}), if $html;
-        }
-        printf("%2d: %d -> %2d\n", $cnt++, $key, $y{$key}{wft}), if !$html;
-    }
-  if ($html) {
-    print "
-    </table>
-
-    </body>
-    </html>\n";
-  }
-
-  if ($html) {
-    print "<!DOCTYPE html>
-    <html>
-    <head>
-    <style>
-    table, th, td {
-      border: 1px solid black;
-      border-collapse: collapse;
-    }
-    th, td {
-      text-align: left;
-    }
-    </style>
-    </head>
-    <body>
-    <table style=\"width:20%\">
-    ";
-  }
-  print "<br><br>\n", if $html;
-  print "<caption><b>Others on week $week</b></caption>", if $html;
-  if ($html) {
-    print "
-    <tr>
-      <th style=\"padding-left: 7px\">Rank</th>
-      <th style=\"text-align:center\">Year</th>
-      <th style=\"text-align:center\">Others</th>
-    </tr>
-    \n";
-  }
-    print "\nOthers on week $week.\n", if !$html;
-    $cnt = 1;
-    foreach $key (sort { $y{$a}{two} <=> $y{$b}{two} } (keys(%y))) {
-        if ($key == $year) {
-            printf("<tr><td style=\"padding-left: 7px\"><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
-            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{two}), if $html;
-        } else {
-            printf("<tr><td style=\"padding-left: 7px\">%2d</td>\n", $cnt++), if $html;
-            printf("<td style=\"text-align:center\">%d</td>\n", $key), if $html;
-            printf("<td style=\"text-align:center\">%d</td>\n", $y{$key}{two}), if $html;
-        }
-        printf("%2d: %d -> %2d\n", $cnt++, $key, $y{$key}{two}), if !$html;
-    }
-  if ($html) {
-    print "
-    </table>
-
-    </body>
-    </html>\n";
-  }
-
-  if ($html) {
-    print "<!DOCTYPE html>
-    <html>
-    <head>
-    <style>
-    table, th, td {
-      border: 1px solid black;
-      border-collapse: collapse;
-    }
-    th, td {
-      text-align: left;
-    }
-    </style>
-    </head>
-    <body>
-    <table style=\"width:20%\">
-    ";
-  }
-  print "<br><br>\n", if $html;
-  print "<caption><b>Bogies on week $week</b></caption>", if $html;
-  if ($html) {
-    print "
-    <tr>
-      <th style=\"padding-left: 7px\">Rank</th>
-      <th style=\"text-align:center\">Year</th>
-      <th style=\"text-align:center\">Bogies</th>
-    </tr>
-    \n";
-  }
-    print "\nBogies on week $week.\n", if !$html;
-    $cnt = 1;
-    foreach $key (reverse sort { $y{$a}{twbo} <=> $y{$b}{twbo} } (keys(%y))) {
-        if ($key == $year) {
-            printf("<tr><td style=\"padding-left: 7px\"><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
-            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{twbo}), if $html;
-        } else {
-            printf("<tr><td style=\"padding-left: 7px\">%2d</td>\n", $cnt++), if $html;
-            printf("<td style=\"text-align:center\">%d</td>\n", $key), if $html;
-            printf("<td style=\"text-align:center\">%d</td>\n", $y{$key}{twbo}), if $html;
-        }
-        printf("%2d: %d -> %2d\n", $cnt++, $key, $y{$key}{twbo}), if !$html;
-    }
-  if ($html) {
-    print "
-    </table>
-
-    </body>
-    </html>\n";
-  }
-
-  if ($html) {
-    print "<!DOCTYPE html>
-    <html>
-    <head>
-    <style>
-    table, th, td {
-      border: 1px solid black;
-      border-collapse: collapse;
-    }
-    th, td {
-      text-align: left;
-    }
-    </style>
-    </head>
-    <body>
-    <table style=\"width:20%\">
-    ";
-  }
-  print "<br><br>\n", if $html;
-  print "<caption><b>Pars on week $week</b></caption>", if $html;
-  if ($html) {
-    print "
-    <tr>
-      <th style=\"padding-left: 7px\">Rank</th>
-      <th style=\"text-align:center\">Year</th>
-      <th style=\"text-align:center\">Pars</th>
-    </tr>
-    \n";
-  }
-    print "\nPars on week $week.\n", if !$html;
-    $cnt = 1;
-    foreach $key (reverse sort { $y{$a}{twp} <=> $y{$b}{twp} } (keys(%y))) {
-        if ($key == $year) {
-            printf("<tr><td style=\"padding-left: 7px\"><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
-            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{twp}), if $html;
-        } else {
-            printf("<tr><td style=\"padding-left: 7px\">%2d</td>\n", $cnt++), if $html;
-            printf("<td style=\"text-align:center\">%d</td>\n", $key), if $html;
-            printf("<td style=\"text-align:center\">%d</td>\n", $y{$key}{twp}), if $html;
-        }
-        printf("%2d: %d -> %2d\n", $cnt++, $key, $y{$key}{twp}), if !$html;
-    }
-  if ($html) {
-    print "
-    </table>
-
-    </body>
-    </html>\n";
-  }
-
-  if ($html) {
-    print "<!DOCTYPE html>
-    <html>
-    <head>
-    <style>
-    table, th, td {
-      border: 1px solid black;
-      border-collapse: collapse;
-    }
-    th, td {
-      text-align: left;
-    }
-    </style>
-    </head>
-    <body>
-    <table style=\"width:20%\">
-    ";
-  }
-  print "<br><br>\n", if $html;
-  print "<caption><b>Birdies on week $week</b></caption>", if $html;
-  if ($html) {
-    print "
-    <tr>
-      <th style=\"padding-left: 7px\">Rank</th>
-      <th style=\"text-align:center\">Year</th>
-      <th style=\"text-align:center\">Birdies</th>
-    </tr>
-    \n";
-  }
-    print "\nBirdies on week $week.\n", if !$html;
-    $cnt = 1;
-    foreach $key (reverse sort { $y{$a}{twb} <=> $y{$b}{twb} } (keys(%y))) {
-        if ($key == $year) {
-            printf("<tr><td style=\"padding-left: 7px\"><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
-            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{twb}), if $html;
-        } else {
-            printf("<tr><td style=\"padding-left: 7px\">%2d</td>\n", $cnt++), if $html;
-            printf("<td style=\"text-align:center\">%d</td>\n", $key), if $html;
-            printf("<td style=\"text-align:center\">%d</td>\n", $y{$key}{twb}), if $html;
-        }
-        printf("%2d: %d -> %2d\n", $cnt++, $key, $y{$key}{twb}), if !$html;
-    }
-  if ($html) {
-    print "
-    </table>
-
-    </body>
-    </html>\n";
-  }
-
-  if ($html) {
-    print "<!DOCTYPE html>
-    <html>
-    <head>
-    <style>
-    table, th, td {
-      border: 1px solid black;
-      border-collapse: collapse;
-    }
-    th, td {
-      text-align: left;
-    }
-    </style>
-    </head>
-    <body>
-    <table style=\"width:20%\">
-    ";
-  }
-  print "<br><br>\n", if $html;
-  print "<caption><b>Eagles on week $week</b></caption>", if $html;
-  if ($html) {
-    print "
-    <tr>
-      <th style=\"padding-left: 7px\">Rank</th>
-      <th style=\"text-align:center\">Year</th>
-      <th style=\"text-align:center\">Eagles</th>
-    </tr>
-    \n";
-  }
-    print "\nEagles on week $week.\n", if !$html;
-    $cnt = 1;
-    foreach $key (reverse sort { $y{$a}{twe} <=> $y{$b}{twe} } (keys(%y))) {
-        if ($key == $year) {
-            printf("<tr><td style=\"padding-left: 7px\"><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
-            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{twe}), if $html;
-        } else {
-            printf("<tr><td style=\"padding-left: 7px\">%2d</td>\n", $cnt++), if $html;
-            printf("<td style=\"text-align:center\">%d</td>\n", $key), if $html;
-            printf("<td style=\"text-align:center\">%d</td>\n", $y{$key}{twe}), if $html;
-        }
-        printf("%2d: %d -> %2d\n", $cnt++, $key, $y{$key}{twe}), if !$html;
-    }
-  if ($html) {
-    print "
-    </table>
-    <br>
-    <br>
-    </body>
-    </html>\n";
-  }
+  #
+  # set start week to 0 so we know to only print out
+  &print_html_text_table(\%y, $sy, 0, $week, "Stroke Average", "wlsa");
+  &print_html_text_table(\%y, $sy, 0, $week, "Scores in the 30\'s", "wthirty");
+  &print_html_text_table(\%y, $sy, 0, $week, "Scores in the 50\'s", "wft");
+  &print_html_text_table(\%y, $sy, 0, $week, "Others", "two");
+  &print_html_text_table(\%y, $sy, 0, $week, "Double Bogies", "twdbo");
+  &print_html_text_table(\%y, $sy, 0, $week, "Bogies", "twbo");
+  &print_html_text_table(\%y, $sy, 0, $week, "Pars", "twp");
+  &print_html_text_table(\%y, $sy, 0, $week, "Birdies", "twb");
+  &print_html_text_table(\%y, $sy, 0, $week, "Eagles", "twe");
 }
 
 if ($cumulative_stats) {
+  print "<!DOCTYPE html><font color=\"red\">
+  <H2>Comparison of weeks 1 through $week</H2>\n", if $html;
+  print "\n\nComparison of week 1 through $week\n", if !$html;
 
-  if ($html) {
-    print "<!DOCTYPE html><font color=\"red\">
-    <H2>Comparison of weeks 1 through $week</H2>
-    <html>
-    <head>
-    <style>
-    table, th, td {
-      border: 1px solid black;
-      border-collapse: collapse;
-    }
-    th, td {
-      text-align: left;
-    }
-    </style>
-    </head>
-    <body>
-    <table style=\"width:20%\">
-    ";
+  &print_html_text_table(\%y, $sy, 1, $week, "Stroke Average", "clsa");
+  &print_html_text_table(\%y, $sy, 1, $week, "Scores in the 30\'s", "cthirty");
+  &print_html_text_table(\%y, $sy, 1, $week, "Scores in the 50\'s", "cft");
+  &print_html_text_table(\%y, $sy, 1, $week, "Others", "ctdbo");
+  &print_html_text_table(\%y, $sy, 1, $week, "Double Bogies", "twdbo");
+  &print_html_text_table(\%y, $sy, 1, $week, "Bogies", "ctbo");
+  &print_html_text_table(\%y, $sy, 1, $week, "Pars", "ctp");
+  &print_html_text_table(\%y, $sy, 1, $week, "Birdies", "ctb");
+  &print_html_text_table(\%y, $sy, 1, $week, "Eagles", "cte");
+}
+
+sub
+print_html_text_table {
+
+  my ($y, $sy, $sw, $week, $stat_name, $stat) = @_;
+
+  print "<!DOCTYPE html>
+  <html>
+  <head>
+  <style>
+  table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
   }
-  print "<caption><b>League Stroke Average<br>week 1 through $week</b></caption>", if $html;
+  th, td {
+    text-align: left;
+  }
+  </style>
+  </head>
+  <body>
+  <table style=\"width:20%\">
+  ", if ($html);
+  print "<caption><b>$stat_name on week $week</b></caption>", if ($html && ($sw == 0));
+  print "<caption><b>$stat_name week 1 through $week</b></caption>", if ($html && ($sw == 1));
   if ($html) {
     print "
     <tr>
       <th style=\"padding-left: 7px\">Rank</th>
       <th style=\"text-align:center\">Year</th>
-      <th style=\"text-align:center\">Stroke Average</th>
+      <th style=\"text-align:center\">$stat_name</th>
     </tr>
     \n";
   }
-    print "\nLeague Stroke Average. Week 1 through $week\n", if !$html;
-    $cnt = 1;
-    foreach $key (sort { $y{$a}{clsa} <=> $y{$b}{clsa} } (keys(%y))) {
-        if ($key == $year) {
-            printf("<tr><td style=\"padding-left: 7px\"><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
-            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-            printf("<td style=\"text-align:center\"><b><font color=\"red\">%.2f</font></b></td>\n", $y{$key}{clsa}), if $html;
-        } else {
-            printf("<tr><td style=\"padding-left: 7px\">%2d</td>\n", $cnt++), if $html;
-            printf("<td style=\"text-align:center\">%d</td>\n", $key), if $html;
-            printf("<td style=\"text-align:center\">%.2f\n</td>", $y{$key}{clsa}), if $html;
-        }
-        printf("%2d: %d -> %.2f\n", $cnt++, $key, $y{$key}{clsa}), if !$html;
-    }
+  print "\n$stat_name on week $week.\n", if (!$html && ($sw == 0));
+  print "\n$stat_name week 1 through $week\n", if (!$html && ($sw == 1));
+  $cnt = 1;
+  foreach $key (sort { $y{$a}{$stat} <=> $y{$b}{$stat} } (keys(%y))) {
+      if ($key == $year) {
+          printf("<tr><td style=\"padding-left: 7px\"><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
+          printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
+          if ($html && (($stat eq "wlsa") || ($stat eq "clsa"))) {
+            printf("<td style=\"text-align:center\"><b><font color=\"red\">%.2f</font></b></td>\n",
+                $y{$key}{$stat}), if ($html);
+          } else {
+            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n",
+                $y{$key}{$stat}), if ($html);
+          }
+      } else {
+          printf("<tr><td style=\"padding-left: 7px\">%2d</td>\n", $cnt++), if $html;
+          printf("<td style=\"text-align:center\">%d</td>\n", $key), if $html;
+          if ($html && (($stat eq "wlsa") || ($stat eq "clsa"))) {
+            printf("<td style=\"text-align:center\">%.2f\n</td>\n", $y{$key}{$stat}), if ($html);
+          } else {
+            printf("<td style=\"text-align:center\">%d\n</td>\n", $y{$key}{$stat}), if ($html);
+          }
+      }
+      if (($stat eq "wlsa") || ($stat eq "clsa")) {
+          printf("%2d: %d -> %.2f\n", $cnt++, $key, $y{$key}{$stat}), if (!$html);
+      } else {
+          printf("%2d: %d -> %d\n", $cnt++, $key, $y{$key}{$stat}), if (!$html);
+      }
+  }
   if ($html) {
     print "
     </table>
 
     </body>
     </html>\n";
-  }
-
-  if ($html) {
-    print "<!DOCTYPE html>
-    <html>
-    <head>
-    <style>
-    table, th, td {
-      border: 1px solid black;
-      border-collapse: collapse;
-    }
-    th, td {
-      text-align: left;
-    }
-    </style>
-    </head>
-    <body>
-    <table style=\"width:20%\">
-    ";
   }
   print "<br><br>\n", if $html;
-  print "<caption><b>Scores in the 30's<br>week 1 through $week</b></caption>", if $html;
-  if ($html) {
-    print "
-    <tr>
-      <th style=\"padding-left: 7px\">Rank</th>
-      <th style=\"text-align:center\">Year</th>
-      <th style=\"text-align:center\">30's</th>
-    </tr>
-    \n";
-  }
-    print "\nScores in 30's. Week 1 through $week.\n", if !$html;
-    $cnt = 1;
-    foreach $key (reverse sort { $y{$a}{cthirty} <=> $y{$b}{cthirty} } (keys(%y))) {
-        if ($key == $year) {
-            printf("<tr><td style=\"padding-left: 7px\"><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
-            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{cthirty}), if $html;
-        } else {
-            printf("<tr><td style=\"padding-left: 7px\">%2d</td>\n", $cnt++), if $html;
-            printf("<td style=\"text-align:center\">%d</td>\n", $key), if $html;
-            printf("<td style=\"text-align:center\">%d</td>\n", $y{$key}{cthirty}), if $html;
-        }
-        printf("%2d: %d -> %2d\n", $cnt++, $key, $y{$key}{cthirty}), if !$html;
-    }
-  if ($html) {
-    print "
-    </table>
-
-    </body>
-    </html>\n";
-  }
-
-  if ($html) {
-    print "<!DOCTYPE html>
-    <html>
-    <head>
-    <style>
-    table, th, td {
-      border: 1px solid black;
-      border-collapse: collapse;
-    }
-    th, td {
-      text-align: left;
-    }
-    </style>
-    </head>
-    <body>
-    <table style=\"width:20%\">
-    ";
-  }
-  print "<br><br>\n", if $html;
-  print "<caption><b>Scores in the 50+<br>week 1 through $week</b></caption>", if $html;
-  if ($html) {
-    print "
-    <tr>
-      <th style=\"padding-left: 7px\">Rank</th>
-      <th style=\"text-align:center\">Year</th>
-      <th style=\"text-align:center\">50+</th>
-    </tr>
-    \n";
-  }
-    print "\nScores of 50+. Week 1 through $week\n", if !$html;
-    $cnt = 1;
-    foreach $key (sort { $y{$a}{cft} <=> $y{$b}{cft} } (keys(%y))) {
-        if ($key == $year) {
-            printf("<tr><td style=\"padding-left: 7px\"><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
-            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{cft}), if $html;
-        } else {
-            printf("<tr><td style=\"padding-left: 7px\">%2d</td>\n", $cnt++), if $html;
-            printf("<td style=\"text-align:center\">%d</td>\n", $key), if $html;
-            printf("<td style=\"text-align:center\">%d</td>\n", $y{$key}{cft}), if $html;
-        }
-        printf("%2d: %d -> %2d\n", $cnt++, $key, $y{$key}{cft}), if !$html;
-    }
-  if ($html) {
-    print "
-    </table>
-
-    </body>
-    </html>\n";
-  }
-
-  if ($html) {
-    print "<!DOCTYPE html>
-    <html>
-    <head>
-    <style>
-    table, th, td {
-      border: 1px solid black;
-      border-collapse: collapse;
-    }
-    th, td {
-      text-align: left;
-    }
-    </style>
-    </head>
-    <body>
-    <table style=\"width:20%\">
-    ";
-  }
-  print "<br><br>\n", if $html;
-  print "<caption><b>Others<br>week 1 through $week</b></caption>", if $html;
-  if ($html) {
-    print "
-    <tr>
-      <th style=\"padding-left: 7px\">Rank</th>
-      <th style=\"text-align:center\">Year</th>
-      <th style=\"text-align:center\">Others</th>
-    </tr>
-    \n";
-  }
-    print "\nOthers. Week 1 through $week\n", if !$html;
-    $cnt = 1;
-    foreach $key (sort { $y{$a}{cto} <=> $y{$b}{cto} } (keys(%y))) {
-        if ($key == $year) {
-            printf("<tr><td style=\"padding-left: 7px\"><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
-            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{cto}), if $html;
-        } else {
-            printf("<tr><td style=\"padding-left: 7px\">%2d</td>\n", $cnt++), if $html;
-            printf("<td style=\"text-align:center\">%d</td>\n", $key), if $html;
-            printf("<td style=\"text-align:center\">%d</td>\n", $y{$key}{cto}), if $html;
-        }
-        printf("%2d: %d -> %d\n", $cnt++, $key, $y{$key}{cto}), if !$html;
-    }
-  if ($html) {
-    print "
-    </table>
-
-    </body>
-    </html>\n";
-  }
-
-  if ($html) {
-    print "<!DOCTYPE html>
-    <html>
-    <head>
-    <style>
-    table, th, td {
-      border: 1px solid black;
-      border-collapse: collapse;
-    }
-    th, td {
-      text-align: left;
-    }
-    </style>
-    </head>
-    <body>
-    <table style=\"width:20%\">
-    ";
-  }
-  print "<br><br>\n", if $html;
-  print "<caption><b>Bogies<br>week 1 through $week</b></caption>", if $html;
-  if ($html) {
-    print "
-    <tr>
-      <th style=\"padding-left: 7px\">Rank</th>
-      <th style=\"text-align:center\">Year</th>
-      <th style=\"text-align:center\">Bogies</th>
-    </tr>
-    \n";
-  }
-    print "\nBogies. Week 1 through $week\n", if !$html;
-    $cnt = 1;
-    foreach $key (reverse sort { $y{$a}{ctbo} <=> $y{$b}{ctbo} } (keys(%y))) {
-        if ($key == $year) {
-            printf("<tr><td style=\"padding-left: 7px\"><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
-            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{ctbo}), if $html;
-        } else {
-            printf("<tr><td style=\"padding-left: 7px\">%2d</td>\n", $cnt++), if $html;
-            printf("<td style=\"text-align:center\">%d</td>\n", $key), if $html;
-            printf("<td style=\"text-align:center\">%d</td>\n", $y{$key}{ctbo}), if $html;
-        }
-        printf("%2d: %d -> %d\n", $cnt++, $key, $y{$key}{ctbo}), if !$html;
-    }
-  if ($html) {
-    print "
-    </table>
-
-    </body>
-    </html>\n";
-  }
-
-  if ($html) {
-    print "<!DOCTYPE html>
-    <html>
-    <head>
-    <style>
-    table, th, td {
-      border: 1px solid black;
-      border-collapse: collapse;
-    }
-    th, td {
-      text-align: left;
-    }
-    </style>
-    </head>
-    <body>
-    <table style=\"width:20%\">
-    ";
-  }
-  print "<br><br>\n", if $html;
-  print "<caption><b>Pars<br>week 1 through $week</b></caption>", if $html;
-  if ($html) {
-    print "
-    <tr>
-      <th style=\"padding-left: 7px\">Rank</th>
-      <th style=\"text-align:center\">Year</th>
-      <th style=\"text-align:center\">Pars</th>
-    </tr>
-    \n";
-  }
-    print "\nPars. Week 1 throught $week\n", if !$html;
-    $cnt = 1;
-    foreach $key (reverse sort { $y{$a}{ctp} <=> $y{$b}{ctp} } (keys(%y))) {
-        if ($key == $year) {
-            printf("<tr><td style=\"padding-left: 7px\"><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
-            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{ctp}), if $html;
-        } else {
-            printf("<tr><td style=\"padding-left: 7px\">%2d</td>\n", $cnt++), if $html;
-            printf("<td style=\"text-align:center\">%d</td>\n", $key), if $html;
-            printf("<td style=\"text-align:center\">%d</td>\n", $y{$key}{ctp}), if $html;
-        }
-        printf("%2d: %d -> %d\n", $cnt++, $key, $y{$key}{ctp}), if !$html;
-    }
-  if ($html) {
-    print "
-    </table>
-
-    </body>
-    </html>\n";
-  }
-
-  if ($html) {
-    print "<!DOCTYPE html>
-    <html>
-    <head>
-    <style>
-    table, th, td {
-      border: 1px solid black;
-      border-collapse: collapse;
-    }
-    th, td {
-      text-align: left;
-    }
-    </style>
-    </head>
-    <body>
-    <table style=\"width:20%\">
-    ";
-  }
-  print "<br><br>\n", if $html;
-  print "<caption><b>Birdies<br>week 1 through $week</b></caption>", if $html;
-  if ($html) {
-    print "
-    <tr>
-      <th style=\"padding-left: 7px\">Rank</th>
-      <th style=\"text-align:center\">Year</th>
-      <th style=\"text-align:center\">Birdies</th>
-    </tr>
-    \n";
-  }
-    print "\nBirdies. Week 1 through $week\n", if !$html;
-    $cnt = 1;
-    foreach $key (reverse sort { $y{$a}{ctb} <=> $y{$b}{ctb} } (keys(%y))) {
-        if ($key == $year) {
-            printf("<tr><td style=\"padding-left: 7px\"><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
-            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{ctb}), if $html;
-        } else {
-            printf("<tr><td style=\"padding-left: 7px\">%2d</td>\n", $cnt++), if $html;
-            printf("<td style=\"text-align:center\">%d</td>\n", $key), if $html;
-            printf("<td style=\"text-align:center\">%d</td>\n", $y{$key}{ctb}), if $html;
-        }
-        printf("%2d: %d -> %2d\n", $cnt++, $key, $y{$key}{ctb}), if !$html;
-    }
-  if ($html) {
-    print "
-    </table>
-
-    </body>
-    </html>\n";
-  }
-
-  if ($html) {
-    print "<!DOCTYPE html>
-    <html>
-    <head>
-    <style>
-    table, th, td {
-      border: 1px solid black;
-      border-collapse: collapse;
-    }
-    th, td {
-      text-align: left;
-    }
-    </style>
-    </head>
-    <body>
-    <table style=\"width:20%\">
-    ";
-  }
-  print "<br><br>\n", if $html;
-  print "<caption><b>Eagles<br>week 1 through $week</b></caption>", if $html;
-  if ($html) {
-    print "
-    <tr>
-      <th style=\"padding-left: 7px\">Rank</th>
-      <th style=\"text-align:center\">Year</th>
-      <th style=\"text-align:center\">Eagles</th>
-    </tr>
-    \n";
-  }
-    print "\nEagles. Week 1 through $week\n", if !$html;
-    $cnt = 1;
-    foreach $key (reverse sort { $y{$a}{cte} <=> $y{$b}{cte} } (keys(%y))) {
-        if ($key == $year) {
-            printf("<tr><td style=\"padding-left: 7px\"><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
-            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $y{$key}{cte}), if $html;
-        } else {
-            printf("<tr><td style=\"padding-left: 7px\">%2d</td>\n", $cnt++), if $html;
-            printf("<td style=\"text-align:center\">%d</td>\n", $key), if $html;
-            printf("<td style=\"text-align:center\">%d</td>\n", $y{$key}{cte}), if $html;
-        }
-        printf("%2d: %d -> %d\n", $cnt++, $key, $y{$key}{cte}), if !$html;
-    }
-  if ($html) {
-    print "
-    </table>
-    <br>
-    <br>
-    </body>
-    </html>\n";
-  }
 }
