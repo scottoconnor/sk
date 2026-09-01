@@ -17,7 +17,6 @@ my $cur_year = $year;
 my $start_year = 2003;
 my $dh;
 my $fh;
-my $html_list;
 my $week;
 my $num_weeks;
 my $s;
@@ -59,13 +58,13 @@ select $fh;
 
 @line = qx{./skperf.pl -s -t -h -y $cur_year};
 print @line;
-print "<br><br>";
+print "<br>";
 
 $week = $num_weeks;
 while ($week > 0) {
     @line = qx{./skperf.pl -h -s -g -t -y $cur_year -w $week};
     print @line;
-    print "<br><br>";
+    print "<br>";
     $week--;
 }
 
