@@ -39,6 +39,9 @@ $ret = qx(./skperf.pl -s -y $year | grep \"Total holes played\");
 ($val) = $ret =~ /Total holes played: (\d+)/;
 $week = ceil(($val/288));
 
+#
+# First, get the data for the current week, then weeks 1 - current week.
+#
 for ($sy = $start_year; $sy <= $year; $sy++) {
 
     if ($weekly_stats) {
@@ -120,15 +123,15 @@ if ($weekly_stats) {
 
   #
   # set start week to 0 so we know to only print out
-  &print_html_text_table(\%y, $sy, 0, $week, "Stroke Average", "wlsa");
-  &print_html_text_table(\%y, $sy, 0, $week, "Scores in the 30\'s", "wthirty");
-  &print_html_text_table(\%y, $sy, 0, $week, "Scores in the 50\'s", "wft");
-  &print_html_text_table(\%y, $sy, 0, $week, "Others", "two");
-  &print_html_text_table(\%y, $sy, 0, $week, "Double Bogies", "twdbo");
-  &print_html_text_table(\%y, $sy, 0, $week, "Bogies", "twbo");
-  &print_html_text_table(\%y, $sy, 0, $week, "Pars", "twp");
-  &print_html_text_table(\%y, $sy, 0, $week, "Birdies", "twb");
-  &print_html_text_table(\%y, $sy, 0, $week, "Eagles", "twe");
+  &print_html_text_table(\%y, $sy, 0, $week, "Stroke Average", "wlsa", 0);
+  &print_html_text_table(\%y, $sy, 0, $week, "Scores in the 30\'s", "wthirty", 1);
+  &print_html_text_table(\%y, $sy, 0, $week, "Scores in the 50\'s", "wft", 0);
+  &print_html_text_table(\%y, $sy, 0, $week, "Others", "two", 0);
+  &print_html_text_table(\%y, $sy, 0, $week, "Double Bogies", "twdbo", 0);
+  &print_html_text_table(\%y, $sy, 0, $week, "Bogies", "twbo", 0);
+  &print_html_text_table(\%y, $sy, 0, $week, "Pars", "twp", 1);
+  &print_html_text_table(\%y, $sy, 0, $week, "Birdies", "twb", 1);
+  &print_html_text_table(\%y, $sy, 0, $week, "Eagles", "twe", 1);
 }
 
 if ($cumulative_stats) {
@@ -136,21 +139,21 @@ if ($cumulative_stats) {
   <H2>Comparison of weeks 1 through $week</H2>\n", if $html;
   print "\n\nComparison of week 1 through $week\n", if !$html;
 
-  &print_html_text_table(\%y, $sy, 1, $week, "Stroke Average", "clsa");
-  &print_html_text_table(\%y, $sy, 1, $week, "Scores in the 30\'s", "cthirty");
-  &print_html_text_table(\%y, $sy, 1, $week, "Scores in the 50\'s", "cft");
-  &print_html_text_table(\%y, $sy, 1, $week, "Others", "ctdbo");
-  &print_html_text_table(\%y, $sy, 1, $week, "Double Bogies", "twdbo");
-  &print_html_text_table(\%y, $sy, 1, $week, "Bogies", "ctbo");
-  &print_html_text_table(\%y, $sy, 1, $week, "Pars", "ctp");
-  &print_html_text_table(\%y, $sy, 1, $week, "Birdies", "ctb");
-  &print_html_text_table(\%y, $sy, 1, $week, "Eagles", "cte");
+  &print_html_text_table(\%y, $sy, 1, $week, "Stroke Average", "clsa", 0);
+  &print_html_text_table(\%y, $sy, 1, $week, "Scores in the 30\'s", "cthirty", 1);
+  &print_html_text_table(\%y, $sy, 1, $week, "Scores in the 50\'s", "cft", 0);
+  &print_html_text_table(\%y, $sy, 1, $week, "Others", "cto", 0);
+  &print_html_text_table(\%y, $sy, 1, $week, "Double Bogies", "ctdbo", 0);
+  &print_html_text_table(\%y, $sy, 1, $week, "Bogies", "ctbo", 0);
+  &print_html_text_table(\%y, $sy, 1, $week, "Pars", "ctp", 1);
+  &print_html_text_table(\%y, $sy, 1, $week, "Birdies", "ctb", 1);
+  &print_html_text_table(\%y, $sy, 1, $week, "Eagles", "cte", 1);
 }
 
 sub
 print_html_text_table {
 
-  my ($y, $sy, $sw, $week, $stat_name, $stat) = @_;
+  my ($y, $sy, $sw, $week, $stat_name, $stat, $reverse) = @_;
 
   print "<!DOCTYPE html>
   <html>
@@ -182,7 +185,7 @@ print_html_text_table {
   print "\n$stat_name on week $week.\n", if (!$html && ($sw == 0));
   print "\n$stat_name week 1 through $week\n", if (!$html && ($sw == 1));
   $cnt = 1;
-  foreach $key (sort { $y{$a}{$stat} <=> $y{$b}{$stat} } (keys(%y))) {
+  foreach $key (sort { $reverse ? $y{$b}{$stat} <=> $y{$a}{$stat} : $y{$a}{$stat} <=> $y{$b}{$stat} } (keys(%y))) {
       if ($key == $year) {
           printf("<tr><td style=\"padding-left: 7px\"><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
           printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
