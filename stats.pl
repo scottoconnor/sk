@@ -24,7 +24,7 @@ undef(my %y);
 
 if ($#ARGV < 0) {
     print "Usage:\n";
-    print "stats.pl: -c for cumlative and/or -w for weekly\n";
+    print "stats.pl: -c for cumlative, -w for weekly, -h for html output.\n";
     exit;
 }
 
