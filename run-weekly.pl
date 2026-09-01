@@ -18,7 +18,6 @@ my $start_year = 2003;
 my $dh;
 my $fh;
 my $week;
-my $num_weeks;
 my $s;
 my $th;
 my @line;
@@ -41,18 +40,15 @@ unlink @html_list;
 #
 # First, find out how many weeks of golf have been played in the year specified.
 #
-$num_weeks = 0;
-
 $s = qx(./skperf.pl -s -y $year | grep \"Total holes played\");
 ($th) = $s =~ /Total holes played: (\d+)/;
-$num_weeks = ceil(($th/288));
-print "Number of weeks: $num_weeks\n";
+$week = ceil(($th/288));
+print "Number of weeks: $week\n";
 
 #
 # Get the stats and table for the current year, then tack the
 # weekly stats below the overall stats.
 #
-
 open ($fh, ">", "/tmp/$cur_year.html");
 select $fh;
 
@@ -60,7 +56,6 @@ select $fh;
 print @line;
 print "<br>";
 
-$week = $num_weeks;
 while ($week > 0) {
     @line = qx{./skperf.pl -h -s -g -t -y $cur_year -w $week};
     print @line;
