@@ -18,9 +18,8 @@ my ($year, $month, $day, $date);
 my %tnfb_db;
 my %d;
 our %dates;
-my $league = "./golfers";
+my $league = "/home/soconnor/sk/golfers";
 my $dh;
-my $golfers;
 my %golfers_gdbm;
 
 #
