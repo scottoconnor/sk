@@ -189,13 +189,10 @@ print_html_text_table {
       if ($key == $year) {
           printf("<tr><td style=\"padding-left: 7px\"><b><font color=\"red\">%d</font></b></td>\n", $cnt++), if $html;
           printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n", $key), if $html;
-          if ($html && (($stat eq "wlsa") || ($stat eq "clsa"))) {
-            printf("<td style=\"text-align:center\"><b><font color=\"red\">%.2f</font></b></td>\n",
-                $y{$key}{$stat}), if ($html);
-          } else {
-            printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n",
-                $y{$key}{$stat}), if ($html);
-          }
+          printf("<td style=\"text-align:center\"><b><font color=\"red\">%.2f</font></b></td>\n",
+            $y{$key}{$stat}), if ($html && (($stat eq "wlsa") || ($stat eq "clsa")));
+          printf("<td style=\"text-align:center\"><b><font color=\"red\">%d</font></b></td>\n",
+            $y{$key}{$stat}), if ($html && (($stat ne "wlsa") && ($stat ne "clsa")));
       } else {
           printf("<tr><td style=\"padding-left: 7px\">%2d</td>\n", $cnt++), if $html;
           printf("<td style=\"text-align:center\">%d</td>\n", $key), if $html;
