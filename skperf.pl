@@ -210,7 +210,7 @@ if ($add) {
     print "Enter week of play: ";
     chomp(my $w = <STDIN>);
 
-    my @files = ("../golf/week$w-1.csv", "../golf/week$w-2.csv");
+    my @files = ("./docs/week$w-1.csv", "./docs/week$w-2.csv");
 
     foreach $fn (@files) {
 
