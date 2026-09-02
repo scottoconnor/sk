@@ -9,18 +9,17 @@ require './hcroutines.pl';
 use Getopt::Long;
 use GDBM_File;
 
-my ($expected_diff) = 1;
-my ($update_hi) = 0;
-my ($four) = 0;
-my ($allowance) = 0.9;
+my $expected_diff = 1;
+my $update_hi = 0;
+my $four = 0;
+my $allowance = 0.9;
 
-my ($div) = 4;
-my (%tnfb_db, %league, $dh);
-my ($max_scores) = 20;
+my $div = 4;
+my (%tnfb_db, %league, $dh, %golfers_gdbm);
+my $max_scores = 20;
 my ($sf, $sb, $nf, $nb);
-my (%golfers_gdbm);
 my ($total_scores, %t, $tier, $course_data, @course_elements);
-my ($year) = (1900 + (localtime)[5]);
+my $year = (1900 + (localtime)[5]);
 my @courses = ("SF", "SB", "NF", "NB");
 our %dates;
 
@@ -31,8 +30,8 @@ GetOptions (
     "a=f" => \$allowance),
 or die("Error in command line arguments\n");
 
-my ($month) = (((localtime)[4]) + 1);
-my ($day) = (localtime)[3];
+my $month = (((localtime)[4]) + 1);
+my $day = (localtime)[3];
 
 &get_years_weeks_dates();
 
@@ -91,7 +90,7 @@ while (my $sc = shift @courses) {
         if (!defined($t{$sc}{$tier})) {
             next;
         }
-        my $ave = (($t{$sc}{$tier}{strokes}/$t{$sc}{$tier}{xplayed}) * 1.0);
+        my $ave = ($t{$sc}{$tier}{strokes}/$t{$sc}{$tier}{xplayed});
         $t{$sc}{$tier}{ave} = $ave;
         printf("%s: tier %d, (scores %d), strokes %d, ave = %.1f\n", $sc, $tier,
             $t{$sc}{$tier}{xplayed}, $t{$sc}{$tier}{strokes}, $ave), if (0);
