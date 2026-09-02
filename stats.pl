@@ -113,16 +113,14 @@ for ($sy = $start_year; $sy <= $year; $sy++) {
     }
 }
 
-#
-# Print Header for comparison of individual weeks.
-#
 if ($weekly_stats) {
   print "<!DOCTYPE html><font color=\"red\">
   <H2>Comparison of week $week\'s</H2>\n", if $html;
   print "Comparison of week $week\'s\n", if !$html;
 
   #
-  # set start week to 0 so we know to only print out
+  # set start week to 0 so we only print out that week.
+  #
   &print_html_text_table(\%y, $sy, 0, $week, "Stroke Average", "wlsa", 0);
   &print_html_text_table(\%y, $sy, 0, $week, "Scores in the 30\'s", "wthirty", 1);
   &print_html_text_table(\%y, $sy, 0, $week, "Scores in the 50\'s", "wft", 0);
@@ -139,6 +137,10 @@ if ($cumulative_stats) {
   <H2>Comparison of weeks 1 through $week</H2>\n", if $html;
   print "\n\nComparison of week 1 through $week\n", if !$html;
 
+  #
+  # set start week to 1 so we print out the cumulative weeks from
+  # week 1 to week "$week".
+  #
   &print_html_text_table(\%y, $sy, 1, $week, "Stroke Average", "clsa", 0);
   &print_html_text_table(\%y, $sy, 1, $week, "Scores in the 30\'s", "cthirty", 1);
   &print_html_text_table(\%y, $sy, 1, $week, "Scores in the 50\'s", "cft", 0);
