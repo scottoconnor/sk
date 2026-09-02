@@ -14,8 +14,6 @@ $diff = 0;
 my ($end_year) = (1900 + (localtime)[5]);
 
 $beforepath = "/home/soconnor/backup";
-#$beforepath = "/run/media/soconnor/1TB/golfers";
-
 $workingpath = "/home/soconnor/sk/golfers";
 
 #
