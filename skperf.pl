@@ -775,7 +775,7 @@ print_stats {
         printf("Total Double Bogies = %d\n", $y{$yp}{total_db});
         printf("Total Others = %d\n", $y{$yp}{total_other});
         printf("Total 30's = %d\n", $y{$yp}{thirties});
-        printf("Total 50+ = %d\n\n", $y{$yp}{fifty_plus});
+        printf("Total 50+ = %d\n", $y{$yp}{fifty_plus});
 
     } elsif ($y{$yp}{total_strokes} && $html) {
         print "<b><font color=\"green\">$yp</font></b>";
