@@ -14,7 +14,7 @@ my (@line1, @line2, @line3,  @line4);
 
 my $fd;
 my @vals;
-my $num_lines;
+my $num_lines = 0;
 my @team_line;
 
 #
@@ -40,9 +40,7 @@ my %HoT = (
     "Buckeyes"        => [ ],
 );
 
-open($fd, "<", "./docs/sched.csv") or die "Cannot open file: $!";
-
-$num_lines = 0;
+open($fd, "<", "./docs/sched.csv") or die "Cannot open file: ./docs/sched.csv. Export file first.";
 
 while (my $line = <$fd>) {
     chomp ($line);
@@ -56,9 +54,10 @@ while (my $line = <$fd>) {
         $num_lines++;
     }
 }
-print "Number of lines = $num_lines\n", if (0);
 
 close ($fd);
+
+die "Only $num_lines lines of league play, should be 60.\n", if ($num_lines != 60);
 
 for (my $x = 0; $x < $num_lines; $x += 4) {
     @line1 = split(/,/, $team_line[$x]);
@@ -76,31 +75,48 @@ for (my $x = 0; $x < $num_lines; $x += 4) {
     &create_teams_played($line3[3], $line4[3]);
 }
 
+
 sub
 create_teams_played {
     my ($team1, $team2) = @_;
 
-    print "$team1 v $team2\n", if (0);
-
-    if (grep { $_ eq $team2 } @{ $HoT{$team1} } ) {
-        die "The $team1 already played the  $team2.\n";
-    }
+    #
+    # If a team has already played another team, stop now
+    # so the schedule can be fixed. Check both teams on
+    # any given match day.
+    #
     if (grep { $_ eq $team1 } @{ $HoT{$team2} } ) {
         die "The $team2 already played the  $team1.\n";
+    }
+    if (grep { $_ eq $team2 } @{ $HoT{$team1} } ) {
+        die "The $team1 already played the  $team2.\n";
     }
     push @{ $HoT{$team1} }, $team2;
     push @{ $HoT{$team2} }, $team1;
 }
 
-foreach my $t (sort keys %HoT) {
+foreach my $team (sort keys %HoT) {
     my $week = 1;
-    print "$t: \n";
-    
-    # Dereferencing the array reference at $HoT
-    # print "@{ $HoT{$t} }\n";
-    foreach my $oppenent (@{ $HoT{$t} }) {
+    my $list_of_teams = $tnfb_teams;
+
+    #
+    # Remove the team itself from the list.
+    $list_of_teams =~ s/$team//g;
+
+    print "$team: \n";
+
+    # Show each team's oppenent they will play from week 1 to week 15.
+    foreach my $oppenent (@{$HoT{$team}}) {
+        $list_of_teams =~ s/$oppenent//g;
         print "\tweek $week: $oppenent\n";
         $week++;
+    }
+    $list_of_teams =~ s/^\174+|\174+$//g;
+    $list_of_teams =~ s/(?:\174)+/ /g;
+    $list_of_teams =~ s/(\s)+$/ /g;
+    my $len = length $list_of_teams;
+    if (defined $list_of_teams && ($len > 0)) {
+        die "$team did not play the $list_of_teams.\n";
     }
     print "\n";
 }
