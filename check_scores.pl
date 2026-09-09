@@ -22,7 +22,16 @@ my (%tnfb_db);
 
 my $t0 = gettimeofday();
 
-for (my $x = 1000; $x <= 1300; $x++) {
+my $dir = './golfers';
+opendir(my $dh, $dir) or die "Cannot open $dir: $!";
+
+# Filter to keep only actual files (-f)
+my $file_count = grep { -f "$dir/$_" } readdir($dh);
+
+closedir($dh);
+$file_count += 1000;
+
+for (my $x = 1000; $x <= $file_count; $x++) {
     my $file = "golfers/$x.gdbm";
 
     if (! -e $file) {
