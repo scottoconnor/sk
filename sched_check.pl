@@ -75,7 +75,6 @@ for (my $x = 0; $x < $num_lines; $x += 4) {
     &create_teams_played($line3[3], $line4[3]);
 }
 
-
 sub
 create_teams_played {
     my ($team1, $team2) = @_;
@@ -85,14 +84,14 @@ create_teams_played {
     # so the schedule can be fixed. Check both teams on
     # any given match day.
     #
-    if (grep { $_ eq $team1 } @{ $HoT{$team2} } ) {
+    if (grep {$_ eq $team1} @{$HoT{$team2}}) {
         die "The $team2 already played the  $team1.\n";
     }
-    if (grep { $_ eq $team2 } @{ $HoT{$team1} } ) {
+    if (grep {$_ eq $team2} @{$HoT{$team1}}) {
         die "The $team1 already played the  $team2.\n";
     }
-    push @{ $HoT{$team1} }, $team2;
-    push @{ $HoT{$team2} }, $team1;
+    push @{$HoT{$team1}}, $team2;
+    push @{$HoT{$team2}}, $team1;
 }
 
 foreach my $team (sort keys %HoT) {
@@ -100,15 +99,20 @@ foreach my $team (sort keys %HoT) {
     my $list_of_teams = $tnfb_teams;
 
     #
-    # Remove the team itself from the list.
+    # Remove the team from the list. A team doesn't play itself.
+    #
     $list_of_teams =~ s/$team//g;
 
     print "$team: \n";
 
+    #
     # Show each team's oppenent they will play from week 1 to week 15.
+    # After printing the team, remove that team from the list. The list
+    # should be empty after all 15 weeks are processed.
+    #
     foreach my $oppenent (@{$HoT{$team}}) {
-        $list_of_teams =~ s/$oppenent//g;
         print "\tweek $week: $oppenent\n";
+        $list_of_teams =~ s/$oppenent//g;
         $week++;
     }
     $list_of_teams =~ s/^\174+|\174+$//g;
