@@ -4,21 +4,20 @@
 #
 
 use strict;
+use warnings;
 use Time::Piece;
 use Time::Seconds;
 use GDBM_File;
 use Time::HiRes qw(gettimeofday);
-use warnings;
 
 # Get current year
 my $end_year = localtime->year;
 my $sy;
 my $bad_scores = 0;
 my $all_scores = 0;
-my $na_scores = 0;
 my $t;
 my ($year, $month, $day, $date);
-my (%tnfb_db);
+my %tnfb_db;
 
 my $t0 = gettimeofday();
 
@@ -44,12 +43,6 @@ for (my $x = 1000; $x <= $file_count; $x++) {
         or die "$GDBM_File::gdbm_errno";
 
     my $pn =  $tnfb_db{'Player'};
-
-    if (($tnfb_db{'Team'} ne "Sub") && 0) {
-        print "$tnfb_db{'Player'} skipping...\n";
-        untie %tnfb_db;
-        next;
-    }
 
     $sy = 1997;
     $t = Time::Piece->strptime("$sy-04-01", "%Y-%m-%d");
