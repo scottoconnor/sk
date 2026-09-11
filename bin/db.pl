@@ -14,19 +14,17 @@ require 'hcroutines.pl';
 
 my (%golfers_gdbm, %tnfb_db, $file, $dh, $pn);
 
-my ($modify) = 0;
-my ($delete) = 0;
-my ($add) = 0;
-my ($create) = 0;
-my ($view) = 0;
-my ($search_key) = 0;
-my ($search_del_key) = 0;
-my ($search_value) = 0;
-my ($end_year) = (1900 + (localtime)[5]);
-my ($path) = "/home/soconnor/sk/golfers";
-#my ($path) = "/home/soconnor/backup";
-my ($file_path);
-our (%dates);
+my $modify = 0;
+my $delete = 0;
+my $add = 0;
+my $create = 0;
+my $view = 0;
+my $search_key = 0;
+my $search_del_key = 0;
+my $search_value = 0;
+my $end_year = (1900 + (localtime)[5]);
+my $path = "/home/soconnor/sk/golfers";
+my $file_path;
 
 GetOptions (
     "a" => \$add,
@@ -53,16 +51,13 @@ Options: \
   -v         View the player's entire database record.\n";
 }
 
-&get_years_weeks_dates();
-
 opendir($dh, $path) || die "Can't open directory.";
 
 while (readdir $dh) {
-    if ($_ =~ /(^1\d{3}$\.gdbm)/) {
+    if ($_ =~ /(^1\d{3}\056gdbm)/) {
         $file_path = "$path/$_";
         tie %tnfb_db, 'GDBM_File', $file_path, GDBM_READER, 0644
             or die "$GDBM_File::gdbm_errno";
-        print "$tnfb_db{'Player'} - $file_path\n", if 0;
         $golfers_gdbm{$tnfb_db{'Player'}} = $file_path;
         untie %tnfb_db;
     }
@@ -76,7 +71,6 @@ if ($modify == 1 || $delete == 1 || $add == 1 || $view == 1) {
         die "$pn does not exists.\n";
     }
     $file = $golfers_gdbm{$pn};
-    #print "$pn: $file\n";
 }
 
 if ($add) {
@@ -139,7 +133,7 @@ create_tnfb_db {
     my ($new_pn) = @_;
     my ($new_file, $x, $y, $hi);
 
-    for ($x = 1; $x < 300; $x++) {
+    for ($x = 1; $x < 600; $x++) {
         $y = 1000 + $x;
         $new_file = "golfers/$y.gdbm";
         if (! -e $new_file) {
@@ -307,8 +301,8 @@ view_db {
     tie %tnfb_db, 'GDBM_File', $file, GDBM_READER, 0640
         or die "$GDBM_File::gdbm_errno";
 
-    my ($y, $m, $d, $team, $w, $da, $found);
-    my ($scores) = 0;
+    my ($y, $m, $d, $team);
+    my $scores = 0;
 
     foreach $y (1997..$end_year) {
         $team = "Team_$y";
@@ -319,17 +313,6 @@ view_db {
             foreach $d (1..31) {
                 my $date = "$y-$m-$d";
                 if (exists($tnfb_db{$date})) {
-                    $found = 1;
-                    for ($w = 1; $w < 16; $w++) {
-                        $da = $dates{$y}{$w};
-                        if ($da eq $date) {
-                            $found = 1;
-                        }
-                    }
-                    if (!$found && $y > 2002) {
-                        untie %tnfb_db;
-                        die "\tBAD: da: $da, date(bad): $date\n";
-                    }
                     print "$date: $tnfb_db{$date}\n";
                     $scores++;
                 }
