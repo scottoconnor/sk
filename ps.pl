@@ -4,6 +4,8 @@
 #
 
 use strict;
+use warnings;
+
 use Getopt::Long qw(:config no_ignore_case);
 
 require './subs.pl';
@@ -59,7 +61,7 @@ print "\n\n";
 
 print "Subs table:\n";
 print "-----------\n";
-foreach my $pn (reverse sort { $ss{$a} <=> $ss{$b} } (keys(%ss))) {
+foreach my $pn (reverse sort { $ss{$a} <=> $ss{$b} } (keys %ss)) {
     if ($ss{$pn} > 19) {
         print "$pn: $ss{$pn}\n";
     }
@@ -67,7 +69,7 @@ foreach my $pn (reverse sort { $ss{$a} <=> $ss{$b} } (keys(%ss))) {
 
 print "\n\nLeague Member table:\n", if ($members);
 print "--------------------\n", if ($members);
-foreach my $pn (reverse sort { $league_player{$a} <=> $league_player{$b} } ((%league_player))) {
+foreach my $pn (reverse sort { $league_player{$a} <=> $league_player{$b} } (keys %league_player)) {
     if ($league_player{$pn} > 19) {
         print "$pn: $league_player{$pn}\n", if ($members);
     }
