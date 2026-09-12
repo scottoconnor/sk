@@ -6,6 +6,8 @@
 #
 
 use strict;
+use warnings;
+
 use Crypt::Random::Seed;
 use Time::HiRes qw(gettimeofday);
 
