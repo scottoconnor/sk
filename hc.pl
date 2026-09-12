@@ -3,9 +3,10 @@
 # Copyright (c) 2018, 2026 Scott O'Connor
 #
 
-use strict;
 require './hcroutines.pl';
 
+use strict;
+use warnings;
 use Getopt::Long;
 use GDBM_File;
 
@@ -18,7 +19,7 @@ my $div = 4;
 my (%tnfb_db, %league, $dh, %golfers_gdbm);
 my $max_scores = 20;
 my ($sf, $sb, $nf, $nb);
-my ($total_scores, %t, $tier, $course_data, @course_elements);
+my (%t, $tier, $course_data, @course_elements);
 my $year = (1900 + (localtime)[5]);
 my @courses = ("SF", "SB", "NF", "NB");
 our %dates;
@@ -78,8 +79,6 @@ foreach my $pn (keys %golfers_gdbm) {
                 $tier = int($sr[4] / $div);
                 $t{$sr[0]}{$tier}{strokes} += ($sr[7] - $course_elements[3]);
                 $t{$sr[0]}{$tier}{xplayed}++;
-
-                $total_scores++;
             } 
         }
     }
@@ -125,7 +124,6 @@ foreach my $pn (keys %golfers_gdbm) {
         expected_diff($file);
     }
 }
-closedir ($dh);
 
 if ($four) {
     printf("%-25s (sf sb nf nb)\n", "$month-$day-$year");
@@ -238,7 +236,7 @@ expected_diff {
     my ($fn) = @_;
 
     my (%tnfb_db, $use, @sr, $diff, $ex_diff, $hi, $start_year, $tier);
-    my ($rw) = GDBM_READER;
+    my $rw = GDBM_READER;
 
     $rw = GDBM_WRITER, if ($update_hi);
 
