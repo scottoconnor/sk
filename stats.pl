@@ -4,6 +4,8 @@
 #
 
 use strict;
+use warnings;
+
 use Getopt::Long;
 use POSIX;
 
@@ -42,12 +44,22 @@ $week = ceil(($val/288));
 #
 # First, get the data for the current week, then weeks 1 - current week.
 #
-for ($sy = $start_year; $sy <= $year; $sy++) {
+if ($weekly_stats) {
 
-    if ($weekly_stats) {
+    for ($sy = $start_year; $sy <= $year; $sy++) {
+        $y{$sy}{wlsa} = 0;
+        $y{$sy}{wthirty} =0;
+        $y{$sy}{wft} =0;
+        $y{$sy}{two} = 0;
+        $y{$sy}{twdbo} = 0;
+        $y{$sy}{twbo} = 0;
+        $y{$sy}{twp} = 0;
+        $y{$sy}{twb} = 0;
+        $y{$sy}{twe} = 0;
         @return = qx{./skperf.pl -s -y $sy -w $week};
         while ($line = shift @return) {
             chomp ($line);
+            undef($val);
             if (($val) = $line =~ /League Stroke Average = (\d+\056\d+)/) {
                 $y{$sy}{wlsa} = $val;
             }
@@ -77,11 +89,23 @@ for ($sy = $start_year; $sy <= $year; $sy++) {
             }
         }
     }
+}
 
-    if ($cumulative_stats) {
+if ($cumulative_stats) {
+    for ($sy = $start_year; $sy <= $year; $sy++) {
+        $y{$sy}{clsa} = 0;
+        $y{$sy}{cthirty} = 0;
+        $y{$sy}{cft} = 0;
+        $y{$sy}{cto} = 0;
+        $y{$sy}{ctdbo} = 0;
+        $y{$sy}{ctbo} = 0;
+        $y{$sy}{ctp} = 0;
+        $y{$sy}{ctb} = 0;
+        $y{$sy}{cte} = 0;
         @return = qx{./skperf.pl -s -y $sy -sw 1 -ew $week};
         while ($line = shift @return) {
             chomp ($line);
+            undef($val);
             if (($val) = $line =~ /League Stroke Average = (\d+\056\d+)/) {
                 $y{$sy}{clsa} = $val;
             }
