@@ -7,12 +7,12 @@ use strict;
 use warnings;
 use GDBM_File;
 
-my $path = "/home/soconnor/sk/";
+my $path = "/home/soconnor/sk/golfers/";
 
-print "Enter database file of player: ";
-my $filename = <STDIN>;
-chomp($filename);
-$filename = $path . "golfers/" . $filename;
+print "Enter database number of player: ";
+my $db_num = <STDIN>;
+chomp($db_num);
+my $filename = $path . $db_num . ".gdbm";
 
 # Tie the GDBM file to a normal perl hash in read-only mode (GDBM_READER)
 tie my %hash, 'GDBM_File', $filename, GDBM_READER, 0444
@@ -22,5 +22,7 @@ tie my %hash, 'GDBM_File', $filename, GDBM_READER, 0444
 while (my ($key, $value) = each %hash) {
     print "$key => $value\n";
 }
+
+print "$hash{'Player'}\n";
 
 untie %hash;
