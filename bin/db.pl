@@ -133,13 +133,18 @@ create_tnfb_db {
     my ($new_pn) = @_;
     my ($new_file, $x, $y, $hi);
 
-    for ($x = 1; $x < 600; $x++) {
-        $y = 1000 + $x;
-        $new_file = "golfers/$y.gdbm";
-        if (! -e $new_file) {
-            print "new db file is: $new_file\n";
-            last;
-        }
+    opendir($dh, $path) or die "Cannot open $path: $!";
+
+    # Filter to keep only actual files (-f)
+    my $file_count = grep { -f "$path/$_" } readdir($dh);
+
+    closedir($dh);
+    $file_count += 1001;
+
+    $new_file = $path . "/$file_count" . "." . "gdbm";
+
+    if (! -e $new_file) {
+        print "new DB file is: $new_file\n";
     }
 
     tie %tnfb_db, 'GDBM_File', $new_file, GDBM_WRCREAT, 0644
@@ -309,7 +314,7 @@ view_db {
         if (exists($tnfb_db{$team})) {
             print "$team: $tnfb_db{$team}\n";
         }
-        foreach $m (1..12) {
+        foreach $m (3..10) {
             foreach $d (1..31) {
                 my $date = "$y-$m-$d";
                 if (exists($tnfb_db{$date})) {
@@ -329,9 +334,6 @@ view_db {
     }
     if (exists($tnfb_db{'Current'})) {
         printf "Current: %.1f\n", $tnfb_db{'Current'};
-    }
-    if (exists($tnfb_db{'new_hi'})) {
-        printf "new_hi: %.1f\n", $tnfb_db{'new_hi'};
     }
     print "db file: $file\n";
     print "Number of scores: $scores\n";
