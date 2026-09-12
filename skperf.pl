@@ -4,6 +4,8 @@
 #
 
 use strict;
+use warnings;
+
 require './subs.pl';
 require './hcroutines.pl';
 
@@ -50,7 +52,7 @@ my (undef(%y));
 my (undef(%p));
 my ($dh, %golfers_gdbm);
 my (%tnfb_db);
-my ($cy, $cw, $t0, $t1, $fna, $total_time);
+my ($cy, $cw, $t0, $t1, $fna);
 my (%bt, %et, %difficult, %bph, %bpp, %to, %ht, %c);
 
 #
@@ -177,7 +179,7 @@ if ($delete) {
     my ($count, $key);
 
     print "Enter date of scores to delete: ";
-    chomp(my $key = <STDIN>);
+    chomp($key = <STDIN>);
 
     $count = 0;
     foreach my $pn (keys %golfers_gdbm) {
@@ -231,8 +233,8 @@ if ($add) {
             chomp($line);
             if ($line =~ /(4|5)\072\d{2}/) {
                 @week = split (/,/, $line);
-                $date = @week[0];
-                $time = @week[1];
+                $date = $week[0];
+                $time = $week[1];
                 ($year, $month, $day) = split /-/, $date;
                 my $month = abs($month);
                 my $day = abs($day);
@@ -290,7 +292,7 @@ if ($add) {
                 }
 
                 $cph = $sr[2];
-                $shot = abs(@sr[13]);
+                $shot = abs($sr[13]);
                 @swings = @sr[4..12];
                 ($hi, $ph, $post) = net_double_bogey($pn, $year, $gdbm_file, $course, @swings);
                 print "$pn: cph = $cph, ph = $ph\n", if ($cph != $ph);
@@ -1094,7 +1096,7 @@ show_most_improved {
             $d = $dates{$start_year}{$cw};
             if (!defined($p{$pn}{A}) && exists($tnfb_db{$d})) {
                 @score = split(/:/, $tnfb_db{$d});
-                $p{$pn}{A} = (@score[4] + 6);
+                $p{$pn}{A} = ($score[4] + 6);
                 $p{$pn}{Adate} = $d;
                 last;
             }
@@ -1107,7 +1109,7 @@ show_most_improved {
             $d = $dates{($end_year+1)}{$cw};
             if (!defined($p{$pn}{B}) && exists($tnfb_db{$d})) {
                 @score = split(/:/, $tnfb_db{$d});
-                $p{$pn}{B} = (@score[4] + 6);
+                $p{$pn}{B} = ($score[4] + 6);
                 $p{$pn}{Bdate} = $d;
             }
         }
@@ -1183,7 +1185,7 @@ get_player_scores {
     my($fn, $pn, $cy) = @_;
 
     my($cw, $date, $h, $hi, $hc, %tnfb_db, $course_data);
-    my($course, $par, $slope, $date, $hi, $hc, $shot, $post);
+    my($course, $par, $slope, $shot, $post);
     my(@par_per_hole, @course_elements, $hp);
 
     tie %tnfb_db, 'GDBM_File', $fn, GDBM_READER, 0640
