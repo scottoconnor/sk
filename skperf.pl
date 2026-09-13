@@ -1072,6 +1072,11 @@ show_most_improved {
         tie %tnfb_db, 'GDBM_File', $file, GDBM_READER, 0640
             or die "$GDBM_File::gdbm_errno";
 
+        if (!exists($tnfb_db{"Team_$start_year"})) {
+            untie %tnfb_db;
+            next;
+        }
+
         #
         # If start year is the same as end year, include players
         # that played that year. Should always find 32 players.
@@ -1107,6 +1112,7 @@ show_most_improved {
         #
         for ($cw = 1; $cw <= $end_week; $cw++) {
             $d = $dates{($end_year+1)}{$cw};
+            next, if !defined($d);
             if (!defined($p{$pn}{B}) && exists($tnfb_db{$d})) {
                 @score = split(/:/, $tnfb_db{$d});
                 $p{$pn}{B} = ($score[4] + 6);
