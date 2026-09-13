@@ -809,12 +809,13 @@ if ($course_stats) {
     my ($course, $course_data, @course_elements);
 
     while (my $sc = shift @courses) {
-        if ($c{$sc}{total_strokes} == 0) {
+        if (!defined($c{$sc})) {
             next;
         }
         $c{$sc}{ave_score} = ($c{$sc}{total_strokes} / $c{$sc}{total_scores});
     }
-    foreach my $course (reverse sort { $c{$b}{ave_score} <=> $c{$a}{ave_score} } keys %c) {
+
+    foreach $course (reverse sort { $c{$b}{ave_score} <=> $c{$a}{ave_score} } keys %c) {
         $course_data = get_course_data($start_year, $course);
         print "course data $course_data\n", if (0);
         @course_elements = split(/:/, $course_data);
