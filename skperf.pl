@@ -35,7 +35,6 @@ my ($stats) = 0;
 my ($player_stats) = 0;
 my ($tables) = 0;
 my ($thirties) = 0;
-my ($output) = 0;
 my ($html) = 0;
 my ($others) = 0;
 my ($hires) = 0;
@@ -941,21 +940,13 @@ print_player_stats {
 
     foreach my $pn (sort keys %p) {
 
-        my $out_filename = "/tmp/$pn", if ($output);
-        if ($output) {
-            open (PS, ">", $out_filename);
-            select PS;
-        } elsif (-e $out_filename) {
-            unlink $out_filename;
-        }
-
         my @courses = ("SF", "SB", "NF", "NB");
 
         #
         # Skip those that don't have a posted scores.
         #
-        if ($p{$pn}{total_strokes} == 0) {
-            next;
+        if (!defined($p{$pn}{total_strokes})) {
+            die "$pn did not play this year. Should not get here.\n";
         }
 
         print "$pn\n\n";
@@ -973,16 +964,16 @@ print_player_stats {
         }
         print "\nTotal Strokes = $p{$pn}{total_strokes}\n";
         printf("Average Score = %.2f\n", ($p{$pn}{total_strokes} / $total_player_rounds));
-        printf("Total Hole-In-Ones = %d\n", $p{$pn}{th});
-        printf("Total Eagles = %d\n", $p{$pn}{te});
-        printf("Total Birdies = %d\n", $p{$pn}{tb});
+        printf("Total Hole-In-Ones = %d\n", defined($p{$pn}{th}) ? $p{$pn}{th} : 0);
+        printf("Total Eagles = %d\n", defined($p{$pn}{te}) ? $p{$pn}{te} : 0);
+        printf("Total Birdies = %d\n", defined($p{$pn}{tb}) ? $p{$pn}{tb} : 0);
 
         print "\n";
 
         @courses = ("SF", "SB", "NF", "NB");
         while (my $sc = shift @courses) {
 
-            if ($p{$pn}{$sc}{xplayed} == 0) {
+            if (!defined($p{$pn}{$sc}{xplayed})) {
                 next;
             }
 
@@ -1006,17 +997,21 @@ print_player_stats {
 
                 if ($par > 3) {
                     printf("ave = %.2f\n  Eagles=%d, ", ($p{$pn}{$sc}{$h}{shots} / $p{$pn}{$sc}{xplayed}),
-                        $p{$pn}{$sc}{$h}{e} ? $p{$pn}{$sc}{$h}{e} : 0);
+                        defined($p{$pn}{$sc}{$h}{e} ? $p{$pn}{$sc}{$h}{e} : 0));
                 } elsif ($par == 3) {
                     printf("ave = %.2f\n  Hole-in-Ones=%d, ", ($p{$pn}{$sc}{$h}{shots} / $p{$pn}{$sc}{xplayed}),
-                        $p{$pn}{$sc}{$h}{h} ? $p{$pn}{$sc}{$h}{h} : 0);
+                        defined($p{$pn}{$sc}{$h}{h} ? $p{$pn}{$sc}{$h}{h} : 0));
                 }
-                printf("Birdies=%d, Pars=%d, Bogies=%d, Double Bogies=%d, Others=%d\n\n", $p{$pn}{$sc}{$h}{b},
-                    $p{$pn}{$sc}{$h}{p}, $p{$pn}{$sc}{$h}{bo}, $p{$pn}{$sc}{$h}{db}, $p{$pn}{$sc}{$h}{o});
+                printf("Birdies=%d, Pars=%d, Bogies=%d, Double Bogies=%d, Others=%d\n\n",
+                    defined($p{$pn}{$sc}{$h}{b})  ? $p{$pn}{$sc}{$h}{b} : 0,
+                        defined($p{$pn}{$sc}{$h}{p})  ? $p{$pn}{$sc}{$h}{p} : 0,
+                            defined($p{$pn}{$sc}{$h}{bo}) ? $p{$pn}{$sc}{$h}{bo} : 0,
+                                defined($p{$pn}{$sc}{$h}{db}) ? $p{$pn}{$sc}{$h}{db} : 0,
+                                    defined($p{$pn}{$sc}{$h}{o})  ? $p{$pn}{$sc}{$h}{o} : 0);
+
             }
             print "\n";
         }
-        close(PS), if $output;
     }
 }
 
