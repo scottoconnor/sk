@@ -986,7 +986,12 @@ print_player_stats {
 
         my @courses = ("SF", "SB", "NF", "NB");
 
-        print "$pn\n\n";
+        print "$pn: ";
+        if ($start_year == $end_year) {
+            print "year $start_year\n\n";
+        } else {
+            print "years $start_year to $end_year\n\n";
+        }
 
         my $total_player_rounds = 0;
         while (my $sc = shift @courses) {
