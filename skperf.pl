@@ -106,6 +106,7 @@ while (readdir $dh) {
         tie %tnfb_db, 'GDBM_File', "$league/$_", GDBM_READER, 0644
             or die "$GDBM_File::gdbm_errno";
         $golfers_gdbm{$tnfb_db{'Player'}} = "$league/$_";
+        initialize_player_data($tnfb_db{'Player'});
         if (exists($tnfb_db{"Team_$cur_year"})) {
             $valid_year = 1;
         }
@@ -164,6 +165,49 @@ for ($cy = $start_year; $cy <= $end_year && $perf; $cy++) {
     }
     $t1 = gettimeofday(), if $hires;
     $total_time += ($t1 - $t0), if $hires;
+}
+
+#
+# Delete players from the hash that didn't play any rounds
+# of golf in the league.
+#
+foreach my $pn (keys %golfers_gdbm) {
+    if ($p{$pn}{total_rounds} == 0) {
+        delete($p{$pn}); 
+    }
+}
+
+sub
+initialize_player_data {
+    my($pn) = @_;
+    my @courses = ("SF", "SB", "NF", "NB");
+
+    $p{$pn}{to} = 0;
+    $p{$pn}{tdb} = 0;
+    $p{$pn}{bo} = 0;
+    $p{$pn}{tp} = 0;
+    $p{$pn}{tb} = 0;
+    $p{$pn}{te} = 0;
+    $p{$pn}{th} = 0;
+    $p{$pn}{rounds} = 0;
+    $p{$pn}{avediff} = 0;
+    $p{$pn}{total_strokes} = 0;
+    $p{$pn}{total_rounds} = 0;
+
+    while (my $sc = shift @courses) {
+        for (my $h = 0; $h < 18; $h++) {
+            $p{$pn}{$sc}{$h}{o} = 0;
+            $p{$pn}{$sc}{$h}{db} = 0;
+            $p{$pn}{$sc}{$h}{bo} = 0;
+            $p{$pn}{$sc}{$h}{p} = 0;
+            $p{$pn}{$sc}{$h}{b} = 0;
+            $p{$pn}{$sc}{$h}{e} = 0;
+            $p{$pn}{$sc}{$h}{h} = 0;
+            $p{$pn}{$sc}{$h}{shots} = 0;
+            $p{$pn}{$sc}{xplayed} = 0;
+        }
+    }
+
 }
 
 if ($most_improved) {
@@ -942,18 +986,11 @@ print_player_stats {
 
         my @courses = ("SF", "SB", "NF", "NB");
 
-        #
-        # Skip those that don't have a posted scores.
-        #
-        if (!defined($p{$pn}{total_strokes})) {
-            die "$pn did not play this year. Should not get here.\n";
-        }
-
         print "$pn\n\n";
 
         my $total_player_rounds = 0;
         while (my $sc = shift @courses) {
-            if (!defined($p{$pn}{$sc})) {
+            if ($p{$pn}{$sc}{xplayed} == 0) {
                 next;
             }
 
@@ -973,7 +1010,10 @@ print_player_stats {
         @courses = ("SF", "SB", "NF", "NB");
         while (my $sc = shift @courses) {
 
-            if (!defined($p{$pn}{$sc}{xplayed})) {
+            #
+            # If a player has not played this course, go to the next course.
+            #
+            if ($p{$pn}{$sc}{xplayed} == 0) {
                 next;
             }
 
