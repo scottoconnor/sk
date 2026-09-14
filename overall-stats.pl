@@ -5,7 +5,6 @@
 
 use strict;
 use warnings;
-
 use Getopt::Long;
 
 my $year = (1900 + (localtime)[5]);
@@ -27,37 +26,37 @@ if ($out) {
     select STDOUT;
 }
 
-#@line = qx{./skperf.pl -t -sy 2003 -ey $year | grep -A 1 "Birdie Table"};
-#$num = @line;
-#$x = 0;
+@line = qx{./skperf.pl -t -sy 2003 -ey $year | grep -A 1 "Birdie Table"};
+my $num = @line;
+my $x = 0;
 
-#print "Yearly Birdie winners\n";
-#print "---------------------\n";
-#while ($x < $num) {
-    #chop ($line[$x]);
-    #print "$line[$x] ";
-    #$x++;
-    #chop ($line[$x]);
-    #print "$line[$x]\n";
-    #$x++; $x++;
-#}
+print "Yearly Birdie winners\n";
+print "---------------------\n";
+while ($x < $num) {
+    chop ($line[$x]);
+    print "$line[$x] ";
+    $x++;
+    chop ($line[$x]);
+    print "$line[$x]\n";
+    $x++; $x++;
+}
 
-#print "\n\n";
+print "\n\n";
 
-#@line = qx{./skperf.pl -t -sy 2003 -ey $year | grep -A 1 "Eagle Table"};
-#$num = @line;
-#$x = 0;
+@line = qx{./skperf.pl -t -sy 2003 -ey $year | grep -A 1 "Eagle Table"};
+$num = @line;
+$x = 0;
 
-#print "Yearly Eagle winners\n";
-#print "--------------------\n";
-#while ($x < $num) {
-    #chop ($line[$x]);
-    #print "$line[$x] ";
-    #$x++;
-    #chop ($line[$x]);
-    #print "$line[$x]\n";
-    #$x++; $x++;
-#}
+print "Yearly Eagle winners\n";
+print "--------------------\n";
+while ($x < $num) {
+    chop ($line[$x]);
+    print "$line[$x] ";
+    $x++;
+    chop ($line[$x]);
+    print "$line[$x]\n";
+    $x++; $x++;
+}
 
 print "\n\n";
 
