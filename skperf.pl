@@ -552,7 +552,10 @@ if ($top_gun) {
     foreach my $pn (keys %p) {
         foreach my $yp (sort keys %y) {
             foreach my $w ($start_week..$end_week) {
-                if ($p{$pn}{$yp}{$w} != 0 && $p{$pn}{$yp}{$w} < 40) {
+                if (!exists(($p{$pn}{$yp}{$w}))) {
+                    next;
+                }
+                if ($p{$pn}{$yp}{$w} < 40) {
                     $thirty{$yp}{$w}{$pn} = $p{$pn}{$yp}{$w};
                 }
             }
@@ -959,7 +962,7 @@ print_player_stats {
 
         my $total_player_rounds = 0;
         while (my $sc = shift @courses) {
-            if ($p{$pn}{$sc}{xplayed} == 0) {
+            if (!defined($p{$pn}{$sc})) {
                 next;
             }
 
