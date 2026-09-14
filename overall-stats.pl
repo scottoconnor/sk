@@ -3,20 +3,25 @@
 # Copyright (c) 2018, 2026 Scott O'Connor
 #
 
+use strict;
+use warnings;
+
 use Getopt::Long;
 
-$year = (1900 + (localtime)[5]);
+my $year = (1900 + (localtime)[5]);
+my $out = 0;
+my @line;
+my @nline;
+my $log;
 
 GetOptions (
     "y=s" => \$year,
     "o" =>  \$out)
 or die("Error in command line arguments\n");
 
-print "Year is $year\n";
-
 if ($out) {
     unlink "/tmp/stats-$year.txt", if -e "/tmp/stats-$year.txt";
-    open (my $log, ">", "/tmp/stats-$year.txt");
+    open ($log, ">", "/tmp/stats-$year.txt");
     select $log;
 } else {
     select STDOUT;
@@ -110,14 +115,14 @@ print @nline, "\n\n";
 print @nline;
 
 
-$low_net = 25;
-$high_net = 60;
+my $low_net = 25;
+my $high_net = 60;
 
 print "$year Lowest to Highest net scores\n";
 print "---------------------------------\n";
 @line = qx{./skperf.pl -vhc -y $year};
 for ($low_net = 25; $low_net <= $high_net; $low_net++) {
-    $num = grep(/net $low_net/, @line);
+    my $num = grep(/net $low_net/, @line);
     if ($num > 0) {
         print "Number of net $low_net scores: $num\n";
         @nline = grep(/net $low_net/, @line);
@@ -133,10 +138,13 @@ print "---------------------------------------------------\n";
 for (my $y = 2003; $y <= $year; $y++) {
     print "$y\n";
     @line = qx{./skperf.pl -vhc -y $y grep "net = "};
-    $cnt = 0;
-    while (($temp_line = shift @line) && ($cnt < 5)) {
+    my $cnt = 0;
+    while ((my $temp_line = shift @line) && ($cnt < 5)) {
         chomp($temp_line);
-        ($num_rounds) = $temp_line =~ /total rounds (\d+)/;
+        (my $num_rounds) = $temp_line =~ /total rounds (\d+)/;
+        if (!defined($num_rounds)) {
+            next;
+        }
         if ($num_rounds >= 10) {
             print "$temp_line\n";
             $cnt++;
