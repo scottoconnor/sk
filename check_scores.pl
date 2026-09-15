@@ -42,7 +42,7 @@ for (my $x = 1000; $x <= $file_count; $x++) {
     tie %tnfb_db, 'GDBM_File', $file, GDBM_READER, 0644
         or die "$GDBM_File::gdbm_errno";
 
-    my $pn =  $tnfb_db{'Player'};
+    my $pn = $tnfb_db{'Player'};
 
     $sy = 1997;
     $t = Time::Piece->strptime("$sy-04-01", "%Y-%m-%d");
