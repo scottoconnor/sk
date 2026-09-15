@@ -22,46 +22,53 @@ if ($out) {
     unlink "/tmp/stats-$year.txt", if -e "/tmp/stats-$year.txt";
     open ($log, ">", "/tmp/stats-$year.txt");
     select $log;
-} else {
-    select STDOUT;
 }
 
-@line = qx{./skperf.pl -t -sy 2003 -ey $year | grep -A 1 "Birdie Table"};
-my $num = @line;
-my $x = 0;
-
-print "Yearly Birdie winners\n";
-print "---------------------\n";
-while ($x < $num) {
-    chop ($line[$x]);
-    print "$line[$x] ";
-    $x++;
-    chop ($line[$x]);
-    print "$line[$x]\n";
-    $x++; $x++;
+my $sy = 2003;
+print "Top 3 on the birdie table ($sy - $year).\n";
+print "----------------------------------------\n";
+while ($sy <= $year) {
+    @line = qx{./skperf.pl -t -y $sy | grep -A 3 "Birdie Table"};
+    print @line;
+    $sy++;
+    print "\n";
 }
 
-print "\n\n";
+print "\n";
 
-@line = qx{./skperf.pl -t -sy 2003 -ey $year | grep -A 1 "Eagle Table"};
-$num = @line;
-$x = 0;
+$sy = 2003;
+print "Top 5 on the eagle table ($sy - $year).\n";
+print "---------------------------------------\n";
+while ($sy <= $year) {
+    @line = qx{./skperf.pl -t -y $sy | grep -A 5 "Eagle Table"};
+    my $num_lines = @line;
 
-print "Yearly Eagle winners\n";
-print "--------------------\n";
-while ($x < $num) {
-    chop ($line[$x]);
-    print "$line[$x] ";
-    $x++;
-    chop ($line[$x]);
-    print "$line[$x]\n";
-    $x++; $x++;
+    if ($num_lines == 0) {
+        print "Eagle Table $sy: No Eagles.\n\n";
+        $sy++;
+        next;
+    }
+
+    my $x = 0;
+    #
+    # skperf puts an extra line at the end of the table
+    # for readability. Don't print that blank line.
+    #
+    while ($x < ($num_lines - 1)) {
+        chop ($line[$x]);
+        print "$line[$x]\n";
+        $x++;
+    }
+    if ($num_lines) {
+        print "\n";
+    }
+    $sy++;
 }
 
 print "\n\n";
 
 print "$year Most Improved (best to not so best)\n";
-print "----------------------------------------\n";
+print "-----------------------------------------\n";
 @line = qx{./skperf.pl -m -y $year};
 print @line;
 
@@ -72,7 +79,7 @@ print "\n\n";
 # so there is not need to run ./skperf twice.
 #
 print "$year player net average scoring vs. par\n";
-print "---------------------------------------\n";
+print "----------------------------------------\n";
 @line = qx{./skperf.pl -vhc -y $year};
 @nline = grep(/Ave = /, @line);
 print @nline;
@@ -80,7 +87,7 @@ print @nline;
 print "\n\n";
 
 print "$year Player week by week stats\n";
-print "------------------------------\n";
+print "-------------------------------\n";
 @line = qx{./skperf.pl -vhc -y $year};
 @nline = grep(/net /, @line);
 print @nline;
@@ -88,21 +95,21 @@ print @nline;
 print "\n\n";
 
 print "$year Course Stats\n";
-print "-----------------\n";
+print "------------------\n";
 @line = qx{./skperf.pl -c -y $year};
 print @line;
 
 print "\n\n";
 
 print "$year Hardest to Easiest Holes\n";
-print "-----------------------------\n";
+print "------------------------------\n";
 @line = qx{./skperf.pl -H -y $year};
 print @line;
 
 print "\n\n";
 
 print "$year Hardest to Easiest Holes Per Nine\n";
-print "--------------------------------------\n";
+print "---------------------------------------\n";
 @line = qx{./skperf.pl -H -y $year};
 @nline = grep(/South Front/, @line);
 print @nline, "\n\n";
@@ -118,7 +125,7 @@ my $low_net = 25;
 my $high_net = 60;
 
 print "$year Lowest to Highest net scores\n";
-print "---------------------------------\n";
+print "----------------------------------\n";
 @line = qx{./skperf.pl -vhc -y $year};
 for ($low_net = 25; $low_net <= $high_net; $low_net++) {
     my $num = grep(/net $low_net/, @line);
@@ -155,21 +162,21 @@ for (my $y = 2003; $y <= $year; $y++) {
 print "\n\n";
 
 print "$year 30's Club\n";
-print "--------------\n";
+print "----------------\n";
 @line = qx{./skperf.pl -g -y $year};
 print @line;
 
 print "\n\n";
 
 print "$year Others break down\n";
-print "----------------------\n";
+print "-----------------------\n";
 @line = qx{./skperf.pl -o -y $year};
 print @line;
 
 print "\n\n";
 
 print "$year detailed player stats\n";
-print "--------------------------\n";
+print "---------------------------\n";
 @line = qx{./skperf.pl -p -y $year};
 print @line;
 
@@ -184,14 +191,14 @@ print @line;
 print "\n\n";
 
 print "2025 detailed player stats\n";
-print "-------------------------------\n";
+print "--------------------------\n";
 @line = qx{./skperf.pl -p -y 2025};
 print @line;
 
 print "\n\n";
 
 print "All time stats (1997-$year)\n";
-print "--------------------------\n";
+print "---------------------------\n";
 @line = qx{./skperf.pl -at -ey $year};
 print @line;
 
