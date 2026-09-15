@@ -29,7 +29,7 @@ or die("Error in command line arguments\n");
 
 foreach my $year (sort keys %subs) {
     $year_subs = 0;
-    for ($w = 1; $w < 16; $w++) {
+    foreach $w (1..15) {
         if (!defined($subs{$year}{$w})) {
             next;
         }
