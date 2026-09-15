@@ -82,6 +82,7 @@ foreach my $pn (keys %golfers_gdbm) {
             } 
         }
     }
+    untie %tnfb_db;
 }
 
 while (my $sc = shift @courses) {
