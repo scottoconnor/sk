@@ -4,6 +4,7 @@
 #
 
 use strict;
+use warnings;
 use File::Compare;
 use Text::Diff;
 use GDBM_File;
@@ -22,7 +23,7 @@ $workingpath = "/home/soconnor/sk/golfers";
 opendir($dh, $workingpath) || die "Can't open \"$workingpath\" directory.";
 
 while (readdir $dh) {
-    if ($_ =~ /(^1\d{3}$\.gdbm)/) {
+    if ($_ =~ /(^1\d{3}\056gdbm)/) {
         my $before = "$beforepath/$_";
         my $after = "$workingpath/$_";
         tie my %tnfb_db, 'GDBM_File', $after, GDBM_READER, 0640

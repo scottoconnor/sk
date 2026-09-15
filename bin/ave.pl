@@ -4,6 +4,7 @@
 #
 
 use strict;
+use warnings;
 use GDBM_File;
 
 my $path;
