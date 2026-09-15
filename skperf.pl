@@ -17,40 +17,40 @@ use Array::Compare;
 #
 # Global variables.
 #
-my ($all_time) = 0;
-my ($birdies_per_hole) = 0;
-my ($birdies_per_player) = 0;
-my ($cur_month) = (localtime)[4];
-my ($cur_day) = (localtime)[3];
-my ($cur_year) = (1900 + (localtime)[5]);
-my ($start_year) = $cur_year;
-my ($end_year) = $cur_year;
-my ($only_year) = 0;
-my ($start_week) = 1;
-my ($end_week) = 15;
+my $all_time = 0;
+my $birdies_per_hole = 0;
+my $birdies_per_player = 0;
+my $cur_month = (localtime)[4];
+my $cur_day = (localtime)[3];
+my $cur_year = (1900 + (localtime)[5]);
+my $start_year = $cur_year;
+my $end_year = $cur_year;
+my $only_year = 0;
+my $start_week = 1;
+my $end_week = 15;
 my $only_week;
-my ($vhc) = 0;
-my ($top_gun) = 0;
-my ($stats) = 0;
-my ($player_stats) = 0;
-my ($tables) = 0;
-my ($thirties) = 0;
-my ($html) = 0;
-my ($others) = 0;
-my ($hires) = 0;
-my ($hardest) = 0;
-my ($course_stats) = 0;
-my ($most_improved) = 0;
-my ($league) = "./golfers";
-my ($delete) = 0;
-my ($add) = 0;
-my ($perf) = 1;
-my ($total_time) = 0;
-my (undef(%totals));
-my (undef(%y));
-my (undef(%p));
+my $vhc = 0;
+my $top_gun = 0;
+my $stats = 0;
+my $player_stats = 0;
+my $tables = 0;
+my $thirties = 0;
+my $html = 0;
+my $others = 0;
+my $hires = 0;
+my $hardest = 0;
+my $course_stats = 0;
+my $most_improved = 0;
+my $league = "./golfers";
+my $delete = 0;
+my $add = 0;
+my $perf = 1;
+my $total_time = 0;
+my %totals;
+my %y;
+my %p;
 my ($dh, %golfers_gdbm);
-my (%tnfb_db);
+my %tnfb_db;
 my ($cy, $cw, $t0, $t1, $fna);
 my (%bt, %et, %difficult, %bph, %bpp, %to, %ht, %c);
 
@@ -342,9 +342,9 @@ if ($add) {
                     print "$pn: Score already exists.\n";
                     untie %tnfb_db;
                     next;
-                } else {
-                    untie %tnfb_db;
                 }
+
+                untie %tnfb_db;
 
                 $cph = $sr[2];
                 $shot = abs($sr[13]);
@@ -356,18 +356,14 @@ if ($add) {
                     $db_out = $db_out . ":$swing";
                 }
 
-                die "$pn: Score already exists.\n", if (exists($tnfb_db{$date}));
-
                 tie %tnfb_db, 'GDBM_File', $gdbm_file, GDBM_WRITER, 0644
                     or die "$GDBM_File::gdbm_errno";
 
                 $num = split(/:/, $db_out);
                 $team = "Team_$year";
-                if ($year >= 2022 && !exists($tnfb_db{$team})) {
-                    $tnfb_db{$team} = $tnfb_db{'Team'}, if ($num == 17);
-                    $tnfb_db{'Active'} = 1, if ($num == 17);
-                }
-                if ($num == 17) {
+                if (!exists($tnfb_db{$team}) && ($num == 17)) {
+                    $tnfb_db{$team} = $tnfb_db{'Team'};
+                    $tnfb_db{'Active'} = 1;
                     $tnfb_db{$date} = $db_out;
                     $count++;
                     print "$pn $date: $db_out\n";
