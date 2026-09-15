@@ -49,8 +49,8 @@ my %golfers = (
 my $source = new Crypt::Random::Seed;
 die "No strong sources exist" unless defined $source;
 
-my ($lastx) = 0;
-my ($filename) = "week16";
+my $lastx = 0;
+my $filename = "week16";
 my (undef(%team));
 
 unlink $filename, if (-e $filename);
