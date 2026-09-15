@@ -654,11 +654,9 @@ if ($top_gun) {
 }
 
 if ($others) {
-    my ($par, $score);
-
-    for ($par = 3; $par < 6; $par++) {
+    foreach my $par (3..5) {
         print "On par $par\'s:\n";
-        for ($score = 6; $score < 15; $score++) {
+        foreach my $score (6..14) {
             if (!defined($to{$par}{$score})) {
                 next;
             }
