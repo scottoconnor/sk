@@ -4,6 +4,7 @@
 #
 
 use strict;
+use warnings;
 use Getopt::Long qw(:config no_ignore_case);
 use GDBM_File;
 
@@ -226,7 +227,7 @@ modify_key {
 sub
 search_db_key {
 
-    my ($count) = 0;
+    my $count = 0;
     print "Enter key to find: ";
     chomp(my $key = <STDIN>);
 
@@ -257,7 +258,7 @@ search_db_key {
 sub
 search_del_db_key {
 
-    my ($count) = 0;
+    my $count = 0;
     print "Enter key to find and delete: ";
     chomp(my $key = <STDIN>);
 
