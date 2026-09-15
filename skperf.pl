@@ -22,13 +22,13 @@ my ($birdies_per_hole) = 0;
 my ($birdies_per_player) = 0;
 my ($cur_month) = (localtime)[4];
 my ($cur_day) = (localtime)[3];
-my ($start_year) = (1900 + (localtime)[5]);
-my ($end_year) = $start_year;
-my ($cur_year) = $start_year;
+my ($cur_year) = (1900 + (localtime)[5]);
+my ($start_year) = $cur_year;
+my ($end_year) = $cur_year;
 my ($only_year) = 0;
 my ($start_week) = 1;
 my ($end_week) = 15;
-my ($only_week) = 0;
+my $only_week;
 my ($vhc) = 0;
 my ($top_gun) = 0;
 my ($stats) = 0;
@@ -117,20 +117,37 @@ closedir ($dh);
 
 &get_years_weeks_dates();
 
-if ($start_year >= $cur_year && !$valid_year) {
-    $start_year = ($cur_year - 1);
+#
+# Back up one year if the current year has not started yet.
+#
+$cur_year--, if (!$valid_year) ;
+
+if ($start_year > $cur_year) {
+    $start_year = $cur_year;
 }
 
-if ($end_year >= $cur_year && !$valid_year) {
-    $end_year = ($cur_year - 1);
+if ($end_year > $cur_year) {
+    $end_year = $cur_year;
 }
 
 if ($only_year) {
-    $cur_year = $start_year = $end_year = $only_year;
+    $start_year = $end_year = $only_year;
 }
 
-if ($only_week) {
+if ($start_year > $cur_year) {
+    print "start_year of \"$start_year\" is beyond last year of play.\n";
+    exit;
+}
+
+if (defined($only_week)) {
     $start_week = $end_week = $only_week;
+}
+
+if (defined($only_week)) {
+    if (($only_week < 1) || ($only_week > 15)) {
+        print "only_week of < 1 or > 15 is invalid.\n";
+        exit;
+    }
 }
 
 #
@@ -142,11 +159,6 @@ if ($add || $delete) {
 
 if ($all_time || ($start_year < 1997)) {
     $start_year = 1997;
-}
-
-if ($only_year > $start_year) {
-    print "only_year of \"$only_year\" is beyond last year of play.\n";
-    exit;
 }
 
 #
