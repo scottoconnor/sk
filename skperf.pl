@@ -44,7 +44,6 @@ my $most_improved = 0;
 my $league = "./golfers";
 my $delete = 0;
 my $add = 0;
-my $perf = 1;
 my $total_time = 0;
 my %totals;
 my %y;
@@ -150,13 +149,6 @@ if (defined($only_week)) {
     }
 }
 
-#
-# If we are adding or deleting scores, we don't need to get data for stats.
-#
-if ($add || $delete) {
-    $perf = 0;
-}
-
 if ($all_time || ($start_year < 1997)) {
     $start_year = 1997;
 }
@@ -169,7 +161,7 @@ if ($all_time || ($start_year < 1997)) {
 #
 # After we get that, the other routines can use that data to generate stats.
 #
-for ($cy = $start_year; $cy <= $end_year && $perf; $cy++) {
+foreach $cy ($start_year..$end_year) {
     $t0 = gettimeofday(), if $hires;
     foreach my $pn (keys %golfers_gdbm) {
         my $file = $golfers_gdbm{$pn};
@@ -1127,19 +1119,7 @@ show_most_improved {
             next;
         }
 
-        #
-        # If start year is the same as end year, include players
-        # that played that year. Should always find 32 players.
-        #
-        # If we are looking at multiple years,  only include
-        # players that are current TNFB members.
-        #
-        if ($start_year == $end_year) {
-            if ($tnfb_db{"Team_$start_year"} eq "Sub") {
-                untie %tnfb_db;
-                next;
-            }
-        } elsif ($tnfb_db{'Team'} eq "Sub") {
+        if ($tnfb_db{'Team'} eq "Sub") {
                 untie %tnfb_db;
                 next;
         }
@@ -1147,7 +1127,7 @@ show_most_improved {
         #
         # Get 'A' index from the first score posted in the start_year.
         #
-        for ($cw = $start_week; $cw <= $end_week; $cw++) {
+        foreach $cw ($start_week..$end_week) {
             $d = $dates{$start_year}{$cw};
             if (!defined($p{$pn}{A}) && exists($tnfb_db{$d})) {
                 @score = split(/:/, $tnfb_db{$d});
@@ -1160,7 +1140,7 @@ show_most_improved {
         #
         # Now get 'B' index from (end_year + 1) first posted score.
         #
-        for ($cw = 1; $cw <= $end_week; $cw++) {
+        foreach $cw (1..$end_week) {
             $d = $dates{($end_year+1)}{$cw};
             next, if !defined($d);
             if (!defined($p{$pn}{B}) && exists($tnfb_db{$d})) {
@@ -1247,7 +1227,7 @@ get_player_scores {
     tie %tnfb_db, 'GDBM_File', $fn, GDBM_READER, 0640
         or die "$GDBM_File::gdbm_errno";
 
-    for ($cw = $start_week; $cw <= $end_week; $cw++) {
+    foreach $cw ($start_week..$end_week) {
 
         my $d = $dates{$cy}{$cw};
 
