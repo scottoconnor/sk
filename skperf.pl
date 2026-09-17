@@ -818,8 +818,8 @@ print_stats {
         printf("Total Bogies = %d\n", $y{$yp}{total_bogies});
         printf("Total Double Bogies = %d\n", $y{$yp}{total_db});
         printf("Total Others = %d\n", $y{$yp}{total_other});
-        printf("Total 30's = %d\n", $y{$yp}{thirties});
-        printf("Total 50+ = %d\n\n", $y{$yp}{fifty_plus});
+        printf("Total 30's = %d\n", defined($y{$yp}{thirties}) ? $y{$yp}{thirties} : 0);
+        printf("Total 50+ = %d\n\n", defined($y{$yp}{fifty_plus}) ? $y{$yp}{fifty_plus} : 0);
 
     } elsif ($y{$yp}{total_strokes} && $html) {
         print "<b><font color=\"green\">$yp</font></b>";
@@ -843,8 +843,10 @@ print_stats {
         printf("Total Bogies = <b><font color=\"green\">%d</font></b></br>\n", $y{$yp}{total_bogies});
         printf("Total Double Bogies = <b><font color=\"green\">%d</font></b></br>\n", $y{$yp}{total_db});
         printf("Total Others = <b><font color=\"green\">%d</font></b></br>\n", $y{$yp}{total_other});
-        printf("Total 30's = <b><font color=\"green\">%d</font></b></br>\n", $y{$yp}{thirties});
-        printf("Total 50+ = <b><font color=\"green\">%d</font></b></br></br>\n", $y{$yp}{fifty_plus});
+        printf("Total 30's = <b><font color=\"green\">%d</font></b></br>\n",
+            defined($y{$yp}{thirties}) ? $y{$yp}{thirties} : 0);
+        printf("Total 50+ = <b><font color=\"green\">%d</font></b></br></br>\n",
+            defined($y{$yp}{fifty_plus}) ? $y{$yp}{fifty_plus} : 0);
     }
 }
 
