@@ -7,12 +7,13 @@ use strict;
 use warnings;
 use POSIX;
 
-my ($year, $week, $ret, $val);
+my $year = (1900 + (localtime)[5]);
+my $val;
 
-for ($year = 2026; $year < 2027; $year++) {
-    for ($week = 1; $week < 16; $week++) {
+foreach $year ($year..$year) {
+    foreach my $week (1..15) {
         $val = 0;
-        $ret = qx{./skperf.pl -s -y $year -w $week | grep "League Stroke Average"};
+        my $ret = qx{./skperf.pl -s -y $year -w $week | grep "League Stroke Average"};
         ($val) = $ret =~ /League Stroke Average = (\d+\.\d+)/;
     
         printf("%d:%d, Stroke Average %.2f\n", $year, $week, $val);
