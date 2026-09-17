@@ -34,7 +34,6 @@ my $top_gun = 0;
 my $stats = 0;
 my $player_stats = 0;
 my $tables = 0;
-my $thirties = 0;
 my $html = 0;
 my $others = 0;
 my $hires = 0;
@@ -77,7 +76,6 @@ GetOptions (
     "p" =>  \$player_stats,
     "m" =>  \$most_improved,
     "t" =>  \$tables,
-    "th" =>  \$thirties,
     "g" =>  \$top_gun,
     "l=s" => \$league,
     "o" => \$others,
@@ -821,7 +819,7 @@ print_stats {
         printf("Total Double Bogies = %d\n", $y{$yp}{total_db});
         printf("Total Others = %d\n", $y{$yp}{total_other});
         printf("Total 30's = %d\n", $y{$yp}{thirties});
-        printf("Total 50+ = %d\n", $y{$yp}{fifty_plus});
+        printf("Total 50+ = %d\n\n", $y{$yp}{fifty_plus});
 
     } elsif ($y{$yp}{total_strokes} && $html) {
         print "<b><font color=\"green\">$yp</font></b>";
@@ -844,7 +842,9 @@ print_stats {
         printf("Total Pars = <b><font color=\"green\">%d</font></b></br>\n", $y{$yp}{total_pars});
         printf("Total Bogies = <b><font color=\"green\">%d</font></b></br>\n", $y{$yp}{total_bogies});
         printf("Total Double Bogies = <b><font color=\"green\">%d</font></b></br>\n", $y{$yp}{total_db});
-        printf("Total Others = <b><font color=\"green\">%d</font></b></br></br>\n", $y{$yp}{total_other});
+        printf("Total Others = <b><font color=\"green\">%d</font></b></br>\n", $y{$yp}{total_other});
+        printf("Total 30's = <b><font color=\"green\">%d</font></b></br>\n", $y{$yp}{thirties});
+        printf("Total 50+ = <b><font color=\"green\">%d</font></b></br></br>\n", $y{$yp}{fifty_plus});
     }
 }
 
@@ -1177,23 +1177,6 @@ show_most_improved {
     }
 }
 
-if ($thirties) {
-    foreach my $ppn (reverse sort { $p{$a}{thirty} <=> $p{$b}{thirty} } (keys(%p))) {
-        my $fn = $golfers_gdbm{$ppn};
-        tie my %tnfb_db, 'GDBM_File', $fn, GDBM_READER, 0640
-            or die "$GDBM_File::gdbm_errno";
-        $p{$ppn}{team} = $tnfb_db{'Team'};
-        untie %tnfb_db;
-        if ($p{$ppn}{team} eq "Sub" && $p{$ppn}{thirty} < 20) {
-            next;
-        }
-
-        if ($p{$ppn}{thirty}) {
-            printf "%-18s: %d\n", $ppn, $p{$ppn}{thirty};
-        }
-    }
-}
-
 if ($birdies_per_player) {
     my ($course, $course_data, @course_elements);
 
@@ -1322,7 +1305,6 @@ get_player_scores {
             $y{$cy}{fifty_plus}++;
         }
         if ($shot < 40) {
-            $p{$pn}{thirty}++;
             $y{$cy}{thirties}++;
         }
 
