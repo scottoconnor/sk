@@ -585,7 +585,7 @@ foreach my $yp (reverse sort keys %y) {
 
 if ($top_gun) {
 
-    my (%thirty, %ty);
+    my (%thirty);
 
     #
     # First check to see if anyone shot in the 30's, if not just exit.
@@ -627,7 +627,7 @@ if ($top_gun) {
             if (keys %{$thirty{$yp}{$w}} == 0) {
                 next;
             }
-            %ty = %{$thirty{$yp}{$w}};
+            my %ty = %{$thirty{$yp}{$w}};
             my $has_rounds = 0;
             foreach my $pn (sort { $ty{$a} <=> $ty{$b} } keys %ty) {
                 print "  <tr>\n", if $html;
