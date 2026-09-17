@@ -127,7 +127,7 @@ my $high_net = 60;
 print "$year Lowest to Highest net scores\n";
 print "----------------------------------\n";
 @line = qx{./skperf.pl -vhc -y $year};
-for ($low_net = 25; $low_net <= $high_net; $low_net++) {
+foreach $low_net (25..$high_net) {
     my $num = grep(/net $low_net/, @line);
     if ($num > 0) {
         print "Number of net $low_net scores: $num\n";
@@ -141,7 +141,7 @@ print "\n\n";
 print "Top 5 by year: Lowest to Highest average net scores\n";
 print "(need at least 10 rounds to qualify)\n";
 print "---------------------------------------------------\n";
-for (my $y = 2003; $y <= $year; $y++) {
+foreach my $y (2003..$year) {
     print "$y\n";
     @line = qx{./skperf.pl -vhc -y $y grep "net = "};
     my $cnt = 0;

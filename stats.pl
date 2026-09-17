@@ -46,7 +46,7 @@ $week = ceil(($val/288));
 #
 if ($weekly_stats) {
 
-    for ($sy = $start_year; $sy <= $year; $sy++) {
+    foreach $sy ($start_year..$year) {
         $y{$sy}{wlsa} = 0;
         $y{$sy}{wthirty} =0;
         $y{$sy}{wft} =0;
@@ -92,7 +92,7 @@ if ($weekly_stats) {
 }
 
 if ($cumulative_stats) {
-    for ($sy = $start_year; $sy <= $year; $sy++) {
+    foreach $sy ($start_year..$year) {
         $y{$sy}{clsa} = 0;
         $y{$sy}{cthirty} = 0;
         $y{$sy}{cft} = 0;

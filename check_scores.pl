@@ -30,7 +30,7 @@ my $file_count = grep { -f "$dir/$_" } readdir($dh);
 closedir($dh);
 $file_count += 1000;
 
-for (my $x = 1000; $x <= $file_count; $x++) {
+foreach my $x (1000..$file_count) {
     my $file = "golfers/$x.gdbm";
 
     if (! -e $file) {

@@ -197,7 +197,7 @@ initialize_player_data {
     $p{$pn}{total_rounds} = 0;
 
     while (my $sc = shift @courses) {
-        for (my $h = 0; $h < 18; $h++) {
+        foreach my $h (0..17) {
             $p{$pn}{$sc}{$h}{o} = 0;
             $p{$pn}{$sc}{$h}{db} = 0;
             $p{$pn}{$sc}{$h}{bo} = 0;
@@ -1032,7 +1032,7 @@ print_player_stats {
                 $offset = 9;
             }
 
-            for (my $h = 1; $h < 10; $h++) {
+            foreach my $h (1..9) {
 
                 my $par = abs(shift @par_per_hole);
 
@@ -1308,7 +1308,7 @@ get_player_scores {
             $y{$cy}{thirties}++;
         }
 
-        for ($h = 1; $h < 10; $h++) {
+        foreach $h (1..9) {
             my $hole = abs(shift @score);
             my $pph = abs(shift @par_per_hole);
 
