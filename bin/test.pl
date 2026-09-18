@@ -6,8 +6,14 @@
 use strict;
 use warnings;
 use POSIX;
+use Getopt::Long;
 
 my $year = (1900 + (localtime)[5]);
+
+GetOptions (
+    "y=s" => \$year)
+or die("Error in command line arguments\n");
+
 my $val;
 
 foreach $year ($year..$year) {
