@@ -45,7 +45,6 @@ $week = ceil(($val/288));
 # First, get the data for the current week, then weeks 1 - current week.
 #
 if ($weekly_stats) {
-
     foreach $sy ($start_year..$year) {
         $y{$sy}{wlsa} = 0;
         $y{$sy}{wthirty} =0;
