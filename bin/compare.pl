@@ -12,7 +12,7 @@ use GDBM_File;
 my ($diff, $dh, $workingpath, $beforepath);
 
 $diff = 0;
-my ($end_year) = (1900 + (localtime)[5]);
+my $end_year = (1900 + (localtime)[5]);
 
 $beforepath = "/home/soconnor/backup";
 $workingpath = "/home/soconnor/sk/golfers";
@@ -44,12 +44,12 @@ while (readdir $dh) {
     }
 }
 closedir ($dh);
-print STDOUT "There are $diff compare errors\n";
+print STDOUT "There are $diff compare errors.\n";
 
 sub
 print_db {
     my ($file, $output) = @_;
-    my (%tnfb_db);
+    my %tnfb_db;
 
     if (!-e $file) {
         die "$file: Does not exists.\n";
@@ -59,7 +59,7 @@ print_db {
         or die "$GDBM_File::gdbm_errno";
 
     my ($y, $m, $d, $team);
-    my ($scores) = 0;
+    my $scores = 0;
 
     open (my $log, ">", "/tmp/$output");
 
@@ -68,7 +68,7 @@ print_db {
         if (exists($tnfb_db{$team})) {
             print $log "$team: $tnfb_db{$team}\n";
         }
-        foreach $m (4..12) {
+        foreach $m (4..10) {
             foreach $d (1..31) {
                 my $date = "$y-$m-$d";
                 if (exists($tnfb_db{$date})) {
