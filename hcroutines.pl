@@ -164,12 +164,9 @@ get_years_weeks_dates {
     foreach my $pn (keys %golfers_gdbm) {
 
         my $file = $golfers_gdbm{$pn};
-        my $scores = 0;
 
         tie %tnfb_db, 'GDBM_File', $file, GDBM_READER, 0644
             or die "$GDBM_File::gdbm_errno";
-
-        my $pn =  $tnfb_db{'Player'};
 
         $sy = 1997;
         $t = Time::Piece->strptime("$sy-04-01", "%Y-%m-%d");
@@ -184,7 +181,6 @@ get_years_weeks_dates {
                 $d{$date} = $date;
             }
 
-            # Move to next day
             if (exists($d{$date})) {
                 $t += ONE_WEEK;
             } else {
