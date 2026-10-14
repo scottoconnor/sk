@@ -186,6 +186,7 @@ get_years_weeks_dates {
             } else {
                 $t += ONE_DAY;
             }
+
             if ($t->mon > 8) {
                 if ($sy > 2002) {
                     do {
