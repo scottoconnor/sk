@@ -4,6 +4,7 @@
 #
 
 use strict;
+use warnings;
 use Getopt::Long;
 use POSIX;
 
@@ -13,7 +14,6 @@ GetOptions (
         "y=i" => \$year)
 or die("Error in command line arguments\n");
 
-my $cur_year = $year;
 my $start_year = 2003;
 my $dh;
 my $fh;
@@ -49,21 +49,21 @@ print "Number of weeks: $week\n";
 # Get the stats and table for the current year, then tack the
 # weekly stats below the overall stats.
 #
-open ($fh, ">", "/tmp/$cur_year.html");
+open ($fh, ">", "/tmp/$year.html");
 select $fh;
 
-@line = qx{./skperf.pl -s -t -h -y $cur_year};
+@line = qx{./skperf.pl -s -t -h -y $year};
 print @line;
 print "<br>";
 
 while ($week > 0) {
-    @line = qx{./skperf.pl -h -s -g -t -y $cur_year -w $week};
+    @line = qx{./skperf.pl -h -s -g -t -y $year -w $week};
     print @line;
     print "<br>";
     $week--;
 }
 
-@line = qx(./stats.pl -w -c -h -y $cur_year);
+@line = qx(./stats.pl -w -c -h -y $year);
 print @line;
 
 close ($fh);
