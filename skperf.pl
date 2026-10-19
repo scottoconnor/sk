@@ -112,7 +112,7 @@ while (readdir $dh) {
 }
 closedir ($dh);
 
-&get_years_weeks_dates();
+&get_years_weeks_dates(%golfers_gdbm);
 
 #
 # Back up one year if the current year has not started yet.

@@ -150,16 +150,7 @@ get_course_data {
 sub
 get_years_weeks_dates {
 
-    opendir($dh, "$league") || die "Can't open \"$league\" directory.";
-
-    while (readdir $dh) {
-        if ($_ =~ /(^1\d{3}\056gdbm)/) {
-            tie %tnfb_db, 'GDBM_File', "$league/$_", GDBM_READER, 0644
-                or die "$GDBM_File::gdbm_errno";
-            $golfers_gdbm{$tnfb_db{'Player'}} = "$league/$_";
-            untie %tnfb_db;
-        }
-    }
+    my %golfers_gdbm = @_;
 
     foreach my $pn (keys %golfers_gdbm) {
 
@@ -211,7 +202,7 @@ get_years_weeks_dates {
         if (exists($d{$date})) {
             $dates{$year}{$week} = $d{$date};
             $dates{$year}{end_week} = $week;
-            print "$year: $week: $date: $d{$date}\n", if (0);
+            print "($year:$week) -> $d{$date}\n", if (0);
             $week++;
         }
 
