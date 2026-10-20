@@ -167,6 +167,17 @@ get_years_weeks_dates {
             ($year, $month, $day) = $t->ymd =~ /(\d{4})-\060*(\d{1,2})-\060*(\d{1,2})/;
             $date = "$year-$month-$day";
 
+            #
+            # We can check if a player has a team for this year, either Unknown, Sub or
+            # league member. If they do no have a team that they played for, they did
+            # not play this year and this year can be skipped.
+            #
+            if (!exists($tnfb_db{"Team_$sy"})) {
+                $sy++;
+                $t = Time::Piece->strptime("$sy-04-01", "%Y-%m-%d");
+                next;
+            }
+
             # If the score exists, check if the day is Tuesday
             if ((exists($tnfb_db{$date})) && ($t->fullday eq 'Tuesday')) {
                 $d{$date} = $date;
@@ -179,13 +190,7 @@ get_years_weeks_dates {
             }
 
             if ($t->mon > 8) {
-                if ($sy > 2002) {
-                    do {
-                        $sy++;
-                    } while ((!exists($tnfb_db{"Team_$sy"})) && ($sy <= $end_year));
-                } else {
-                    $sy++;
-                }
+                $sy++;
                 $t = Time::Piece->strptime("$sy-04-01", "%Y-%m-%d");
             }
         }

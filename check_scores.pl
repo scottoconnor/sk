@@ -53,6 +53,17 @@ foreach my $x (1000..$file_count) {
         $date = "$year-$month-$day";
         print $t->ymd . "\n", if (0);
 
+        #
+        # We can check if a player has a team for this year, either Unknown, Sub or
+        # league member. If they do no have a team that they played for, they did
+        # not play this year and this year can be skipped.
+        #
+        if (!exists($tnfb_db{"Team_$sy"})) {
+            $sy++;
+            $t = Time::Piece->strptime("$sy-04-01", "%Y-%m-%d");
+            next;
+        }
+
         if (!exists($tnfb_db{$date})) {
             # Move to next day
             $t += ONE_DAY;
