@@ -1209,6 +1209,14 @@ get_player_scores {
     tie %tnfb_db, 'GDBM_File', $fn, GDBM_READER, 0640
         or die "$GDBM_File::gdbm_errno";
 
+    #
+    # If a player did not play this year, skip them.
+    #
+    if (!exists($tnfb_db{"Team_$cy"})) {
+        untie %tnfb_db;
+        return;
+    }
+
     foreach $cw ($start_week..$end_week) {
 
         my $d = $dates{$cy}{$cw};
