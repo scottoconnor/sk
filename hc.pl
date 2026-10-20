@@ -34,8 +34,6 @@ or die("Error in command line arguments\n");
 my $month = (((localtime)[4]) + 1);
 my $day = (localtime)[3];
 
-&get_years_weeks_dates();
-
 opendir($dh, "./golfers") || die "Can't open \"./golfers\" directory.";
 
 #
@@ -50,6 +48,8 @@ while (readdir $dh) {
     }
 }
 closedir ($dh);
+
+&get_years_weeks_dates(%golfers_gdbm);
 
 foreach my $pn (keys %golfers_gdbm) {
 
