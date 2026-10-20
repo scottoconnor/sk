@@ -55,7 +55,7 @@ foreach my $x (1000..$file_count) {
 
         #
         # We can check if a player has a team for this year, either Unknown, Sub or
-        # league member. If they do no have a team that they played for, they did
+        # league member. If they do not have a team that they played for, they did
         # not play this year and this year can be skipped.
         #
         if (!exists($tnfb_db{"Team_$sy"})) {
