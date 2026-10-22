@@ -160,7 +160,7 @@ get_years_weeks_dates {
             or die "$GDBM_File::gdbm_errno";
 
         $sy = 1997;
-        $t = Time::Piece->strptime("$sy-04-01", "%Y-%m-%d");
+        $t = Time::Piece->strptime("$sy-04-20", "%Y-%m-%d");
 
         while ($sy <= $end_year) {
 
@@ -174,7 +174,7 @@ get_years_weeks_dates {
             #
             if (!exists($tnfb_db{"Team_$sy"})) {
                 $sy++;
-                $t = Time::Piece->strptime("$sy-04-01", "%Y-%m-%d");
+                $t = Time::Piece->strptime("$sy-04-20", "%Y-%m-%d");
                 next;
             }
 
@@ -188,7 +188,7 @@ get_years_weeks_dates {
 
             if ($t->mon > 8) {
                 $sy++;
-                $t = Time::Piece->strptime("$sy-04-01", "%Y-%m-%d");
+                $t = Time::Piece->strptime("$sy-04-20", "%Y-%m-%d");
             }
         }
         untie %tnfb_db;
@@ -196,7 +196,7 @@ get_years_weeks_dates {
 
     my $week = 1;
     $sy = 1997;
-    $t = Time::Piece->strptime("$sy-04-01", "%Y-%m-%d");
+    $t = Time::Piece->strptime("$sy-04-20", "%Y-%m-%d");
 
     while ($sy <= $end_year) {
         ($year, $month, $day) = $t->ymd =~ /(\d{4})-\060*(\d{1,2})-\060*(\d{1,2})/;
@@ -213,7 +213,7 @@ get_years_weeks_dates {
 
         if ($t->mon > 8) {
             $sy++;
-            $t = Time::Piece->strptime("$sy-04-01", "%Y-%m-%d");
+            $t = Time::Piece->strptime("$sy-04-20", "%Y-%m-%d");
             $week = 1;
         }
     }
