@@ -181,9 +181,6 @@ get_years_weeks_dates {
             # If the score exists, check if the day is Tuesday
             if ((exists($tnfb_db{$date})) && ($t->fullday eq 'Tuesday')) {
                 $d{$date} = $date;
-            }
-
-            if (exists($d{$date})) {
                 $t += ONE_WEEK;
             } else {
                 $t += ONE_DAY;
@@ -209,9 +206,6 @@ get_years_weeks_dates {
             $dates{$year}{end_week} = $week;
             print "($year:$week) -> $d{$date}\n", if (0);
             $week++;
-        }
-
-        if (exists($d{$date})) {
             $t += ONE_WEEK;
         } else {
             $t += ONE_DAY;
