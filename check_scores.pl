@@ -45,7 +45,7 @@ foreach my $x (1000..$file_count) {
     my $pn = $tnfb_db{'Player'};
 
     $sy = 1997;
-    $t = Time::Piece->strptime("$sy-04-01", "%Y-%m-%d");
+    $t = Time::Piece->strptime("$sy-04-20", "%Y-%m-%d");
 
     while ($sy <= $end_year) {
 
@@ -60,17 +60,7 @@ foreach my $x (1000..$file_count) {
         #
         if (!exists($tnfb_db{"Team_$sy"})) {
             $sy++;
-            $t = Time::Piece->strptime("$sy-04-01", "%Y-%m-%d");
-            next;
-        }
-
-        if (!exists($tnfb_db{$date})) {
-            # Move to next day
-            $t += ONE_DAY;
-            if ($t->mon > 8) {
-                $sy++;
-                $t = Time::Piece->strptime("$sy-04-01", "%Y-%m-%d");
-            }
+            $t = Time::Piece->strptime("$sy-04-20", "%Y-%m-%d");
             next;
         }
 
@@ -80,19 +70,19 @@ foreach my $x (1000..$file_count) {
             if ($bad_scores) {
                 print "$tnfb_db{'Player'}: $date, $tnfb_db{$date}\n";
             }
+            $scores++;
+            $t += ONE_WEEK;
         } elsif ((exists($tnfb_db{$date})) && ($t->fullday ne 'Tuesday')) {
             print "$tnfb_db{'Player'}: $date, non-tuesday score?\n";
             $bad_scores += 1;
+            $t += ONE_DAY;
+        } else {
+            $t += ONE_DAY;
         }
-
-        $scores++;
-
-        # Move to next day
-        $t += ONE_DAY;
 
         if ($t->mon > 8) {
             $sy++;
-            $t = Time::Piece->strptime("$sy-04-01", "%Y-%m-%d");
+            $t = Time::Piece->strptime("$sy-04-20", "%Y-%m-%d");
         }
     }
 
