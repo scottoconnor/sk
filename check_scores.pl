@@ -67,7 +67,6 @@ foreach my $x (1000..$file_count) {
         if (!exists($tnfb_db{$date})) {
             # Move to next day
             $t += ONE_DAY;
-            ($sy) = $t->year =~ /(\d\d\d\d)/;
             if ($t->mon > 8) {
                 $sy++;
                 $t = Time::Piece->strptime("$sy-04-01", "%Y-%m-%d");
@@ -90,7 +89,6 @@ foreach my $x (1000..$file_count) {
 
         # Move to next day
         $t += ONE_DAY;
-        ($sy) = $t->year =~ /(\d\d\d\d)/;
 
         if ($t->mon > 8) {
             $sy++;
