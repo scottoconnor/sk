@@ -164,9 +164,6 @@ get_years_weeks_dates {
 
         while ($sy <= $end_year) {
 
-            ($year, $month, $day) = $t->ymd =~ /(\d{4})-\060*(\d{1,2})-\060*(\d{1,2})/;
-            $date = "$year-$month-$day";
-
             #
             # We can check if a player has a team for this year, either Unknown, Sub or
             # league member. If they do not have a team that they played for, they did
@@ -177,6 +174,9 @@ get_years_weeks_dates {
                 $t = Time::Piece->strptime("$sy-04-20", "%Y-%m-%d");
                 next;
             }
+
+            ($year, $month, $day) = $t->ymd =~ /(\d{4})-\060*(\d{1,2})-\060*(\d{1,2})/;
+            $date = "$year-$month-$day";
 
             # If the score exists, check if the day is Tuesday
             if ((exists($tnfb_db{$date})) && ($t->fullday eq 'Tuesday')) {
