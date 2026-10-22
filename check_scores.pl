@@ -18,28 +18,31 @@ my $all_scores = 0;
 my $t;
 my ($year, $month, $day, $date);
 my %tnfb_db;
+my @file_list;
+my $league = './golfers';
+my $dh;
 
 my $t0 = gettimeofday();
 
-my $dir = './golfers';
-opendir(my $dh, $dir) or die "Cannot open $dir: $!";
+opendir($dh, "$league") || die "Can't open \"golfers\" directory.";
 
-# Filter to keep only actual files (-f)
-my $file_count = grep { -f "$dir/$_" } readdir($dh);
-
-closedir($dh);
-$file_count += 1000;
-
-foreach my $x (1000..$file_count) {
-    my $file = "golfers/$x.gdbm";
-
-    if (! -e $file) {
-        next;
+while (readdir $dh) {
+    if ($_ =~ /(^1\d{3}\056gdbm)/) {
+        tie %tnfb_db, 'GDBM_File', "$league/$_", GDBM_READER, 0644
+            or die "$GDBM_File::gdbm_errno";
+        push(@file_list, $_);
+        untie %tnfb_db;
     }
+}
+closedir ($dh);
+
+@file_list = sort @file_list;
+
+while (my $file = shift @file_list) {
 
     my $scores = 0;
 
-    tie %tnfb_db, 'GDBM_File', $file, GDBM_READER, 0644
+    tie %tnfb_db, 'GDBM_File', "$league/$file", GDBM_READER, 0644
         or die "$GDBM_File::gdbm_errno";
 
     my $pn = $tnfb_db{'Player'};
@@ -48,10 +51,6 @@ foreach my $x (1000..$file_count) {
     $t = Time::Piece->strptime("$sy-04-20", "%Y-%m-%d");
 
     while ($sy <= $end_year) {
-
-        ($year, $month, $day) = $t->ymd =~ /(\d{4})-\060*(\d{1,2})-\060*(\d{1,2})/;
-        $date = "$year-$month-$day";
-        print $t->ymd . "\n", if (0);
 
         #
         # We can check if a player has a team for this year, either Unknown, Sub or
@@ -64,16 +63,20 @@ foreach my $x (1000..$file_count) {
             next;
         }
 
+        ($year, $month, $day) = $t->ymd =~ /(\d{4})-\060*(\d{1,2})-\060*(\d{1,2})/;
+        $date = "$year-$month-$day";
+        print $t->ymd . "\n", if (0);
+
         # Check if the day is Tuesday
         if ((exists($tnfb_db{$date})) && ($t->fullday eq 'Tuesday')) {
             $bad_scores += check_score($pn, $date, $tnfb_db{$date});
             if ($bad_scores) {
-                print "$tnfb_db{'Player'}: $date, $tnfb_db{$date}\n";
+                print "$pn: $date, $tnfb_db{$date}\n";
             }
             $scores++;
             $t += ONE_WEEK;
         } elsif ((exists($tnfb_db{$date})) && ($t->fullday ne 'Tuesday')) {
-            print "$tnfb_db{'Player'}: $date, non-tuesday score?\n";
+            print "$pn: $date, non-tuesday score?\n";
             $bad_scores += 1;
             $t += ONE_DAY;
         } else {
@@ -86,14 +89,14 @@ foreach my $x (1000..$file_count) {
         }
     }
 
-    printf("%-18s = %s (%d)\n", $tnfb_db{'Player'}, $file, $scores);
+    printf("%-18s = %s (%d)\n", $pn, $file, $scores);
     $all_scores += $scores;
 
     untie %tnfb_db;
 }
 
 my $t1 = gettimeofday();
-my $total_time += ($t1 - $t0);
+my $total_time = ($t1 - $t0);
 
 printf("All Scores = %d - %d issues found\n", $all_scores, $bad_scores);
 printf("Total time = %.2f seconds\n", $total_time);
