@@ -65,23 +65,19 @@ while (my $file = shift @file_list) {
 
         ($year, $month, $day) = $t->ymd =~ /(\d{4})-\060*(\d{1,2})-\060*(\d{1,2})/;
         $date = "$year-$month-$day";
-        print $t->ymd . "\n", if (0);
 
         # Check if the day is Tuesday
         if ((exists($tnfb_db{$date})) && ($t->fullday eq 'Tuesday')) {
-            $bad_scores += check_score($pn, $date, $tnfb_db{$date});
-            if ($bad_scores) {
-                print "$pn: $date, $tnfb_db{$date}\n";
+            if (check_score($pn, $date, $tnfb_db{$date})) {
+                $bad_scores++;
             }
             $scores++;
-            $t += ONE_WEEK;
         } elsif ((exists($tnfb_db{$date})) && ($t->fullday ne 'Tuesday')) {
-            print "$pn: $date, non-tuesday score?\n";
-            $bad_scores += 1;
-            $t += ONE_DAY;
-        } else {
-            $t += ONE_DAY;
+            print "$pn: $date, non-tuesday score.\n";
+            $bad_scores++;
         }
+
+        $t += ONE_DAY;
 
         if ($t->mon > 8) {
             $sy++;
@@ -98,7 +94,7 @@ while (my $file = shift @file_list) {
 my $t1 = gettimeofday();
 my $total_time = ($t1 - $t0);
 
-printf("All Scores = %d - %d issues found\n", $all_scores, $bad_scores);
+printf("All Scores = %d - %d bad score(s) found\n", $all_scores, $bad_scores);
 printf("Total time = %.2f seconds\n", $total_time);
 
 sub
@@ -111,15 +107,15 @@ check_score
     print "@sr\n", if (0);
 
     if (scalar(@sr) < 17) {
-        print "Scoring record is less than 17: $pn, $date\n";
+        print "$pn: $date, scoring record is less than 17\n";
         $ret = 1;
     }
     if ($sr[0] ne "SF" && $sr[0] ne "SB" && $sr[0] ne "NF" && $sr[0] ne "NB") {
-        print "Bad course: $sr[0], $pn, $date\n";
+        print "$pn: $date, bad course: $sr[0]\n";
         $ret = 1;
     }
     if ($date ne $sr[3]) {
-        print "dates don't match: $pn: $date: $s\n";
+        print "$pn: $date, dates don't match: $s\n";
         $ret = 1;
     }
     return ($ret);
