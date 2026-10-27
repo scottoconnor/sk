@@ -166,7 +166,7 @@ foreach $cy ($start_year..$end_year) {
         get_player_scores($file, $pn, $cy);
     }
     $t1 = gettimeofday(), if $hires;
-    $total_time += ($t1 - $t0), if $hires;
+    $total_time = ($t1 - $t0), if $hires;
 }
 
 #
@@ -181,7 +181,7 @@ foreach my $pn (keys %golfers_gdbm) {
 
 sub
 initialize_player_data {
-    my($pn) = @_;
+    my ($pn) = @_;
     my @courses = ("SF", "SB", "NF", "NB");
 
     $p{$pn}{to} = 0;
@@ -1105,9 +1105,9 @@ printf("Total time = %.2f seconds - processed %d scores\n", $total_time, $totals
 sub
 show_most_improved {
 
-    my ($cw, $mi, $d, %p, @score, %mi);
+    my ($cw, $mi, $d, @score, %mi);
 
-    foreach my $pn (keys %golfers_gdbm) {
+    foreach my $pn (keys %p) {
         my $file = $golfers_gdbm{$pn};
 
         tie %tnfb_db, 'GDBM_File', $file, GDBM_READER, 0640
@@ -1118,7 +1118,7 @@ show_most_improved {
             next;
         }
 
-        if ($tnfb_db{'Team'} eq "Sub") {
+        if ($tnfb_db{"Team_$start_year"} eq "Sub") {
                 untie %tnfb_db;
                 next;
         }
