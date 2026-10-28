@@ -171,7 +171,8 @@ foreach $cy ($start_year..$end_year) {
 
 #
 # Delete players from the hash that didn't play any rounds
-# of golf in the league.
+# of golf in the league for the specifed years entered at
+# the command line.
 #
 foreach my $pn (keys %golfers_gdbm) {
     if ($p{$pn}{total_rounds} == 0) {
@@ -1119,8 +1120,8 @@ show_most_improved {
         }
 
         if ($tnfb_db{"Team_$start_year"} eq "Sub") {
-                untie %tnfb_db;
-                next;
+            untie %tnfb_db;
+            next;
         }
 
         #
