@@ -21,6 +21,7 @@ my $max_scores = 20;
 my ($sf, $sb, $nf, $nb);
 my (%t, $tier, $course_data, @course_elements);
 my $year = (1900 + (localtime)[5]);
+my $start_year = ($year - 20);
 my @courses = ("SF", "SB", "NF", "NB");
 our %dates;
 
@@ -49,19 +50,18 @@ while (readdir $dh) {
 }
 closedir ($dh);
 
-&get_years_weeks_dates(%golfers_gdbm);
+&get_years_weeks_dates($start_year, %golfers_gdbm);
 
 foreach my $pn (keys %golfers_gdbm) {
 
     my $file = $golfers_gdbm{$pn};
-    my ($course_year, $start_year);
-
-    $start_year = ($year - 20);
+    my $course_year;
+    my $sy = $start_year;
 
     tie %tnfb_db, 'GDBM_File', $file, GDBM_READER, 0644
         or die "$GDBM_File::gdbm_errno";
 
-    foreach my $y ($start_year..$year) {
+    foreach my $y ($sy..$year) {
         foreach my $w (1..15) {
             if (exists($tnfb_db{$dates{$y}{$w}})) {
                 my @sr = split(/:/, $tnfb_db{$dates{$y}{$w}});
@@ -90,7 +90,7 @@ while (my $sc = shift @courses) {
         if (!defined($t{$sc}{$tier})) {
             next;
         }
-        my $ave = ($t{$sc}{$tier}{strokes}/$t{$sc}{$tier}{xplayed});
+        my $ave = ($t{$sc}{$tier}{strokes} / $t{$sc}{$tier}{xplayed});
         $t{$sc}{$tier}{ave} = $ave;
         printf("%s: tier %d, (scores %d), strokes %d, ave = %.1f\n", $sc, $tier,
             $t{$sc}{$tier}{xplayed}, $t{$sc}{$tier}{strokes}, $ave), if (0);
@@ -236,7 +236,7 @@ sub
 expected_diff {
     my ($fn) = @_;
 
-    my (%tnfb_db, $use, @sr, $diff, $ex_diff, $hi, $start_year, $tier);
+    my (%tnfb_db, $use, @sr, $diff, $ex_diff, $hi, $tier);
     my $rw = GDBM_READER;
 
     $rw = GDBM_WRITER, if ($update_hi);
