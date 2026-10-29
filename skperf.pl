@@ -112,8 +112,6 @@ while (readdir $dh) {
 }
 closedir ($dh);
 
-&get_years_weeks_dates(%golfers_gdbm);
-
 #
 # Back up one year if the current year has not started yet.
 #
@@ -150,6 +148,8 @@ if (defined($only_week)) {
 if ($all_time || ($start_year < 1997)) {
     $start_year = 1997;
 }
+
+&get_years_weeks_dates($start_year, %golfers_gdbm);
 
 #
 # First get all the players scores/stats for the requested years/weeks.

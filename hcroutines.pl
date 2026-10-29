@@ -150,7 +150,7 @@ get_course_data {
 sub
 get_years_weeks_dates {
 
-    my %golfers_gdbm = @_;
+    my ($start_year, %golfers_gdbm) = @_;
 
     foreach my $pn (keys %golfers_gdbm) {
 
@@ -159,7 +159,7 @@ get_years_weeks_dates {
         tie %tnfb_db, 'GDBM_File', $file, GDBM_READER, 0644
             or die "$GDBM_File::gdbm_errno";
 
-        $sy = 1997;
+        $sy = $start_year;
         $t = Time::Piece->strptime("$sy-04-20", "%Y-%m-%d");
 
         while ($sy <= $end_year) {
@@ -195,7 +195,7 @@ get_years_weeks_dates {
     }
 
     my $week = 1;
-    $sy = 1997;
+    $sy = $start_year;
     $t = Time::Piece->strptime("$sy-04-20", "%Y-%m-%d");
 
     while ($sy <= $end_year) {
