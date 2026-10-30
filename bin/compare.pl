@@ -68,7 +68,7 @@ print_db {
         if (exists($tnfb_db{$team})) {
             print $log "$team: $tnfb_db{$team}\n";
         }
-        foreach $m (4..10) {
+        foreach $m (4..9) {
             foreach $d (1..31) {
                 my $date = "$y-$m-$d";
                 if (exists($tnfb_db{$date})) {
