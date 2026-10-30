@@ -239,15 +239,6 @@ search_db_key {
 
         if (exists($tnfb_db{$key})) {
             printf "%-17s: %s\n", $tnfb_db{'Player'}, $tnfb_db{$key};
-            #my $sr = $tnfb_db{$key};
-            #if ($sr =~ /1997-8-21/) {
-
-                #$sr =~ s/1997-8-21/1997-8-19/;
-                #my $correct_date = "1997-8-19";
-                #printf "%-17s: %s\n", $tnfb_db{'Player'}, $sr;
-
-                #$tnfb_db{$correct_date} = $sr;
-            #}
             $count++
         }
         untie %tnfb_db;
@@ -289,8 +280,6 @@ search_db_value {
         tie %tnfb_db, 'GDBM_File', $file, GDBM_READER, 0640
             or die "$GDBM_File::gdbm_errno";
 
-        $pn = $tnfb_db{'Player'};
-
         while (my($key, $val) = each %tnfb_db) {
             if ($val =~ /$value/) {
                 print "$pn: $key: $val\n";
@@ -315,7 +304,7 @@ view_db {
         if (exists($tnfb_db{$team})) {
             print "$team: $tnfb_db{$team}\n";
         }
-        foreach $m (3..10) {
+        foreach $m (4..9) {
             foreach $d (1..31) {
                 my $date = "$y-$m-$d";
                 if (exists($tnfb_db{$date})) {
