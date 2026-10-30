@@ -11,8 +11,6 @@ use GDBM_File;
 use FindBin;
 use lib "$FindBin::Bin/..";
 
-require 'hcroutines.pl';
-
 my (%golfers_gdbm, %tnfb_db, $file, $dh, $pn);
 
 my $modify = 0;
