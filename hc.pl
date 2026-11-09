@@ -54,6 +54,8 @@ closedir ($dh);
 
 foreach my $pn (keys %golfers_gdbm) {
 
+    next, if (!$expected_diff);
+
     my $file = $golfers_gdbm{$pn};
     my $course_year;
     my $sy = $start_year;
