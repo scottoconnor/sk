@@ -1309,6 +1309,7 @@ get_player_scores {
         $p{$pn}{$d}{hi} = $hi;
         $p{$pn}{$d}{net} = ($shot - $hc);
         $p{$pn}{$d}{diff} = (($shot - $hc) - $course_elements[3]);
+
         if ($shot >= 50) {
             $y{$cy}{fifty_plus}++;
         }
