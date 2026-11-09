@@ -3,12 +3,11 @@
 # Copyright (c) 2026, Scott O'Connor
 #
 
+require './subs.pl';
+
 use strict;
 use warnings;
-
 use Getopt::Long qw(:config no_ignore_case);
-
-require './subs.pl';
 
 my $total_subs = 0;
 my $total_years = 0;

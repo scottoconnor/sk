@@ -3,12 +3,11 @@
 # Copyright (c) 2018, 2026, Scott O'Connor
 #
 
-use strict;
-use warnings;
-
 require './subs.pl';
 require './hcroutines.pl';
 
+use strict;
+use warnings;
 use Time::HiRes qw(gettimeofday);
 use GDBM_File;
 use Getopt::Long qw(:config no_ignore_case);
