@@ -10,7 +10,6 @@ use GDBM_File;
 use Time::Piece;
 use Time::Seconds;
 
-my $end_year = localtime->year;
 my $sy;
 my $t;
 my ($year, $month, $day, $date);
@@ -149,7 +148,7 @@ get_course_data {
 sub
 get_years_weeks_dates {
 
-    my ($start_year, %golfers_gdbm) = @_;
+    my ($start_year, $end_year, %golfers_gdbm) = @_;
 
     foreach my $pn (keys %golfers_gdbm) {
 
@@ -178,12 +177,12 @@ get_years_weeks_dates {
             $date = "$year-$month-$day";
 
             # If the score exists, check if the day is Tuesday
-            if ((exists($tnfb_db{$date})) && ($t->fullday eq 'Tuesday')) {
-                $d{$date} = $date;
-                $t += ONE_WEEK;
-            } else {
-                $t += ONE_DAY;
+            if ((exists($tnfb_db{$date})) && ($t->fullday eq 'Tuesday') &&
+                (!defined($d{$date}))) {
+                    $d{$date} = $date;
             }
+
+            $t += ONE_DAY;
 
             if ($t->mon > 8) {
                 $sy++;
@@ -205,10 +204,9 @@ get_years_weeks_dates {
             $dates{$year}{end_week} = $week;
             print "($year:$week) -> $d{$date}\n", if (0);
             $week++;
-            $t += ONE_WEEK;
-        } else {
-            $t += ONE_DAY;
         }
+
+        $t += ONE_DAY;
 
         if ($t->mon > 8) {
             $sy++;

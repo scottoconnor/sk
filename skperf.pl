@@ -148,7 +148,7 @@ if ($all_time || ($start_year < 1997)) {
     $start_year = 1997;
 }
 
-&get_years_weeks_dates($start_year, %golfers_gdbm);
+&get_years_weeks_dates($start_year, $end_year, %golfers_gdbm);
 
 #
 # First get all the players scores/stats for the requested years/weeks.

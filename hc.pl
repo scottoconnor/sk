@@ -50,7 +50,7 @@ while (readdir $dh) {
 }
 closedir ($dh);
 
-&get_years_weeks_dates($start_year, %golfers_gdbm);
+&get_years_weeks_dates($start_year, $year, %golfers_gdbm);
 
 foreach my $pn (keys %golfers_gdbm) {
 
