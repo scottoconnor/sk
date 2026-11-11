@@ -266,9 +266,9 @@ if ($add) {
             next;
         }
 
-        open(FD, $fn);
+        open(my $fd, $fn);
 
-        while ($line = <FD>) {
+        while ($line = <$fd>) {
 
             #
             # The first "if" gets the date, course information. Once we get this information
@@ -362,7 +362,7 @@ if ($add) {
                 untie %tnfb_db;
             }
         }
-        close(FD);
+        close($fd);
     }
     print "Added $count scores for week $w. (Otherwise add $num_scores scores)\n";
 }

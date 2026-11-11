@@ -96,13 +96,13 @@ while ($y < 33) {
     $y++;
 }
 
-open(FD, ">", $filename);
+open(my $fd, ">", $filename);
 $y = 1;
 while ($y < 33) {
-    print FD "$team{$y}\n";
+    print $fd "$team{$y}\n";
     print STDOUT "$team{$y}\n";
-    print FD "\n", if (($y & 1) == 0 && $y != 32);
+    print $fd "\n", if (($y & 1) == 0 && $y != 32);
     print STDOUT "\n", if (($y & 1) == 0 && $y != 32);
     $y++;
 }
-close(FD);
+close($fd);
