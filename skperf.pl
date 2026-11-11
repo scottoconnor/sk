@@ -679,7 +679,7 @@ if ($all_time) {
     print "  <tr>\n    <th>Name</th>\n    <th>Eagles</th>\n    <th>Eagles per 9-holes</th>\n  </tr>\n", if $html;
     print "All Time Eagles Table:\n", if !$html;
     foreach $key (sort { $p{$b}{te} <=> $p{$a}{te} } (keys(%p))) {
-        if ($p{$key}{te} == 0 || ($p{$key}{total_rounds} < 30)) {
+        if ($p{$key}{te} == 0 || ($p{$key}{total_rounds} < 10)) {
             next;
         }
         printf("%-17s: %d\t(%.3f eagles per 9 holes)\n", $key, $p{$key}{te}, ($p{$key}{te} / $p{$key}{total_rounds})), if !$html;
@@ -699,7 +699,7 @@ if ($all_time) {
     print "  <tr>\n    <th>Name</th>\n    <th>Birdies</th>\n    <th>Birdies per 9-holes</th>\n  </tr>\n", if $html;
     print "All Time Birdie Table:\n", if !$html;
     foreach $key (sort { $p{$b}{tb} <=> $p{$a}{tb} } (keys(%p))) {
-        if ($p{$key}{tb} == 0 || ($p{$key}{total_rounds} < 30)) {
+        if ($p{$key}{tb} == 0 || ($p{$key}{total_rounds} < 10)) {
             next;
         }
         printf("%-17s: %d\t(%.2f birdies per 9 holes)\n", $key, $p{$key}{tb}, ($p{$key}{tb} / $p{$key}{total_rounds})), if !$html;
@@ -719,7 +719,7 @@ if ($all_time) {
     print "  <tr>\n    <th>Name</th>\n    <th>Pars</th>\n    <th>Pars per 9-holes</th>\n  </tr>\n", if $html;
     print "All Time Par Table:\n", if !$html;
     foreach $key (sort { $p{$b}{tp} <=> $p{$a}{tp} } (keys(%p))) {
-        if ($p{$key}{tp} == 0 || ($p{$key}{total_rounds} < 30)) {
+        if ($p{$key}{tp} == 0 || ($p{$key}{total_rounds} < 10)) {
             next;
         }
         printf("%-17s: %d\t(%.2f pars per 9 holes)\n", $key, $p{$key}{tp}, ($p{$key}{tp} / $p{$key}{total_rounds})), if !$html;
@@ -739,7 +739,7 @@ if ($all_time) {
     print "  <tr>\n    <th>Name</th>\n    <th>Bogies</th>\n    <th>Bogies per 9-holes</th>\n  </tr>\n", if $html;
     print "All Time Bogie Table:\n", if !$html;
     foreach $key (sort { $p{$b}{bo} <=> $p{$a}{bo} } (keys(%p))) {
-        if ($p{$key}{bo} == 0 || ($p{$key}{total_rounds} < 30)) {
+        if ($p{$key}{bo} == 0 || ($p{$key}{total_rounds} < 10)) {
             next;
         }
         printf("%-17s: %d\t(%.2f bogies per 9 holes)\n", $key, $p{$key}{bo}, ($p{$key}{bo} / $p{$key}{total_rounds})), if !$html;
@@ -759,7 +759,7 @@ if ($all_time) {
     print "  <tr>\n    <th>Name</th>\n    <th>Doubles</th>\n    <th>Doubles per 9-holes</th>\n  </tr>\n", if $html;
     print "All Time Double Bogie Table:\n", if !$html;
     foreach $key (sort { $p{$b}{tdb} <=> $p{$a}{tdb} } (keys(%p))) {
-        if ($p{$key}{tdb} == 0 || ($p{$key}{total_rounds} < 30)) {
+        if ($p{$key}{tdb} == 0 || ($p{$key}{total_rounds} < 10)) {
             next;
         }
         printf("%-17s: %d\t(%.2f doubles per 9 holes)\n", $key, $p{$key}{tdb}, ($p{$key}{tdb} / $p{$key}{total_rounds})), if !$html;
@@ -779,7 +779,7 @@ if ($all_time) {
     print "  <tr>\n    <th>Name</th>\n    <th>Others</th>\n    <th>Others per 9-holes</th>\n  </tr>\n", if $html;
     print "All Time Others Table:\n", if !$html;
     foreach $key (sort { $p{$b}{to} <=> $p{$a}{to} } (keys(%p))) {
-        if ($p{$key}{to} == 0 || ($p{$key}{total_rounds} < 30)) {
+        if ($p{$key}{to} == 0 || ($p{$key}{total_rounds} < 10)) {
             next;
         }
         printf("%-17s: %d\t(%.2f others per 9 holes)\n", $key, $p{$key}{to}, ($p{$key}{to} / $p{$key}{total_rounds})), if !$html;
