@@ -14,6 +14,7 @@ use lib "$FindBin::Bin/..";
 my (%golfers_gdbm, %tnfb_db, $file, $dh, $pn);
 
 my $modify = 0;
+my $db_number = 0;
 my $delete = 0;
 my $add = 0;
 my $create = 0;
@@ -30,6 +31,7 @@ GetOptions (
     "c" => \$create,
     "d" => \$delete,
     "m" => \$modify,
+    "n" => \$db_number,
     "s" => \$search_key,
     "sd" => \$search_del_key,
     "S" => \$search_value,
@@ -37,7 +39,7 @@ GetOptions (
 or die("Error in command line arguments\n");
 
 if ($modify == 0 && $delete == 0 && $add == 0 && $view == 0 && $search_key == 0
-    && $search_del_key == 0 && $search_value == 0 && $create == 0) {
+    && $search_del_key == 0 && $search_value == 0 && $create == 0 && $db_number == 0) {
     die "usage: db.pl [options] \
 Options: \
   -a         Add a new key/value entry into a player's scoring record. \
@@ -47,7 +49,8 @@ Options: \
   -s         Search all player's scoring record for a key. \
   -sd        Search all player's scoring record for a key and delete it. \
   -S         Search all player's scoring record for a value. \
-  -v         View the player's entire database record.\n";
+  -v         View the player's entire database record. \
+  -n         View database record using database number, e.g. \"1001\".\n";
 }
 
 opendir($dh, $path) || die "Can't open directory.";
@@ -86,6 +89,17 @@ if ($delete) {
 
 if ($modify) {
     modify_key($file);
+}
+
+if ($db_number) {
+    print "Enter database number of player (e.g. 1001): ";
+    my $db_num = <STDIN>;
+    chomp($db_num);
+    foreach my $pn (keys %golfers_gdbm) {
+        if ($golfers_gdbm{$pn} =~ /\b$db_num\b/) {
+            view_db($golfers_gdbm{$pn});
+        }
+    }
 }
 
 if ($search_key) {
