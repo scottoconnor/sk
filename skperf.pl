@@ -570,15 +570,19 @@ if ($vhc) {
 }
 
 #
-# Now print out the data for those years/weeks.
+# Print out the stats for those years/weeks.
 #
-# The years are printed in descending order.
-#
-foreach my $yp (reverse sort keys %y) {
-    if ($stats) {
+if ($stats) {
+    foreach my $yp (reverse sort keys %y) {
         print_stats($yp);
     }
-    if ($tables) {
+}
+
+#
+# Print out the tables for those years/weeks.
+#
+if ($tables) {
+    foreach my $yp (reverse sort keys %y) {
         print_tables($yp);
     }
 }
