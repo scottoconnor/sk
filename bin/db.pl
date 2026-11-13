@@ -22,9 +22,9 @@ my $view = 0;
 my $search_key = 0;
 my $search_del_key = 0;
 my $search_value = 0;
+my $db_count = 0;
 my $end_year = (1900 + (localtime)[5]);
 my $path = "/home/soconnor/sk/golfers";
-my $file_path;
 
 GetOptions (
     "a" => \$add,
@@ -57,14 +57,19 @@ opendir($dh, $path) || die "Can't open directory.";
 
 while (readdir $dh) {
     if ($_ =~ /(^1\d{3}\056gdbm)/) {
-        $file_path = "$path/$_";
-        tie %tnfb_db, 'GDBM_File', $file_path, GDBM_READER, 0644
+        tie %tnfb_db, 'GDBM_File', "$path/$_", GDBM_READER, 0644
             or die "$GDBM_File::gdbm_errno";
-        $golfers_gdbm{$tnfb_db{'Player'}} = $file_path;
+        $golfers_gdbm{$tnfb_db{'Player'}} = "$path/$_";
         untie %tnfb_db;
     }
 }
 closedir ($dh);
+
+#
+# Determine how many existing player database's we have in case
+# we are creating a new player database.
+#
+$db_count = keys %golfers_gdbm;
 
 if ($modify == 1 || $delete == 1 || $add == 1 || $view == 1) {
     print "Enter Player name: ";
@@ -143,24 +148,17 @@ add_key {
 
 sub
 create_tnfb_db {
-    my ($new_pn) = @_;
-    my ($new_file, $x, $y, $hi);
+    my ($new_db_file, $new_pn, $hi);
 
-    opendir($dh, $path) or die "Cannot open $path: $!";
+    my $next_db = (1001 + $db_count);
 
-    # Filter to keep only actual files (-f)
-    my $file_count = grep { -f "$path/$_" } readdir($dh);
+    $new_db_file = $path . "/$next_db" . "." . "gdbm";
 
-    closedir($dh);
-    $file_count += 1001;
-
-    $new_file = $path . "/$file_count" . "." . "gdbm";
-
-    if (! -e $new_file) {
-        print "new DB file is: $new_file\n";
+    if (! -e $new_db_file) {
+        print "New DB file is: $new_db_file\n";
     }
 
-    tie %tnfb_db, 'GDBM_File', $new_file, GDBM_WRCREAT, 0644
+    tie %tnfb_db, 'GDBM_File', $new_db_file, GDBM_WRCREAT, 0644
         or die "$GDBM_File::gdbm_errno";
     
     print "Enter Player's name: ";
@@ -176,7 +174,7 @@ create_tnfb_db {
     #
     # Update golfers_gdbm hash
     #
-    $golfers_gdbm{$new_pn} = $new_file;
+    $golfers_gdbm{$new_pn} = $new_db_file;
 }
 
 #
@@ -216,22 +214,20 @@ modify_key {
     tie %tnfb_db, 'GDBM_File', $file, GDBM_WRITER, 0644
         or die "$GDBM_File::gdbm_errno";
 
-    while (1) {
-        print "Enter key to Change: ";
-        chomp($key = <STDIN>);
+    print "Enter key to Change: ";
+    chomp($key = <STDIN>);
 
-        if (!exists($tnfb_db{$key})) {
-            print "\"$key\" does not exists.\n";
-            untie %tnfb_db;
-            return;
-        }
-
-        print "current vaule of $key is: $tnfb_db{$key}\n";
-        print "New value for $key: ";
-        chomp($new_val = <STDIN>);
-        print "Changing $tnfb_db{$key} to $new_val\n";
-        $tnfb_db{$key} = $new_val;
+    if (!exists($tnfb_db{$key})) {
+        print "\"$key\" does not exists.\n";
+        untie %tnfb_db;
+        return;
     }
+
+    print "current vaule of $key is: $tnfb_db{$key}\n";
+    print "New value for $key: ";
+    chomp($new_val = <STDIN>);
+    print "Changing $tnfb_db{$key} to $new_val\n";
+    $tnfb_db{$key} = $new_val;
 
     untie %tnfb_db;
 }
