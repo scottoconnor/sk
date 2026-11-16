@@ -54,7 +54,7 @@ foreach my $year (sort keys %subs) {
 }
 
 print "Total subs = $total_subs, Number of weeks = $num_weeks, Number of years = $total_years\n";
-printf("Average subs = %.2f\n", ($total_subs / $num_weeks));
+printf("Average subs per week = %.2f\n", ($total_subs / $num_weeks));
 
 print "\n\n";
 
