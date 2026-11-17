@@ -69,7 +69,7 @@ foreach my $pn (keys %golfers_gdbm) {
                 my @sr = split(/:/, $tnfb_db{$dates{$y}{$w}});
                 my $date = $sr[3];
                 print "$date: $tnfb_db{$date}\n", if (0);
-                print "$date: @sr\n", if 0;
+                print "$date: @sr\n", if (0);
                 print "$date: $sr[4], $sr[6]\n", if (0);
 
                 ($course_year) = $sr[3] =~ /(\d\d\d\d)-/;
