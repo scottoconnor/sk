@@ -488,7 +488,7 @@ if ($vhc) {
                     $p{$pn}{rounds}++;
                     $temp{$p{$pn}{$d}{team}}{diff} += $p{$pn}{$d}{diff};
                     $temp{$p{$pn}{$d}{team}}{rounds}++;
-                    $temp{$p{$pn}{$d}{team}}{date} = "$yp:$w", if 0;
+                    $temp{$p{$pn}{$d}{team}}{date} = "$yp:$w", if (0);
                     if ($p{$pn}{team} eq "Sub") {
                         printf("%-17s: (%-4d:%s) shot %d, hc %2d, net %d, diff %d (%s)\n", $pn, $yp, $w,
                             $p{$pn}{$d}{shot}, $p{$pn}{$d}{hc}, $p{$pn}{$d}{net}, $p{$pn}{$d}{diff}, $p{$pn}{$d}{team});
@@ -505,7 +505,7 @@ if ($vhc) {
                     $league{$team}{diff} += $temp{$team}{diff};
                     $league{$team}{rounds}++;
                 } else {
-                    print "$team missing score (only $temp{$team}{rounds}): $temp{$team}{date}\n", if 0;
+                    print "$team missing score (only $temp{$team}{rounds}): $temp{$team}{date}\n", if (0);
                 }
                 $temp{$team}{rounds} = 0;
                 $temp{$team}{diff} = 0;
@@ -514,7 +514,7 @@ if ($vhc) {
 
             if (($num_players + $num_subs) != 32) {
                 printf("Missing player(s): players: %d, subs: %d, total: %d\n",
-                    $num_players, $num_subs, ($num_players + $num_subs)), if 0;
+                    $num_players, $num_subs, ($num_players + $num_subs)), if (0);
             }
             print "\n";
         }
@@ -531,10 +531,10 @@ if ($vhc) {
 
     foreach my $team (keys %league) {
         if ($team =~ /TNFB/) {
-            printf("rounds for %s: %d\n", $team, $league{$team}{rounds}), if 0;
+            printf("rounds for %s: %d\n", $team, $league{$team}{rounds}), if (0);
             $league{$team}{avediff} = ($league{$team}{diff} / $league{$team}{rounds});
         } else {
-            printf("rounds for %s: %d\n", $team, $league{$team}{rounds}), if 0;
+            printf("rounds for %s: %d\n", $team, $league{$team}{rounds}), if (0);
             $league{$team}{avediff} = ($league{$team}{diff} / $league{$team}{rounds});
         }
     }
@@ -1258,7 +1258,7 @@ get_player_scores {
                 die "$pn is not a valid sub? year $cy, week $cw\n";
             }
             my $league_fn = $golfers_gdbm{$subs{$cy}{$cw}{$pn}};
-            print "$subs{$cy}{$cw}{$pn}, $league_fn\n", if 0;
+            print "$subs{$cy}{$cw}{$pn}, $league_fn\n", if (0);
 
             tie my %sub_db, 'GDBM_File', $league_fn, GDBM_READER, 0640
                 or die "$GDBM_File::gdbm_errno";
@@ -1280,7 +1280,7 @@ get_player_scores {
             }
 
             untie %sub_db;
-            print "$pn Subbed for $subs{$cy}{$cw}{$pn} ($p{$pn}{$d}{team}) in $cy week $cw\n", if 0;
+            print "$pn Subbed for $subs{$cy}{$cw}{$pn} ($p{$pn}{$d}{team}) in $cy week $cw\n", if (0);
         }
 
         ($course, $par, $slope, $date, $hi, $hc, $shot, $post) = @score_record[0..7];

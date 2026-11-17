@@ -59,9 +59,9 @@ my $y = 1;
 while ($y < 33) {
     my $which_num = (int(rand(4)));
     my @seed_values = $source->random_values(4);
-    print "@seed_values\n", if 0;
+    print "@seed_values\n", if (0);
     my $seed = $seed_values[$which_num];
-    print STDOUT "seed -> $seed - which_num = $which_num\n", if 0;
+    print STDOUT "seed -> $seed - which_num = $which_num\n", if (0);
     srand($seed);
 
     my $x = int(rand(32));
@@ -92,7 +92,7 @@ while ($y < 33) {
     } else {
         $lastx = 0;
     }
-    sleep(int(rand(4))), if 0;
+    sleep(int(rand(4))), if (0);
     $y++;
 }
 
